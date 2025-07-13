@@ -1,0 +1,7 @@
+{
+  "name": "Kalinga",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
