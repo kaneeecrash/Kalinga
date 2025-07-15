@@ -1,0 +1,80 @@
+<ion-content class="register-bg" fullscreen>
+  <!-- Gradient Wave Header -->
+  <div class="register-wave-tall">
+    <svg viewBox="0 0 400 100" class="register-wave-svg" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="regWaveGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#A300D6"/>
+          <stop offset="100%" stop-color="#FF3C8E"/>
+        </linearGradient>
+      </defs>
+      <path d="M0,70 Q120,110 260,60 T400,60 L400,0 L0,0 Z"
+        fill="url(#regWaveGrad)" />
+      <path d="M0,95 Q140,120 400,90 L400,100 L0,100 Z"
+        fill="#fff" fill-opacity="0.85"/>
+    </svg>
+    <div class="register-title">Create New Account</div>
+  </div>
+
+  <div class="register-card">
+    <form [formGroup]="regForm" (ngSubmit)="onRegister()" class="register-form">
+      <div class="input-row">
+        <ion-icon name="person-outline"></ion-icon>
+        <ion-input
+          formControlName="userName"
+          placeholder="Username"
+          autocomplete="username"
+          required
+        ></ion-input>
+      </div>
+      <div class="input-row">
+        <ion-icon name="id-card-outline"></ion-icon>
+        <ion-input
+          formControlName="displayName"
+          placeholder="Full Name"
+          autocomplete="name"
+          required
+        ></ion-input>
+      </div>
+      <div class="input-row">
+        <ion-icon name="mail-outline"></ion-icon>
+        <ion-input
+          formControlName="email"
+          type="email"
+          placeholder="Email Address"
+          autocomplete="email"
+          required></ion-input>
+      </div>
+
+      <div class="input-row">
+        <ion-icon name="lock-closed-outline"></ion-icon>
+        <ion-input
+          formControlName="password"
+          type="password"
+          placeholder="Password"
+          autocomplete="new-password"
+          required></ion-input>
+      </div>
+      <div class="input-row">
+        <ion-icon name="checkmark-done-outline"></ion-icon>
+        <ion-input
+          formControlName="confirmPassword"
+          type="password"
+          placeholder="Confirm Password"
+          autocomplete="new-password"
+          required></ion-input>
+      </div>
+
+      <ion-button
+        expand="block"
+        type="submit"
+        class="register-btn"
+        [disabled]="regForm.invalid || loading">Sign Up</ion-button>
+
+      <ion-text color="danger" *ngIf="errorMsg">{{ errorMsg }}</ion-text>
+      <div class="register-footer">
+        Already have an account? <a routerLink="/login"><b>Sign in</b></a>
+      </div>
+    </form>
+  </div>
+</ion-content>

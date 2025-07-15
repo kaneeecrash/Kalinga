@@ -1,0 +1,180 @@
+:host, .register-bg, body {
+  min-height: 100vh;
+  width: 100vw;
+  overflow-x: hidden;
+}
+
+.register-wave-tall {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  width: 100vw;
+  height: 25vh;
+  min-height: 110px;
+  max-height: 230px;
+  overflow: hidden;
+  z-index: 2;
+  border-radius: 0 0 48px 48px;
+  background: transparent;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+}
+
+.register-wave-svg {
+  width: 100vw;
+  height: 100%;
+  display: block;
+}
+
+.register-title {
+  position: absolute;
+  left: 24px;
+  bottom: 20px;
+  font-size: 2.1rem;
+  font-weight: bold;
+  color: #fff;
+  z-index: 3;
+  letter-spacing: 0.4px;
+  text-shadow: 0 4px 20px #A300D6, 0 1px 2px #0002;
+}
+
+/* GLASS CARD: white, glass, with shadow. */
+.register-card {
+  position: relative;
+  z-index: 3;
+  margin: 0 auto;
+  max-width: 380px;
+  width: 92vw;
+  top: 22vh;
+  padding: 32px 0 20px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
+  transition: box-shadow 0.2s;
+  margin-top: 100px;
+}
+
+/* FORM LAYOUT */
+.register-form {
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+/* INPUT ROWS: minimal white pill */
+.input-row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  border-radius: 30px;
+  padding: 2px 14px 2px 12px;
+  box-shadow: 0 2px 9px 0 rgba(234, 164, 255, 0.953);
+  border: 1.5px solid #eee;
+  transition: border 0.17s, background 0.18s;
+  
+  ion-icon {
+    font-size: 1.37em;
+    color: #c300ff;  /* accent color for icon */
+    margin-right: 8px;
+    margin-left: 2px;
+    flex-shrink: 0;
+  }
+  ion-input {
+    border: none;
+    background: transparent !important;
+    box-shadow: none !important;
+    font-size: 1.07rem;
+    font-weight: 500;
+    color: #2a2250;
+    width: 100%;
+    --padding-start: 0;
+    --padding-end: 0;
+    --padding-top: 16px;
+    --padding-bottom: 12px;
+    outline: none;
+  }
+  &:focus-within, &:has(ion-input:focus) {
+    border: 1.5px solid #A300D6;
+    background: #fff;
+  }
+}
+
+/* BUTTON: gradient accent */
+.register-btn, ion-button[type="submit"] {
+  --background: #0000;
+  background: linear-gradient(135deg, #A300D6 0%, #FF3C8E 100%) !important;
+  --border-radius: 22px;
+  --color: #fff;
+  font-weight: 700;
+  font-size: 1.09rem;
+  letter-spacing: 0.4px;
+  box-shadow: 0 2px 14px rgba(163,0,214,0.13);
+  border: none;
+  min-height: 46px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  width: 100%;
+  transition: filter 0.17s;
+  cursor: pointer;
+
+  &:hover, &:focus {
+    filter: brightness(1.09);
+  }
+  &:disabled {
+    filter: grayscale(0.24) opacity(0.7);
+    background: linear-gradient(135deg, #d1b6e0 0%, #fdc6dc 100%) !important;
+    box-shadow: none;
+  }
+}
+
+/* FOOTER */
+.register-footer {
+  text-align: center;
+  color: #C0C0C0;
+  font-size: 15px;
+  margin-top: 14px;
+
+  a {
+    color: #FF3C8E;
+    text-decoration: underline;
+    font-weight: 600;
+    transition: color 0.2s;
+    &:hover, &:focus { color: #A300D6; }
+  }
+}
+ion-text[color="danger"] {
+  display: block;
+  margin-top: 12px;
+  font-size: 15px;
+  text-align: center;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+@media (max-width: 540px) {
+  .register-card {
+    max-width: 99vw;
+    border-radius: 0 0 18px 18px;
+    top: 18vh;
+    padding-top: 18px;
+  }
+  .register-title {
+    font-size: 1.33rem;
+    left: 12px;
+    bottom: 9px;
+    text-shadow:0 1px 1px #0002;
+    color: #A300D6;
+    padding-top: 20px;  
+}
+  .register-form {
+    width: 98%;
+    gap: 12px;
+  }
+  .input-row {
+    padding-left: 8px;
+    padding-right: 7px;
+  }
+}

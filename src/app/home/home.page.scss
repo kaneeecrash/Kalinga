@@ -1,27 +1,219 @@
-#container {
-  text-align: center;
+// Accent Variables
+$accent-gradient: linear-gradient(135deg, #A300D6 0%, #FF3C8E 100%);
+$accent-mission: linear-gradient(135deg, #f8fbff 0%, #e3f6ff 100%);
+$accent-action: linear-gradient(135deg, #fff0fa 0%, #e3f6ff 100%);
+$accent-purple: #A300D6;
+$accent-pink: #FF3C8E;
+$accent-white: #FFFFFF;
+$accent-gray: #C0C0C0;
+$accent-lightgray: #F3F3F3;
+$accent-shadow: rgba(163,0,214,0.09);
 
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+// Page background and header
+.home-bg {
+  --background: #fff;
+  background: $accent-gradient;
 }
 
-#container strong {
-  font-size: 20px;
-  line-height: 26px;
+.home-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 40px 16px 24px 16px;
+  background: $accent-gradient;
+  color: $accent-white;
+  border-radius: 0 0 36px 36px;
+  min-height: 120px;
 }
 
-#container p {
+.avatar img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid $accent-pink;
+  box-shadow: 0 2px 8px $accent-shadow;
+}
+
+// --- Standout Username and Tagline ---
+.header-username {
+  font-size: 25px;
+  font-weight: bold;
+  margin-top: -2px;
+  margin-bottom: 0px;
+  letter-spacing: 0.3px;
+  text-shadow: 0 2px 8px rgba(163, 0, 214, 0.14);
+  background: linear-gradient(90deg, $accent-white 60%, $accent-pink 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  display: inline-block;
+}
+
+.header-tagline {
   font-size: 16px;
-  line-height: 22px;
+  font-weight: 600;
+  margin-top: 2px;
+  background: white;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  letter-spacing: 0.2px;
+  // text-shadow: 0 1px 8px rgba(255, 60, 142, 0.13);
+  display: inline-block;
+}
+// --- End standout username ---
 
-  color: #8c8c8c;
-
-  margin: 0;
+.subtitle {
+  color: rgb(229, 229, 229);
+  font-size: 15px;
 }
 
-#container a {
-  text-decoration: none;
+.notif-icon {
+  margin-left: auto;
+  font-size: 40px;
+  color: $accent-white;
+}
+
+// Titles
+.featured-missions-title, .ongoing-title {
+  margin: 18px 0 8px 18px;
+  font-weight: bold;
+  font-size: 17px;
+  color: $accent-purple;
+}
+
+// Scroll row for mission cards
+.featured-missions-scroll {
+  display: flex;
+  flex-direction: row;
+  overflow-x: auto;
+  gap: 20px;
+  padding: 16px 10px;
+  scroll-snap-type: x mandatory;
+  margin-left: 20px; // Remove this line, padding handles the spacing
+}
+
+// ---- MISSION CARD with visible outline ----
+.mission-card,
+.mission-card.open {
+  background: $accent-mission;
+  color: #222;
+  border: 2.5px solid $accent-purple;
+  box-shadow: 0 2px 12px $accent-shadow;
+  border-radius: 22px;
+  padding: 16px 16px 8px 16px;
+  min-width: 220px;
+  max-width: 240px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: box-shadow 0.2s, border-color 0.2s, transform 0.13s;
+  scroll-snap-align: start;
+  flex-shrink: 0;
+  outline: none;
+}
+
+.mission-card:hover,
+.mission-card:focus,
+.mission-card.open {
+  border-color: $accent-pink;
+  box-shadow: 0 6px 24px $accent-shadow;
+  transform: scale(1.022);
+}
+
+.mission-type {
+  font-weight: bold;
+  color: $accent-purple;
+  font-size: 15px;
+  margin-bottom: 2px;
+}
+.mission-details, .mission-datetime, .mission-status {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  gap: 5px;
+  color: #555;
+}
+.mission-status {
+  color: #4caf50;
+  font-size: 13px;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+ion-button[size="small"] {
+  --background: #A300D6;
+  --background-hover: #FF3C8E;
+  --border-radius: 18px;
+  --color: #fff;
+  height: 26px;
+  font-size: 13px;
+  box-shadow: 0 2px 10px $accent-shadow;
+}
+
+// ---- ACTION CARDS with visible outline ----
+.quick-actions-cards {
+  margin: 24px 0 0 0;
+  padding: 0 8px;
+}
+.quick-actions-cards ion-row {
+  justify-content: space-between;
+}
+.action-card {
+  background: $accent-action;
+  border: 2.5px solid $accent-gray;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px $accent-shadow;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 18px 0 10px 0;
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
+  min-height: 120px;
+  min-width: 90px;
+  max-width: 120px;
+  margin: 0 auto;
+  outline: none;
+}
+
+.action-card:hover,
+.action-card:active,
+.action-card.selected {
+  border-color: $accent-pink;
+  box-shadow: 0 4px 20px $accent-shadow;
+  transform: translateY(-2px) scale(1.04);
+}
+.action-card img {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 10px;
+  object-fit: contain;
+}
+.action-card .label {
+  font-size: 13px;
+  font-weight: 600;
+  color: $accent-purple;
+  text-align: center;
+  line-height: 1.2;
+  letter-spacing: 0.5px;
+  margin-top: 4px;
+}
+
+// Map container
+.map-container {
+  width: 96%;
+  margin: 0 auto;
+  background: $accent-white;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px $accent-shadow;
+  margin-bottom: 24px;
+  margin-top: 10px;
+}
+.map-img {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
 }

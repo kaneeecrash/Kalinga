@@ -1,0 +1,71 @@
+.settings-content {
+  background: #f6f7fb;
+  min-height: 100vh;
+}
+
+.profile-card {
+  margin: 24px 0 16px 0;
+  border-radius: 18px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  background: #fff;
+  padding: 0;
+}
+
+.avatar-lg {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-right: 12px;
+}
+
+.profile-card ion-label h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 2px 0;
+  color: #222;
+}
+
+.profile-card ion-label p {
+  font-size: 14px;
+  color: #888;
+  margin: 0;
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 18px 0 8px 4px;
+  color: #222;
+  letter-spacing: 0.5px;
+}
+
+.settings-list {
+  background: transparent;
+  border-radius: 18px;
+  box-shadow: none;
+  margin-bottom: 24px;
+}
+
+ion-item.settings-list {
+  --background: #fff;
+  --border-radius: 14px;
+  --min-height: 56px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+
+ion-item ion-icon[slot="start"] {
+  color: #3880ff;
+  font-size: 22px;
+}
+
+ion-item ion-icon[slot="end"] {
+  color: #bbb;
+  font-size: 18px;
+}
+
+.notif-icon {
+  font-size: 24px;
+  color: #4caf50;   
+}

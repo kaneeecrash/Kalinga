@@ -11,6 +11,38 @@ const routes: Routes = [
     redirectTo: 'home',
     pathMatch: 'full'
   },
+  {
+    path: 'login',
+    loadChildren: () => import('./login/login.module').then( m => m.LoginPageModule)
+  },
+  {
+    path: 'register',
+    loadChildren: () => import('./register/register.module').then( m => m.RegisterPageModule)
+  },
+  {
+    path: 'profile',
+    loadChildren: () => import('./profile/profile.module').then( m => m.ProfilePageModule)
+  },
+  {
+    path: 'notifications',
+    loadChildren: () => import('./notifications/notifications.module').then( m => m.NotificationsPageModule)
+  },
+  {
+    path: 'profile-info',
+    loadChildren: () => import('./profile-info/profile-info.module').then( m => m.ProfileInfoPageModule)
+  },
+  {
+    path: 'missions',
+    loadChildren: () => import('./missions/missions.module').then( m => m.MissionsPageModule)
+  },
+  {
+    path: 'donations',
+    loadChildren: () => import('./donations/donations.module').then( m => m.DonationsPageModule)
+  },
+  {
+    path: 'leaderboards',
+    loadChildren: () => import('./leaderboards/leaderboards.module').then( m => m.LeaderboardsPageModule)
+  },
 ];
 
 @NgModule({

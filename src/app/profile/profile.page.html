@@ -1,0 +1,50 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Profile</ion-title>
+    <ion-buttons slot="end">
+      <ion-icon name="notifications-outline" class="notif-icon"></ion-icon>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding settings-content">
+  <!-- Profile card -->
+  <ion-card class="profile-card">
+    <ion-item lines="none">
+      <ion-avatar slot="start" class="avatar-lg">
+        <img src="assets/avatar.png" />
+      </ion-avatar>
+      <ion-label>
+        <h2>{{ userName || '' }}</h2>
+        <p>{{ userEmail || '' }}</p>
+      </ion-label>
+    </ion-item>
+  </ion-card>
+
+
+  <!-- Settings header -->
+  <div class="section-title">Settings</div>
+
+  <ion-list class="settings-list">
+    <ion-item lines="full" button (click)="goToProfileInfo()">
+      <ion-icon name="person-outline" slot="start"></ion-icon>
+      <ion-label>Personal information</ion-label>
+      <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+    </ion-item>
+    <ion-item lines="full" button>
+      <ion-icon name="shield-checkmark-outline" slot="start"></ion-icon>
+      <ion-label>Adjustments and Badges</ion-label>
+      <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+    </ion-item>
+    <ion-item lines="full" button>
+      <ion-icon name="settings-outline" slot="start"></ion-icon>
+      <ion-label>Settings</ion-label>
+      <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+    </ion-item>
+    <ion-item lines="full" button>
+      <ion-icon name="person-outline" slot="start"></ion-icon>
+      <ion-label>Account Management</ion-label>
+      <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+    </ion-item>
+  </ion-list>
+</ion-content>

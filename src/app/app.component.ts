@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { NavController } from '@ionic/angular';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -7,5 +9,18 @@ import { Component } from '@angular/core';
   standalone: false,
 })
 export class AppComponent {
-  constructor() {}
+  constructor(
+    private nav: NavController,
+    private router: Router
+  ) {}
+
+  isActive(url: string): boolean {
+    return this.router.url === url;
+  }
+  isLoginPage(): boolean {
+    return this.router.url === '/login' || this.router.url === '/register';
+  }
 }
+
+
+
