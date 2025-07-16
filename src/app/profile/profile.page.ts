@@ -1,5 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { Firestore, doc, getDoc } from '@angular/fire/firestore';
+import { Auth } from '@angular/fire/auth';
+import { AuthService } from '../services/auth.service';
 import { NavController } from '@ionic/angular';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-profile',
@@ -8,20 +12,46 @@ import { NavController } from '@ionic/angular';
   standalone: false
 })
 export class ProfilePage implements OnInit {
-  userName: string = '';
-  userEmail: string = '';
-  userPhotoURL: string = 'assets/me.jpg';
+  user: any = {
+    displayName: '',
+    email: '',
+    occupation: '',
+    photoURL: '',
+    missionsAttended: 51,   // static for now
+    missionPoints: 186      // static for now
+  };
 
-  constructor( private nav : NavController) {}
+  constructor(
+    private firestore: Firestore,
+    private auth: Auth,
+    private authService: AuthService,
+    private nav: NavController,
+    private router: Router
+  ) {}
 
-  ngOnInit() {
-    // Example: Load user data from a service or storage
-    // this.userName = 'Juan Dela Cruz';
-    // this.userEmail = 'juan@email.com';
-    // this.userPhotoURL = 'assets/me.jpg';
+  async ngOnInit() {
+    const currentUser = this.auth.currentUser;
+    if (currentUser) {
+      const userRef = doc(this.firestore, 'users', currentUser.uid);
+      const userSnap = await getDoc(userRef);
+      if (userSnap.exists()) {
+        const data = userSnap.data();
+        this.user.displayName = data['displayName'] || '';
+        this.user.email = data['email'] || '';
+        this.user.occupation = data['occupation'] || '';
+        this.user.photoURL = data['photoURL'] || '';
+      }
+    }
   }
-  goToProfileInfo() {
-    this.nav.navigateForward('/profile-info');
-  }
 
+  logout() {
+    this.authService.logout().subscribe({
+      next: () => {
+        this.nav.navigateRoot('/login');
+      },
+      error: (err) => {
+        alert('Logout failed. Please try again.');
+      }
+    });
+  }
 }

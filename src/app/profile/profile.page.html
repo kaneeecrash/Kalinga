@@ -1,50 +1,68 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Profile</ion-title>
-    <ion-buttons slot="end">
-      <ion-icon name="notifications-outline" class="notif-icon"></ion-icon>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+<ion-content class="profile-bg" fullscreen>
+  <!-- SVG gradient header (WAVE ONLY) -->
+  <div class="profile-header-gradient">
+    <svg viewBox="0 0 400 100" class="profile-header-svg" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="profileWaveGradient" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#A300D6"/>
+          <stop offset="100%" stop-color="#FF3C8E"/>
+        </linearGradient>
+      </defs>
+      <path d="M0,55 Q120,110 260,55 T400,55 L400,0 L0,0 Z"
+        fill="url(#profileWaveGradient)" />
+    </svg>
+  </div>
 
-<ion-content class="ion-padding settings-content">
-  <!-- Profile card -->
-  <ion-card class="profile-card">
-    <ion-item lines="none">
-      <ion-avatar slot="start" class="avatar-lg">
-        <img src="assets/avatar.png" />
-      </ion-avatar>
-      <ion-label>
-        <h2>{{ userName || '' }}</h2>
-        <p>{{ userEmail || '' }}</p>
-      </ion-label>
-    </ion-item>
-  </ion-card>
+  <!-- Profile header content (AVATAR + NAME + EMAIL, etc.) -->
+  <div class="profile-header-content">
+    <div class="profile-avatar-wrapper">
+      <img [src]="user.photoURL || 'assets/cute.JPG'" alt="Avatar" class="profile-avatar-img" />
+    </div>
+    <div class="header-username">{{ user.displayName || 'Full Name' }}</div>
+    <div class="header-field">{{ user.occupation || 'Occupation / Field' }}</div>
+    <div class="header-email">{{ user.email || 'your@email.com' }}</div>
+  </div>
 
+  <!-- Stats Row -->
+  <div class="profile-stats-row">
+    <div>
+      <div class="profile-stat-label">MISSION ATTENDED</div>
+      <div class="profile-stat-value">{{ user.missionsAttended || 0 }}</div>
+    </div>
+    <div>
+      <div class="profile-stat-label">MISSION POINTS</div>
+      <div class="profile-stat-value">{{ user.missionPoints || 0 }}</div>
+    </div>
+  </div>
 
-  <!-- Settings header -->
-  <div class="section-title">Settings</div>
-
-  <ion-list class="settings-list">
-    <ion-item lines="full" button (click)="goToProfileInfo()">
+  <!-- Menu List -->
+  <ion-list class="profile-menu-list">
+    <ion-item button lines="full" routerLink="/profile-info">
       <ion-icon name="person-outline" slot="start"></ion-icon>
-      <ion-label>Personal information</ion-label>
-      <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+      PROFILE INFORMATION
     </ion-item>
-    <ion-item lines="full" button>
-      <ion-icon name="shield-checkmark-outline" slot="start"></ion-icon>
-      <ion-label>Adjustments and Badges</ion-label>
-      <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+    <ion-item button lines="full">
+      <ion-icon name="medal-outline" slot="start"></ion-icon>
+      ACHIEVEMENTS & BADGES
     </ion-item>
-    <ion-item lines="full" button>
+    <ion-item button lines="full">
+      <ion-icon name="book-outline" slot="start"></ion-icon>
+      MY MISSION HISTORY
+    </ion-item>
+    <ion-item button lines="full">
       <ion-icon name="settings-outline" slot="start"></ion-icon>
-      <ion-label>Settings</ion-label>
-      <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+      SETTINGS & PREFERENCES
     </ion-item>
-    <ion-item lines="full" button>
-      <ion-icon name="person-outline" slot="start"></ion-icon>
-      <ion-label>Account Management</ion-label>
-      <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+    <ion-item button lines="full">
+      <ion-icon name="help-circle-outline" slot="start"></ion-icon>
+      HELP & FAQS
+    </ion-item>
+    <ion-item button lines="full">
+      <ion-icon name="call-outline" slot="start"></ion-icon>
+      CONTACT US
     </ion-item>
   </ion-list>
+
+  <!-- Logout -->
+  <ion-button expand="block" class="logout-btn" (click)="logout()">LOGOUT</ion-button>
 </ion-content>

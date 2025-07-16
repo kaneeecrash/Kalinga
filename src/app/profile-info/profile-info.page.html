@@ -1,13 +1,95 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>ProfileInfo</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content class="profile-bg" fullscreen>
+  <div class="profile-header-gradient">
+    <svg viewBox="0 0 400 100" class="profile-header-svg" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="profileWaveGradient" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#A300D6"/>
+          <stop offset="100%" stop-color="#FF3C8E"/>
+        </linearGradient>
+      </defs>
+      <path d="M0,55 Q120,110 260,55 T400,55 L400,0 L0,0 Z"
+        fill="url(#profileWaveGradient)" />
+    </svg>
+    <div class="profile-toolbar">
+      <ion-icon name="arrow-back-outline" class="back-btn" (click)="goBack()"></ion-icon>
+      <ion-icon *ngIf="!editMode" name="create-outline" class="edit-btn" (click)="enableEdit()"></ion-icon>
+      <ion-icon *ngIf="editMode" name="close-outline" class="edit-btn" (click)="cancelEdit()"></ion-icon>
+    </div>
+    <div class="profile-avatar-wrapper">
+      <img [src]="avatarPreview || user.photoURL || 'assets/avatar.png'" alt="Avatar" class="profile-avatar-img" />
+    </div>
+  </div>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">ProfileInfo</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <ion-list class="profile-info-list">
+
+    <ion-item lines="none" class="profile-field">
+      <div class="field-group">
+        <label class="field-label" for="displayName">Full Name *</label>
+        <input id="displayName" class="outlined-pill" [value]="user.displayName" 
+               [readonly]="!editMode" placeholder="Full Name" />
+      </div>
+    </ion-item>
+
+    <ion-item lines="none" class="profile-field">
+      <div class="field-group">
+        <label class="field-label" for="bio">Bio</label>
+        <textarea id="bio" class="outlined-pill" [readonly]="!editMode" rows="2" placeholder="Bio">{{ user.bio }}</textarea>
+      </div>
+    </ion-item>
+
+    <ion-item lines="none" class="profile-field">
+      <div class="field-group">
+        <label class="field-label" for="mobile">Mobile Number</label>
+        <input id="mobile" class="outlined-pill" [value]="user.mobile" [readonly]="!editMode" placeholder="Mobile Number" />
+      </div>
+    </ion-item>
+
+    <ion-item lines="none" class="profile-field">
+      <div class="field-group">
+        <label class="field-label" for="birthdate">Birthdate</label>
+        <input id="birthdate" type="date" class="outlined-pill"
+               [value]="user.birthdate" [readonly]="!editMode" [max]="today" placeholder="MM/DD/YYYY" />
+      </div>
+    </ion-item>
+
+    <ion-item lines="none" class="profile-field">
+      <div class="field-group">
+        <label class="field-label" for="gender">Gender</label>
+        <select id="gender" class="outlined-pill" [disabled]="!editMode">
+          <option [selected]="user.gender === 'male'" value="male">Male</option>
+          <option [selected]="user.gender === 'female'" value="female">Female</option>
+          <option [selected]="user.gender === 'other'" value="other">Other</option>
+        </select>
+      </div>
+    </ion-item>
+
+    <ion-item lines="none" class="profile-field">
+      <div class="field-group">
+        <label class="field-label" for="email">Email Address</label>
+        <input id="email" class="outlined-pill" [value]="user.email" readonly />
+      </div>
+    </ion-item>
+
+    <ion-item lines="none" class="profile-field">
+      <div class="field-group">
+        <label class="field-label" for="occupation">Occupation / Field</label>
+        <input id="occupation" class="outlined-pill" [value]="user.occupation" [readonly]="!editMode" placeholder="Occupation / Field" />
+      </div>
+    </ion-item>
+
+    <ion-item lines="none" class="profile-field">
+      <div class="field-group">
+        <label class="field-label" for="skills">Skills & Interests</label>
+        <input id="skills" class="outlined-pill" [value]="user.skills" [readonly]="!editMode" placeholder="Skills & Interests" />
+      </div>
+    </ion-item>
+
+  </ion-list>
+
+   <!-- <ion-button 
+      *ngIf="editMode" 
+      expand="block" 
+      class="save-btn" 
+      (click)="saveProfile()"
+    >SAVE CHANGES</ion-button> -->
 </ion-content>

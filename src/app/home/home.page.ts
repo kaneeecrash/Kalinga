@@ -84,4 +84,8 @@ export class HomePage implements OnInit {
   goToLeaderboard() {
     this.nav.navigateForward('/leaderboards');
   }
+
+  goToNotifications() { 
+    this.nav.navigateForward('/notifications');
+  }
 }

@@ -8,7 +8,7 @@
       <div class="header-username">{{ user?.userName || 'User' }}</div>
       <div class="header-tagline">Ready to make a difference today?</div>
     </div>
-    <ion-icon name="notifications-outline" class="notif-icon"></ion-icon>
+      <ion-icon name="notifications-outline" class="notif-icon" (click)="goToNotifications()"></ion-icon>
   </div>
 
   <div class="featured-missions-title">Featured Missions</div>
