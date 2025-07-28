@@ -6,11 +6,12 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./notifications.page.scss'],
   standalone: false
 })
-export class NotificationsPage implements OnInit {
+export class NotificationsPage  {
+    
+  selectedTab: 'chats' | 'notifications' = 'notifications';
 
-  constructor() { }
-
-  ngOnInit() {
+  selectTab(tab: 'chats' | 'notifications') {
+    this.selectedTab = tab;
   }
-
 }
+

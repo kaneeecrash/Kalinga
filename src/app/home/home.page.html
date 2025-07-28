@@ -48,8 +48,10 @@
 </ion-grid>
 
 
-  <div class="ongoing-title">Ongoing Missions near you</div>
+<div class="ongoing-title">Ongoing Missions near you</div>
   <div class="map-container">
-    <img src="assets/icons/map-placeholder.png" alt="Map" class="map-img" />
-    <!-- You can replace this with an actual map component -->
-  </div>
+  <div id="map"></div>
+  <button class="locate-btn" (click)="recenterMap()">
+    <ion-icon name="locate"></ion-icon>
+  </button>
+</div>

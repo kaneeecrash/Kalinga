@@ -16,7 +16,11 @@
       <ion-icon *ngIf="editMode" name="close-outline" class="edit-btn" (click)="cancelEdit()"></ion-icon>
     </div>
     <div class="profile-avatar-wrapper">
-      <img [src]="avatarPreview || user.photoURL || 'assets/avatar.png'" alt="Avatar" class="profile-avatar-img" />
+      <img [src]="avatarPreview || user.photoURL || 'assets/avatar.png'" alt="Avatar" class="profile-avatar" />
+      <input type="file" #avatarInput accept="image/*" hidden (change)="onAvatarChange($event)">
+      <ion-button fill="clear" (click)="avatarInput.click()" *ngIf="editMode">
+        Change Avatar
+      </ion-button>
     </div>
   </div>
 
@@ -83,13 +87,9 @@
         <input id="skills" class="outlined-pill" [value]="user.skills" [readonly]="!editMode" placeholder="Skills & Interests" />
       </div>
     </ion-item>
-
   </ion-list>
 
-   <!-- <ion-button 
-      *ngIf="editMode" 
-      expand="block" 
-      class="save-btn" 
-      (click)="saveProfile()"
-    >SAVE CHANGES</ion-button> -->
+  <div *ngIf="editMode" style="text-align: center; margin-top: 20px;">
+    <ion-button color="primary" (click)="saveProfile()">Save</ion-button>
+  </div>
 </ion-content>

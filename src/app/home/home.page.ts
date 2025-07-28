@@ -1,7 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
 import { Firestore, doc, getDoc } from '@angular/fire/firestore';
+import * as mapboxgl from 'mapbox-gl';
+import { Geolocation } from '@capacitor/geolocation';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-home',
@@ -9,9 +12,11 @@ import { Firestore, doc, getDoc } from '@angular/fire/firestore';
   styleUrls: ['./home.page.scss'],
   standalone: false
 })
-export class HomePage implements OnInit {
+export class HomePage implements OnInit, AfterViewInit {
 
   user: { userName?: string } | null = null;
+  userLat = 10.317347; // add these vars to your class
+  userLng = 123.885437;
 
   featuredMissions = [
     {
@@ -45,6 +50,8 @@ export class HomePage implements OnInit {
     { lat: 10.300, lng: 123.900, name: "Mission B" },
   ];
 
+  map?: mapboxgl.Map;
+
   constructor(
     private nav: NavController,
     private firestore: Firestore
@@ -71,6 +78,53 @@ export class HomePage implements OnInit {
     });
   }
 
+  async ngAfterViewInit() {
+    // Set Mapbox access token
+    (mapboxgl as any).accessToken = environment.mapbox.accessToken;
+
+    // Default center if geolocation fails (Cebu City)
+    let lat = 10.317347;
+    let lng = 123.885437;
+
+    try {
+      const coords = await Geolocation.getCurrentPosition();
+      lat = coords.coords.latitude;
+      lng = coords.coords.longitude;
+    } catch (err) {
+      console.warn('Could not get location, using default:', err);
+    }
+
+    // Initialize map
+    this.map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/mapbox/streets-v11',
+      center: [lng, lat],
+      zoom: 13,
+    });
+
+    // Add user marker (red)
+    if (this.map) {
+      new mapboxgl.Marker({ color: '#e53935' })
+        .setLngLat([lng, lat])
+        .setPopup(new mapboxgl.Popup().setText("You are here"))
+        .addTo(this.map);
+
+      // Add ongoing mission markers (green)
+      this.ongoingMissions.forEach(mission => {
+        new mapboxgl.Marker({ color: '#218838' })
+          .setLngLat([mission.lng, mission.lat])
+          .setPopup(new mapboxgl.Popup().setText(mission.name))
+          .addTo(this.map as mapboxgl.Map);
+      });
+    }
+  }
+
+  recenterMap() {
+    if (this.map) {
+      this.map.flyTo({ center: [this.userLng, this.userLat], zoom: 14 });
+    }
+  }
+
   viewDetails(mission: any) {
     alert(`Mission: ${mission.type}\nVenue: ${mission.venue}`);
   }
@@ -85,7 +139,7 @@ export class HomePage implements OnInit {
     this.nav.navigateForward('/leaderboards');
   }
 
-  goToNotifications() { 
+  goToNotifications() {
     this.nav.navigateForward('/notifications');
   }
 }

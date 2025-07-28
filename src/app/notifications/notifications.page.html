@@ -1,13 +1,40 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
-    <ion-title>notifications</ion-title>
+    <ion-title>Messages</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">notifications</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="ion-padding">
+  <div class="notif-tabs">
+    <button 
+      class="tab-btn" 
+      [class.active]="selectedTab === 'chats'" 
+      [class.inactive]="selectedTab !== 'chats'"
+      (click)="selectTab('chats')"
+    >
+      Chats
+    </button>
+    <button 
+      class="tab-btn" 
+      [class.active]="selectedTab === 'notifications'" 
+      [class.inactive]="selectedTab !== 'notifications'"
+      (click)="selectTab('notifications')"
+    >
+      Notifications
+    </button>
+  </div>
+
+  <!-- Chats Tab -->
+  <div *ngIf="selectedTab === 'chats'" class="notif-empty">
+    <img src="assets/notifs/noMessages.png" alt="No chats" />
+    <h2>No chats yet</h2>
+    <p>Start a conversation with other volunteers.</p>
+  </div>
+
+  <!-- Notifications Tab -->
+  <div *ngIf="selectedTab === 'notifications'" class="notif-empty">
+    <img src="assets/notifs/noNotif.png" alt="No notifications" />
+    <h2>Notifications will appear here</h2>
+    <p>Watch this space for offers, updates, and more.</p>
+  </div>
 </ion-content>

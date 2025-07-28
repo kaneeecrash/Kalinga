@@ -1,13 +1,14 @@
 import { Injectable, NgZone } from '@angular/core';
-import { Firestore, doc, setDoc, collection, addDoc, collectionData } from '@angular/fire/firestore';
+import { Firestore, doc, setDoc, updateDoc, getDoc, collection, addDoc, collectionData } from '@angular/fire/firestore';
 import { query, where, getDocs } from '@angular/fire/firestore';
-import { Observable } from 'rxjs';
-import { from } from 'rxjs';
+import { Storage, ref, uploadBytes, getDownloadURL } from '@angular/fire/storage';
+import { Observable, from } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class FirestoreService {
   constructor(
     private firestore: Firestore,
+    private storage: Storage,
     private ngZone: NgZone
   ) {}
 
@@ -46,5 +47,26 @@ export class FirestoreService {
         return null;
       }
     });
+  }
+
+  // ---- NEW: Get user by UID ----
+  async getUserByUID(uid: string): Promise<any> {
+    const userRef = doc(this.firestore, 'users', uid);
+    const snap = await getDoc(userRef);
+    return snap.exists() ? { id: snap.id, ...snap.data() } : null;
+  }
+
+  // ---- NEW: Update user profile by UID ----
+  async updateUserProfile(uid: string, data: any): Promise<void> {
+    const userRef = doc(this.firestore, 'users', uid);
+    return updateDoc(userRef, data);
+  }
+
+  // ---- NEW: Upload avatar to storage, return download URL ----
+  async uploadAvatar(file: File, uid: string): Promise<string> {
+    const filePath = `avatars/${uid}/${Date.now()}_${file.name}`;
+    const storageRef = ref(this.storage, filePath);
+    await uploadBytes(storageRef, file);
+    return await getDownloadURL(storageRef);
   }
 }
