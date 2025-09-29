@@ -1,14 +1,13 @@
 // Accent Variables
-$accent-red: #e53935;        // Primary
-$accent-red-dark: #b71c1c;   // For hover, dark text
-$accent-green-dark: #218838; // Accent, highlight, success
+$accent-green: #006400;        // Main color (dark green)
+$accent-green-dark: #004d00;   // Darker green for hover, dark text, and borders
 $accent-white: #ffffff;
 $accent-gray: #757575;
-$accent-pink: #ffe5e5;       // Soft BG for cards
-$accent-green-bg: #e4f6e7;   // Soft BG for alt cards
-$accent-icy: #f7f9fa;        // Neutral page background
+$accent-pink: #ffe5e5;         // Soft BG for cards
+$accent-green-bg: #e4f6e7;     // Soft BG for alt cards
+$accent-icy: #f7f9fa;          // Neutral page background
 
-$accent-shadow: rgba(229, 57, 53, 0.09);
+$accent-shadow: rgba(0, 100, 0, 0.09); // Adjust shadow to match dark green
 
 // Page background and header
 .home-bg {
@@ -21,7 +20,7 @@ $accent-shadow: rgba(229, 57, 53, 0.09);
   align-items: center;
   gap: 12px;
   padding: 40px 16px 24px 16px;
-  background: $accent-red;
+  background: $accent-green; // Change to dark green
   color: $accent-white;
   border-radius: 0 0 36px 36px;
   min-height: 120px;
@@ -31,9 +30,9 @@ $accent-shadow: rgba(229, 57, 53, 0.09);
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 56px;     // or your preferred avatar size
+  width: 56px;
   height: 56px;
-  min-width: 56px; // keeps it from shrinking in flex layout
+  min-width: 56px;
   min-height: 56px;
   background: $accent-white;
   border-radius: 50%;
@@ -82,9 +81,9 @@ $accent-shadow: rgba(229, 57, 53, 0.09);
 // Titles
 .featured-missions-title, .ongoing-title {
   margin: 18px 0 8px 18px;
-  font-weight: bold;
-  font-size: 17px;
-  color: $accent-red;
+  font-weight: 800;
+  font-size: 18px;
+  color: $accent-green;
 }
 
 // Scroll row for mission cards
@@ -95,16 +94,18 @@ $accent-shadow: rgba(229, 57, 53, 0.09);
   gap: 20px;
   padding: 16px 10px;
   scroll-snap-type: x mandatory;
+
 }
 
 // ---- MISSION CARD with visible outline ----
 .mission-card,
 .mission-card.open {
-  background: $accent-pink;
-  color: #222;
-  border: 2.5px solid $accent-green-dark;
+  background: #ffffff;
+  color: #0b0b0b;
+  font-weight: 400;
+  border: 2px solid rgba(0, 100, 0, 0.18);
   box-shadow: 0 2px 12px $accent-shadow;
-  border-radius: 22px;
+  border-radius: 20px;
   padding: 16px 16px 8px 16px;
   min-width: 220px;
   max-width: 240px;
@@ -119,23 +120,24 @@ $accent-shadow: rgba(229, 57, 53, 0.09);
 
 .mission-card.alt,
 .mission-card.open.alt {
-  background: $accent-green-bg;
+  background: #ffffff;
 }
 
 .mission-card:hover,
 .mission-card:focus,
 .mission-card.open {
-  border-color: $accent-red-dark;
+  border-color: $accent-green-dark;
   box-shadow: 0 6px 24px $accent-shadow;
   transform: scale(1.022);
 }
 
 .mission-type {
-  font-weight: bold;
-  color: $accent-red;
+  font-weight: 800;
+  color: $accent-green;
   font-size: 15px;
   margin-bottom: 2px;
 }
+
 .mission-details, .mission-datetime, .mission-status {
   display: flex;
   align-items: center;
@@ -143,20 +145,41 @@ $accent-shadow: rgba(229, 57, 53, 0.09);
   gap: 5px;
   color: $accent-gray;
 }
+
 .mission-status {
-  color: $accent-green-dark;
+  color: $accent-green-dark; // Dark green color for status
   font-size: 13px;
   margin-bottom: 4px;
   font-weight: 600;
 }
+
 ion-button[size="small"] {
-  --background: #e53935;
-  --background-hover: #218838;
+  --background: $accent-green; // Dark green primary button
+  --background-hover: $accent-green-dark; // Darker hover
   --border-radius: 18px;
   --color: #fff;
-  height: 26px;
-  font-size: 13px;
+  height: 32px;                // bigger tap target
+  font-size: 15px;             // larger label
+  font-weight: 700;
+  text-transform: uppercase;
   box-shadow: 0 2px 10px $accent-shadow;
+}
+
+// Visible outline for clear buttons inside card contexts
+.mission-card ion-button[fill="clear"],
+.action-card ion-button[fill="clear"] {
+  --background: transparent;
+  --color: $accent-green;
+  border: 2px solid $accent-green;
+  box-shadow: 0 2px 8px $accent-shadow;
+}
+
+@media (hover:hover) {
+  .mission-card ion-button:hover,
+  .action-card ion-button:hover {
+    box-shadow: 0 4px 14px $accent-shadow;
+    transform: translateY(-1px);
+  }
 }
 
 // ---- ACTION CARDS with visible outline ----
@@ -164,12 +187,14 @@ ion-button[size="small"] {
   margin: 24px 0 0 0;
   padding: 0 8px;
 }
+
 .quick-actions-cards ion-row {
   justify-content: space-between;
 }
+
 .action-card {
   background: $accent-white;
-  border: 2.5px solid $accent-red;
+  border: 2.5px solid $accent-green;
   border-radius: 16px;
   box-shadow: 0 2px 12px $accent-shadow;
   display: flex;
@@ -179,7 +204,7 @@ ion-button[size="small"] {
   cursor: pointer;
   transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
   min-height: 120px;
-  min-width: 90px;
+  min-width: 120px;
   max-width: 120px;
   margin: 0 auto;
   outline: none;
@@ -188,19 +213,21 @@ ion-button[size="small"] {
 .action-card:hover,
 .action-card:active,
 .action-card.selected {
-  border-color: $accent-green-dark;
+  border-color: $accent-green-dark; // Dark green hover effect
   box-shadow: 0 4px 20px $accent-shadow;
   transform: translateY(-2px) scale(1.04);
 }
+
 .action-card img {
   width: 55px;
   height: 55px;
   margin-bottom: 10px;
 }
+
 .action-card .label {
   font-size: 13px;
   font-weight: 600;
-  color: $accent-red;
+  color: $accent-green;
   text-align: center;
   line-height: 1.2;
   letter-spacing: 0.5px;
@@ -217,9 +244,10 @@ ion-button[size="small"] {
   margin-bottom: 24px;
   margin-top: 10px;
 }
+
 #map {
   width: 100%;
-  height: 250px;      // Fixed height as you want
+  height: 250px;  // Fixed height as you want
   border-radius: 20px;
 }
 
@@ -238,10 +266,11 @@ ion-button[size="small"] {
   align-items: center;
   justify-content: center;
   font-size: 24px;
-  color: #e53935; // match your theme!
+  color: $accent-green;  // Dark green for locate button
   cursor: pointer;
   transition: background 0.2s;
 }
+
 .locate-btn:active {
   background: #f1f1f1;
 }

@@ -1,0 +1,24 @@
+<ion-header>
+  <ion-toolbar color="danger">
+    <ion-title>Emergency Contacts</ion-title>
+  </ion-toolbar>
+  </ion-header>
+
+<ion-content>
+  <div class="banner">
+    <ion-icon name="alert"></ion-icon>
+    <div>For emergencies, tap to call a contact below.</div>
+  </div>
+
+  <ion-list>
+    <ion-item button detail="false" *ngFor="let c of contacts" (click)="call(c.phone)">
+      <ion-icon name="call" slot="start" color="danger"></ion-icon>
+      <ion-label>
+        <h2>{{ c.name }}</h2>
+        <p>{{ c.phone }}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>
+
+

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import { Firestore, doc, getDoc } from '@angular/fire/firestore';
 import { Auth } from '@angular/fire/auth';
 import { AuthService } from '../services/auth.service';
@@ -26,21 +26,24 @@ export class ProfilePage implements OnInit {
     private auth: Auth,
     private authService: AuthService,
     private nav: NavController,
-    private router: Router
+    private router: Router,
+    private ngZone: NgZone
   ) {}
 
   async ngOnInit() {
     const currentUser = this.auth.currentUser;
     if (currentUser) {
-      const userRef = doc(this.firestore, 'users', currentUser.uid);
-      const userSnap = await getDoc(userRef);
-      if (userSnap.exists()) {
-        const data = userSnap.data();
-        this.user.displayName = data['displayName'] || '';
-        this.user.email = data['email'] || '';
-        this.user.occupation = data['occupation'] || '';
-        this.user.photoURL = data['photoURL'] || '';
-      }
+      await this.ngZone.run(async () => {
+        const userRef = doc(this.firestore, 'users', currentUser.uid);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) {
+          const data = userSnap.data();
+          this.user.displayName = data['displayName'] || '';
+          this.user.email = data['email'] || '';
+          this.user.occupation = data['occupation'] || '';
+          this.user.photoURL = data['photoURL'] || '';
+        }
+      });
     }
   }
 

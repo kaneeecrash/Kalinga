@@ -16,80 +16,112 @@
       <ion-icon *ngIf="editMode" name="close-outline" class="edit-btn" (click)="cancelEdit()"></ion-icon>
     </div>
     <div class="profile-avatar-wrapper">
-      <img [src]="avatarPreview || user.photoURL || 'assets/avatar.png'" alt="Avatar" class="profile-avatar" />
+      <div class="avatar-container">
+        <img [src]="avatarPreview || user?.photoURL || 'assets/avatar.png'" alt="Avatar" class="profile-avatar-img" />
+        <ion-spinner *ngIf="isUploadingAvatar" name="crescent" class="avatar-loading"></ion-spinner>
+      </div>
       <input type="file" #avatarInput accept="image/*" hidden (change)="onAvatarChange($event)">
-      <ion-button fill="clear" (click)="avatarInput.click()" *ngIf="editMode">
-        Change Avatar
+      <ion-button fill="clear" (click)="selectAvatar()" *ngIf="editMode" [disabled]="isUploadingAvatar">
+        <ion-spinner *ngIf="isUploadingAvatar" name="crescent" size="small"></ion-spinner>
+        <span *ngIf="!isUploadingAvatar">Change Avatar</span>
+        <span *ngIf="isUploadingAvatar">Uploading... {{uploadProgress}}%</span>
       </ion-button>
+      
+      <!-- Upload Progress Bar -->
+      <div *ngIf="isUploadingAvatar" class="upload-progress">
+        <ion-progress-bar [value]="uploadProgress / 100" color="primary"></ion-progress-bar>
+        <p class="progress-text">Uploading avatar... {{uploadProgress}}%</p>
+      </div>
     </div>
   </div>
 
-  <ion-list class="profile-info-list">
+  <form [formGroup]="profileForm" (ngSubmit)="onFormSubmit($event)" role="form" aria-label="Profile Information Form">
+    <ion-list class="profile-info-list">
+      <ion-item lines="none" class="profile-field">
+        <div class="field-group">
+          <label class="field-label" for="displayName">Full Name *</label>
+          <input id="displayName" class="outlined-pill" formControlName="displayName" 
+                 [readonly]="!editMode" [value]="user.displayName" autocomplete="name" 
+                 aria-required="true" aria-describedby="displayName-help" />
+        </div>
+      </ion-item>
 
-    <ion-item lines="none" class="profile-field">
-      <div class="field-group">
-        <label class="field-label" for="displayName">Full Name *</label>
-        <input id="displayName" class="outlined-pill" [value]="user.displayName" 
-               [readonly]="!editMode" placeholder="Full Name" />
-      </div>
-    </ion-item>
+      <ion-item lines="none" class="profile-field">
+        <div class="field-group">
+          <label class="field-label" for="bio">Bio</label>
+          <textarea id="bio" class="outlined-pill" formControlName="bio" 
+                    [readonly]="!editMode" rows="2" placeholder="Bio" autocomplete="off"></textarea>
+        </div>
+      </ion-item>
 
-    <ion-item lines="none" class="profile-field">
-      <div class="field-group">
-        <label class="field-label" for="bio">Bio</label>
-        <textarea id="bio" class="outlined-pill" [readonly]="!editMode" rows="2" placeholder="Bio">{{ user.bio }}</textarea>
-      </div>
-    </ion-item>
+      <ion-item lines="none" class="profile-field">
+        <div class="field-group">
+          <label class="field-label" for="mobile">Mobile Number</label>
+          <input id="mobile" class="outlined-pill" formControlName="mobile" 
+                 [readonly]="!editMode" placeholder="Mobile Number" autocomplete="tel" 
+                 type="tel" aria-describedby="mobile-help" />
+        </div>
+      </ion-item>
 
-    <ion-item lines="none" class="profile-field">
-      <div class="field-group">
-        <label class="field-label" for="mobile">Mobile Number</label>
-        <input id="mobile" class="outlined-pill" [value]="user.mobile" [readonly]="!editMode" placeholder="Mobile Number" />
-      </div>
-    </ion-item>
+      <ion-item lines="none" class="profile-field">
+        <div class="field-group">
+          <label class="field-label" for="birthdate">Birthdate</label>
+          <input id="birthdate" type="date" class="outlined-pill" formControlName="birthdate"
+                 [readonly]="!editMode" [max]="today" placeholder="MM/DD/YYYY" autocomplete="bday" />
+        </div>
+      </ion-item>
 
-    <ion-item lines="none" class="profile-field">
-      <div class="field-group">
-        <label class="field-label" for="birthdate">Birthdate</label>
-        <input id="birthdate" type="date" class="outlined-pill"
-               [value]="user.birthdate" [readonly]="!editMode" [max]="today" placeholder="MM/DD/YYYY" />
-      </div>
-    </ion-item>
+      <ion-item lines="none" class="profile-field">
+        <div class="field-group">
+          <label class="field-label" for="gender">Gender</label>
+          <select id="gender" class="outlined-pill" formControlName="gender" [disabled]="!editMode">
+            <option value="">Select Gender</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+      </ion-item>
 
-    <ion-item lines="none" class="profile-field">
-      <div class="field-group">
-        <label class="field-label" for="gender">Gender</label>
-        <select id="gender" class="outlined-pill" [disabled]="!editMode">
-          <option [selected]="user.gender === 'male'" value="male">Male</option>
-          <option [selected]="user.gender === 'female'" value="female">Female</option>
-          <option [selected]="user.gender === 'other'" value="other">Other</option>
-        </select>
-      </div>
-    </ion-item>
+      <ion-item lines="none" class="profile-field">
+        <div class="field-group">
+          <label class="field-label" for="email">Email Address</label>
+          <input id="email" class="outlined-pill" [value]="user.email" readonly autocomplete="email" />
+        </div>
+      </ion-item>
 
-    <ion-item lines="none" class="profile-field">
-      <div class="field-group">
-        <label class="field-label" for="email">Email Address</label>
-        <input id="email" class="outlined-pill" [value]="user.email" readonly />
-      </div>
-    </ion-item>
+      <ion-item lines="none" class="profile-field">
+        <div class="field-group">
+          <label class="field-label" for="occupation">Occupation / Field</label>
+          <input id="occupation" class="outlined-pill" formControlName="occupation" 
+                 [readonly]="!editMode" placeholder="Occupation / Field" autocomplete="organization-title" />
+        </div>
+      </ion-item>
 
-    <ion-item lines="none" class="profile-field">
-      <div class="field-group">
-        <label class="field-label" for="occupation">Occupation / Field</label>
-        <input id="occupation" class="outlined-pill" [value]="user.occupation" [readonly]="!editMode" placeholder="Occupation / Field" />
-      </div>
-    </ion-item>
+      <ion-item lines="none" class="profile-field">
+        <div class="field-group">
+          <label class="field-label" for="skills">Skills & Interests</label>
+          <input id="skills" class="outlined-pill" formControlName="skills" 
+                 [readonly]="!editMode" placeholder="Skills & Interests" autocomplete="off" />
+        </div>
+      </ion-item>
+    </ion-list>
 
-    <ion-item lines="none" class="profile-field">
-      <div class="field-group">
-        <label class="field-label" for="skills">Skills & Interests</label>
-        <input id="skills" class="outlined-pill" [value]="user.skills" [readonly]="!editMode" placeholder="Skills & Interests" />
-      </div>
-    </ion-item>
-  </ion-list>
+    <!-- Debug Info (remove in production) -->
+    <div class="debug-info">
+      Debug: Edit Mode = {{editMode}}, Form Valid = {{profileForm.valid}}, User = {{user?.displayName}}
+    </div>
 
-  <div *ngIf="editMode" style="text-align: center; margin-top: 20px;">
-    <ion-button color="primary" (click)="saveProfile()">Save</ion-button>
-  </div>
+    <!-- Save and Cancel Buttons -->
+    <div *ngIf="editMode" class="edit-actions">
+      <ion-button type="submit" color="primary" [disabled]="isSaving || isUploadingAvatar" expand="block" class="save-btn">
+        <ion-spinner *ngIf="isSaving" name="crescent" size="small"></ion-spinner>
+        <span *ngIf="!isSaving">Save Changes</span>
+        <span *ngIf="isSaving">Saving...</span>
+      </ion-button>
+      <ion-button fill="clear" color="medium" (click)="cancelEdit()" [disabled]="isSaving" expand="block" class="cancel-btn">
+        Cancel
+      </ion-button>
+    </div>
+  </form>
 </ion-content>

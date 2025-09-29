@@ -8,50 +8,53 @@
       <div class="header-username">{{ user?.userName || 'User' }}</div>
       <div class="header-tagline">Ready to make a difference today?</div>
     </div>
-      <ion-icon name="notifications-outline" class="notif-icon" (click)="goToNotifications()"></ion-icon>
+    <ion-icon name="notifications-outline" class="notif-icon" (click)="goToNotifications()"></ion-icon>
   </div>
 
   <div class="featured-missions-title">Featured Missions</div>
   <div class="featured-missions-scroll">
-    <div class="mission-card" *ngFor="let mission of featuredMissions" [ngClass]="{'open': mission.status === 'OPEN'}">
-      <div class="mission-type">{{ mission.type }}</div>
-      <div class="mission-details">{{ mission.venue }}</div>
-      <div class="mission-datetime">{{ mission.date }} | {{ mission.time }}</div>
-      <div class="mission-status">Status: {{ mission.status }}</div>
+    <div class="mission-card" *ngFor="let mission of featuredMissions" [ngClass]="{'open': mission.status?.toLowerCase() === 'open'}">
+      <div class="mission-type">{{ mission.name }}</div>
+      <div class="mission-details">📍{{ mission.location }}</div>
+      <div class="mission-datetime">⏰{{ mission.date }} | {{ mission.time || (mission.start_time + ' - ' + mission.end_time) }}</div>
+      <div class="mission-details">volunteers needed: {{ mission.volunteers }}</div>
       <div class="mission-details">{{ mission.distance }}</div>
-      <ion-button size="small" *ngIf="mission.status === 'OPEN'">Join</ion-button>
+      <div class="mission-actions">
+        <ion-button size="small" color="success" *ngIf="mission.status?.toLowerCase() === 'open'" (click)="joinMission(mission.id)">Join</ion-button>
+        <ion-button size="small" color="medium" *ngIf="mission.status?.toLowerCase() !== 'open'" [routerLink]="['/mission', mission.id]">Closed</ion-button>
+        <ion-button size="small" fill="clear" [routerLink]="['/mission', mission.id]">Details</ion-button>
+      </div>
     </div>
   </div>
 
-
   <ion-grid class="quick-actions-cards">
-  <ion-row>
-    <ion-col size="4">
-      <div class="action-card" (click)="goToJoinMission()">
-        <img src="assets/icons/join-mission.png" alt="Join Mission" />
-        <div class="label">JOIN<br>MISSION</div>
-      </div>
-    </ion-col>
-    <ion-col size="4">
-      <div class="action-card" (click)="goToDonate()">
-        <img src="assets/icons/donate.png" alt="Donate" />
-        <div class="label">DONATE</div>
-      </div>
-    </ion-col>
-    <ion-col size="4">
-      <div class="action-card" (click)="goToLeaderboard()">
-        <img src="assets/icons/leaderboard.png" alt="Leaderboard" />
-        <div class="label">LEADERBOARD</div>
-      </div>
-    </ion-col>
-  </ion-row>
-</ion-grid>
+    <ion-row>
+      <ion-col size="4">
+        <div class="action-card" (click)="goToJoinMission()">
+          <img src="assets/icons/join-mission.png" alt="Join Mission" />
+          <div class="label">JOIN<br>MISSION</div>
+        </div>
+      </ion-col>
+      <ion-col size="4">
+        <div class="action-card" (click)="goToDonate()">
+          <img src="assets/icons/donate.png" alt="Donate" />
+          <div class="label">DONATE</div>
+        </div>
+      </ion-col>
+      <ion-col size="4">
+        <div class="action-card" (click)="goToLeaderboard()">
+          <img src="assets/icons/leaderboard.png" alt="Leaderboard" />
+          <div class="label">LEADERBOARD</div>
+        </div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 
-
-<div class="ongoing-title">Ongoing Missions near you</div>
+  <div class="ongoing-title">Ongoing Missions near you</div>
   <div class="map-container">
-  <div id="map"></div>
-  <button class="locate-btn" (click)="recenterMap()">
-    <ion-icon name="locate"></ion-icon>
-  </button>
-</div>
+    <div id="map" aria-label="Map of ongoing missions"></div>
+    <button class="locate-btn" (click)="recenterMap()" title="Recenter map">
+      <ion-icon name="locate"></ion-icon>
+    </button>
+  </div>
+</ion-content>

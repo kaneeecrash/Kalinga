@@ -1,0 +1,293 @@
+// Accent Variables
+$accent-green: #006400;        // Main color (dark green)
+$accent-green-dark: #004d00;   // Darker green for hover, dark text, and borders
+$accent-light-green: #8BC34A;  // Lighter green for gradient
+$accent-white: #ffffff;        // White background for the page
+$accent-gray: #555555;          // Darker gray for better readability
+$accent-red: #e53935;          // Red for mission date
+$accent-icy: #f7f9fa;          // Neutral page background
+$accent-shadow: rgba(0, 100, 0, 0.09); // Shadow to match dark green
+
+// Global Styling
+ion-header {
+  --background: $accent-green;
+  --color: $accent-white;
+}
+
+ion-toolbar {
+  background: $accent-green;
+  color: $accent-white;
+}
+
+ion-title {
+  font-weight: bold;
+  font-size: 21px;
+}
+
+ion-content {
+  background: $accent-icy;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+// Toolbar Styling
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: $accent-white;
+  border-bottom: 1px solid $accent-gray;
+  padding: 10px 16px;
+}
+
+ion-searchbar {
+  width: auto;
+  flex: 1 1 auto;
+  min-width: 220px;
+  --padding-start: 12px;
+}
+
+ion-buttons {
+  display: flex;
+  align-items: center;
+  gap: 6px; // tighter spacing between filter and calendar
+}
+
+ion-button {
+  --border-radius: 16px;
+  --background: $accent-green;  // Updated color for buttons
+  --color: $accent-white;
+  font-size: 16px;
+  padding: 8px;
+  box-shadow: 0 2px 8px $accent-shadow;
+}
+
+ion-icon {
+  font-size: 22px;
+  color: $accent-green;  // Updated color for icons
+}
+
+ion-buttons ion-button {
+  padding: 4px;
+}
+
+// Mission Card Styling
+ion-list {
+  width: 100%;
+  max-width: 940px;
+  display: flex;
+  flex-direction: column;  // Mission cards stacked vertically
+  gap: 12px;               // tighter spacing between cards
+  padding: 6px 10px 18px;  // slightly reduced outer padding
+}
+
+.mission-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background: #ffffff;
+  border: 2px solid rgba(0, 100, 0, 0.18);
+  border-radius: 16px;
+  box-shadow: 0 4px 12px $accent-shadow;
+  overflow: hidden;
+}
+
+ion-item {
+  background: transparent;
+  margin: 0;
+  border-radius: 0;
+  box-shadow: none;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 12px 14px;       // reduced inner padding
+  border: none;
+  width: 100%;
+}
+
+// Mission Label Styling
+ion-label {
+  display: flex;
+  flex-direction: column;  // Vertical layout inside mission card
+  justify-content: space-between;
+  width: 100%;
+}
+
+h3.date {
+  font-size: 14px;          // slightly larger for readability
+  color: $accent-red;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+h2.title {
+  font-size: 21px;          // a bit bigger headline
+  font-weight: 800;
+  color: $accent-green;
+  margin: 0 0 6px 0;
+  line-height: 1.25;
+}
+
+p {
+  font-size: 17px;          // bump base copy size slightly
+  color: $accent-gray;
+  margin: 0 4px;  // Reduced margin to minimize spacing
+  line-height: 1.4;
+}
+
+.mission-details {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+  gap: 6px;                 // tighter spacing within details row
+}
+
+.mission-details p {
+  font-size: 16px;          // improve legibility in details
+  color: $accent-gray;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mission-details ion-icon {
+  color: $accent-green;
+  font-size: 18px;
+}
+
+// Actions: I AM IN and DETAILS buttons below mission cards
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;                 // tighter button spacing
+  padding: 8px 12px 10px;   // reduced vertical padding
+  background: #ffffff;
+  border-top: 1px solid rgba(0, 100, 0, 0.12);
+
+  ion-button {
+    flex: 0 1 auto;
+    min-width: 110px;       // allow a bit smaller buttons
+    margin: 0;
+  }
+}
+
+// Action Button Styling
+.actions ion-button {
+  --border-radius: 16px;
+  --background: $accent-green;
+  --color: #fff;
+  font-size: 16px;          // prioritize readability
+  padding: 12px 16px;       // larger tap target
+  width: auto;
+  box-shadow: 0 2px 8px $accent-shadow;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+ion-button[color="success"] {
+  --background: $accent-green;
+  --color: $accent-white;
+}
+
+ion-button[size="small"] {
+  --background: $accent-green-dark;
+  --color: $accent-white;
+}
+
+// Ensure clear buttons are still visible with outline and strong label
+.actions ion-button[fill="clear"] {
+  --background: transparent;
+  --color: $accent-green;
+  border: 2px solid $accent-green;
+  box-shadow: 0 2px 8px $accent-shadow;
+}
+
+@media (hover:hover) {
+  .actions ion-button:hover {
+    box-shadow: 0 4px 14px $accent-shadow;
+    transform: translateY(-1px);
+  }
+}
+
+// Empty Template Styling
+ng-template {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+}
+
+ion-text {
+  font-size: 16px;
+  font-weight: bold;
+  color: $accent-gray;
+}
+
+// Highlight the upcoming campaigns text
+.campaign-count b {
+  background: $accent-green;
+  color: #ffffff;
+  padding: 4px 10px;
+  border-radius: 999px;
+  box-shadow: 0 2px 8px $accent-shadow;
+  letter-spacing: 0.4px;
+}
+// Ensure base campaign count text is readable
+.campaign-count {
+  font-size: 16px;
+}
+
+// Mobile Responsiveness
+@media (max-width: 768px) {
+  .toolbar {
+    flex-direction: row;
+    gap: 8px;
+    padding: 10px 8px;
+  }
+
+  ion-searchbar {
+    width: auto;
+    flex: 1 1 auto;
+    min-width: 160px;
+  }
+
+  ion-item {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px 14px;
+    width: 100%;
+  }
+
+  .actions {
+    flex-direction: row;            // keep buttons side-by-side on mobile
+    justify-content: space-between; // spread horizontally
+    width: 100%;
+    gap: 10px;
+    margin-top: 10px;
+    flex-wrap: nowrap;
+  }
+
+  .campaign-count {
+    font-size: 14px;
+  }
+
+  h2.title {
+    font-size: 18px;
+  }
+
+  // Keep action buttons horizontal and not full-width
+  .actions ion-button {
+    font-size: 13px;
+    padding: 8px 12px;
+    width: auto;
+    min-width: 110px;
+    flex: 0 0 auto;
+  }
+}

@@ -43,6 +43,14 @@ const routes: Routes = [
     path: 'leaderboards',
     loadChildren: () => import('./leaderboards/leaderboards.module').then( m => m.LeaderboardsPageModule)
   },
+  {
+    path: 'mission/:id',
+    loadChildren: () => import('./mission-detail/mission-detail.module').then( m => m.MissionDetailPageModule)
+  },
+  {
+    path: 'emergency',
+    loadChildren: () => import('./emergency/emergency.module').then(m => m.EmergencyPageModule)
+  },
 ];
 
 @NgModule({

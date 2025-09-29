@@ -1,0 +1,33 @@
+.poster img {
+	width: 100%;
+	height: 180px;
+	object-fit: cover;
+	border-bottom-left-radius: 12px;
+	border-bottom-right-radius: 12px;
+}
+
+#mission-map {
+	height: 200px;
+	border-radius: 12px;
+	overflow: hidden;
+}
+
+.detail {
+	margin: 6px 0;
+	display: flex;
+	align-items: center;
+}
+
+.detail ion-icon {
+	margin-right: 6px;
+}
+
+.section {
+	margin-top: 16px;
+}
+
+.section-title {
+	font-weight: 600;
+	margin-bottom: 8px;
+}
+

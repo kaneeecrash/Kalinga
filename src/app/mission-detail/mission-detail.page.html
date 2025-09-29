@@ -1,0 +1,43 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>{{ mission?.name || 'Mission Details' }}</ion-title>
+  </ion-toolbar>
+  </ion-header>
+
+<ion-content [fullscreen]="true" *ngIf="mission as m">
+  <div class="poster">
+    <img [src]="m.posterUrl || 'assets/mission.png'" alt="Poster" />
+  </div>
+
+  <div class="ion-padding">
+    <h2 class="title">{{ m.name }}</h2>
+    <p class="subtitle">{{ m.tagline }}</p>
+
+    <div class="detail"><ion-icon name="location"></ion-icon> {{ m.location }}</div>
+    <div class="detail"><ion-icon name="calendar"></ion-icon> {{ m.date | date:'MMMM d, y' }}</div>
+    <div class="detail"><ion-icon name="time"></ion-icon> {{ formatTimeTo12Hour(m.start_time || m.startTime) }} - {{ formatTimeTo12Hour(m.end_time || m.endTime) }}</div>
+    <div class="detail"><ion-icon name="people"></ion-icon> Volunteers needed: {{ m.volunteers }}</div>
+
+    <ion-button expand="block" color="success" *ngIf="(m.status || '').toLowerCase() === 'open'">Join Now</ion-button>
+    <ion-button expand="block" color="medium" *ngIf="(m.status || '').toLowerCase() !== 'open'">Closed</ion-button>
+
+    <div class="section">
+      <div class="section-title">Services</div>
+      <div class="chips">
+        <ion-chip *ngFor="let s of m.services">{{ s }}</ion-chip>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Map</div>
+      <div id="mission-map"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Organizer</div>
+      <p><b>{{ m.orgName }}</b></p>
+      <p>Contact: {{ m.orgContact }}</p>
+      <p>Email: {{ m.orgEmail }}</p>
+    </div>
+  </div>
+</ion-content>

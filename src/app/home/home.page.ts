@@ -1,10 +1,11 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, NgZone } from '@angular/core';
 import { NavController } from '@ionic/angular';
+import { FirestoreService } from '../services/firestore.service'; // Import your Firestore service
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
-import { Firestore, doc, getDoc } from '@angular/fire/firestore';
 import * as mapboxgl from 'mapbox-gl';
 import { Geolocation } from '@capacitor/geolocation';
 import { environment } from '../../environments/environment';
+import { LocalNotifications } from '@capacitor/local-notifications';
 
 @Component({
   selector: 'app-home',
@@ -15,35 +16,12 @@ import { environment } from '../../environments/environment';
 export class HomePage implements OnInit, AfterViewInit {
 
   user: { userName?: string } | null = null;
-  userLat = 10.317347; // add these vars to your class
+  userLat = 10.317347; // default coordinates for Cebu City
   userLng = 123.885437;
 
-  featuredMissions = [
-    {
-      type: 'Medical Mission',
-      venue: 'Brgy. Tisa, Cebu City',
-      date: 'July 20, 2025',
-      time: '8:00 AM - 5:00 PM',
-      status: 'OPEN',
-      distance: '5km away',
-    },
-    {
-      type: 'Free Dental Services',
-      venue: 'USJR Basak Campus',
-      date: 'July 10, 2025',
-      time: '10:00 AM - 4:00 PM',
-      status: 'OPEN',
-      distance: '500m away',
-    },
-    {
-      type: 'Free Dental Services',
-      venue: 'USJR Basak Campus',
-      date: 'July 10, 2025',
-      time: '10:00 AM - 4:00 PM',
-      status: 'OPEN',
-      distance: '500m away',
-    }
-  ];
+  featuredMissions: any[] = [];  // To store the fetched missions
+  allMissions: any[] = [];
+  knownMissionIds = new Set<string>();
 
   ongoingMissions = [
     { lat: 10.307, lng: 123.892, name: "Mission A" },
@@ -54,27 +32,50 @@ export class HomePage implements OnInit, AfterViewInit {
 
   constructor(
     private nav: NavController,
-    private firestore: Firestore
+    private firestoreService: FirestoreService, // Inject FirestoreService
+    private ngZone: NgZone
   ) {}
 
   ngOnInit() {
     const auth = getAuth();
     onAuthStateChanged(auth, async (user: User | null) => {
       if (user) {
-        const docRef = doc(this.firestore, 'users', user.uid);
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-          const profile = docSnap.data();
-          this.user = {
-            userName: profile['userName'] || 'User'
-          };
-        } else {
-          this.user = { userName: 'User' };
-        }
+        // Wrap the Firebase call in ngZone.run to avoid injection context warnings
+        this.ngZone.run(async () => {
+          const profile = await this.firestoreService.getUserByUID(user.uid);
+          this.user = profile ? { userName: profile.userName || 'User' } : { userName: 'User' };
+        });
       } else {
         this.user = null;
       }
+    });
+
+    // Fetch the latest 3 missions for Featured Missions
+    this.fetchFeaturedMissions();
+  }
+
+  fetchFeaturedMissions() {
+    this.ngZone.run(() => {
+      this.firestoreService.getMissions(3).subscribe(missions => {
+        this.featuredMissions = missions;
+      });
+    });
+  }
+
+  private watchAllMissionsAndNotify() {
+    this.ngZone.run(() => {
+      this.firestoreService.getMissions().subscribe(async (missions) => {
+        this.allMissions = missions;
+        // Notify on newly observed missions
+        for (const m of missions) {
+          if (m.id && !this.knownMissionIds.has(m.id)) {
+            this.knownMissionIds.add(m.id);
+            await this.sendLocalNotification(m);
+          }
+        }
+        // Plot markers for all missions
+        this.plotMissionMarkers();
+      });
     });
   }
 
@@ -82,7 +83,6 @@ export class HomePage implements OnInit, AfterViewInit {
     // Set Mapbox access token
     (mapboxgl as any).accessToken = environment.mapbox.accessToken;
 
-    // Default center if geolocation fails (Cebu City)
     let lat = 10.317347;
     let lng = 123.885437;
 
@@ -116,6 +116,9 @@ export class HomePage implements OnInit, AfterViewInit {
           .setPopup(new mapboxgl.Popup().setText(mission.name))
           .addTo(this.map as mapboxgl.Map);
       });
+      // Start watching missions for markers & notifications
+      await LocalNotifications.requestPermissions();
+      this.watchAllMissionsAndNotify();
     }
   }
 
@@ -123,10 +126,6 @@ export class HomePage implements OnInit, AfterViewInit {
     if (this.map) {
       this.map.flyTo({ center: [this.userLng, this.userLat], zoom: 14 });
     }
-  }
-
-  viewDetails(mission: any) {
-    alert(`Mission: ${mission.type}\nVenue: ${mission.venue}`);
   }
 
   goToJoinMission() {
@@ -141,5 +140,66 @@ export class HomePage implements OnInit, AfterViewInit {
 
   goToNotifications() {
     this.nav.navigateForward('/notifications');
+  }
+
+  async joinMission(missionId: string) {
+    const auth = getAuth();
+    const user = auth.currentUser;
+    if (!user) {
+      alert('Please login first');
+      this.nav.navigateForward('/login');
+      return;
+    }
+    await this.firestoreService.joinMission(
+      missionId,
+      user.uid,
+      user.displayName || user.email || 'Volunteer'
+    );
+    this.nav.navigateForward(['/mission', missionId]);
+  }
+
+  private async sendLocalNotification(mission: any) {
+    try {
+      await LocalNotifications.schedule({
+        notifications: [
+          {
+            id: Date.now(),
+            title: 'New Mission Posted',
+            body: `${mission.name || 'A new mission'} at ${mission.location || ''}`.trim(),
+            schedule: { at: new Date(Date.now() + 500) },
+            extra: { missionId: mission.id }
+          }
+        ]
+      });
+    } catch {}
+  }
+
+  private async plotMissionMarkers() {
+    if (!this.map) return;
+    for (const m of this.allMissions) {
+      const coords = await this.ensureCoordinates(m);
+      if (!coords) continue;
+      new mapboxgl.Marker({ color: '#e53935' })
+        .setLngLat([coords.lng, coords.lat])
+        .setPopup(new mapboxgl.Popup().setText(m.name || 'Mission'))
+        .addTo(this.map as mapboxgl.Map);
+    }
+  }
+
+  private async ensureCoordinates(mission: any): Promise<{ lng: number; lat: number } | null> {
+    if (typeof mission?.lng === 'number' && typeof mission?.lat === 'number') {
+      return { lng: mission.lng, lat: mission.lat };
+    }
+    if (!mission?.location) return null;
+    try {
+      const token = environment.mapbox.accessToken;
+      const resp = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(mission.location)}.json?access_token=${token}`);
+      const data = await resp.json();
+      const center = data?.features?.[0]?.center;
+      if (Array.isArray(center) && center.length >= 2) {
+        return { lng: center[0], lat: center[1] };
+      }
+    } catch {}
+    return null;
   }
 }
