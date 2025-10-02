@@ -67,7 +67,7 @@
       <ion-item lines="none">
         <ion-label>
           <h3 class="date">{{ m.date | date:'MMMM d, y' }}</h3>
-          <h2 class="title">{{ m.name }} — {{ m.orgName }}</h2>
+          <h2 class="title">{{ m.missionName }} — {{ m.orgName }}</h2>
           <p class="icon"><ion-icon name="location-outline"></ion-icon>{{ m.location }}</p>
           <p class="icon"><ion-icon name="time-outline"></ion-icon>{{ formatTimeTo12Hour(m.startTime) }} - {{ formatTimeTo12Hour(m.endTime) }}</p>
           <p>👥 Volunteers Needed: {{ m.volunteers }}</p>

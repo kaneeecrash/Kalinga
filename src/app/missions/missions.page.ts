@@ -112,7 +112,7 @@ export class MissionsPage implements OnInit {
     const dateFilter = this.filterDate ? new Date(this.filterDate as string) : null;
 
     this.filtered = this.missions.filter(m => {
-      const matchText = !text || `${m.name} ${m.orgName} ${m.location}`.toLowerCase().includes(text);
+      const matchText = !text || `${m.missioName} ${m.orgName} ${m.location}`.toLowerCase().includes(text);
       const matchLoc = !loc || (m.location || '').toLowerCase().includes(loc);
       // services may be under m.services or m.specializations
       const missionServices: string[] = Array.isArray(m.services)

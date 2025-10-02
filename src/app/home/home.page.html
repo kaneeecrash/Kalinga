@@ -14,7 +14,7 @@
   <div class="featured-missions-title">Featured Missions</div>
   <div class="featured-missions-scroll">
     <div class="mission-card" *ngFor="let mission of featuredMissions" [ngClass]="{'open': mission.status?.toLowerCase() === 'open'}">
-      <div class="mission-type">{{ mission.name }}</div>
+      <div class="mission-type">{{ mission.missionName }}</div>
       <div class="mission-details">📍{{ mission.location }}</div>
       <div class="mission-datetime">⏰{{ mission.date }} | {{ mission.time || (mission.start_time + ' - ' + mission.end_time) }}</div>
       <div class="mission-details">volunteers needed: {{ mission.volunteers }}</div>

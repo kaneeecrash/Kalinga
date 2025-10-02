@@ -1,7 +1,7 @@
 import { Component, OnInit, AfterViewInit, NgZone } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { FirestoreService } from '../services/firestore.service'; // Import your Firestore service
-import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
+import { Auth, authState, User } from '@angular/fire/auth';
 import * as mapboxgl from 'mapbox-gl';
 import { Geolocation } from '@capacitor/geolocation';
 import { environment } from '../../environments/environment';
@@ -24,8 +24,8 @@ export class HomePage implements OnInit, AfterViewInit {
   knownMissionIds = new Set<string>();
 
   ongoingMissions = [
-    { lat: 10.307, lng: 123.892, name: "Mission A" },
-    { lat: 10.300, lng: 123.900, name: "Mission B" },
+    { lat: 10.307, lng: 123.892, missionName: "Mission A" },
+    { lat: 10.300, lng: 123.900, missionName: "Mission B" },
   ];
 
   map?: mapboxgl.Map;
@@ -33,18 +33,16 @@ export class HomePage implements OnInit, AfterViewInit {
   constructor(
     private nav: NavController,
     private firestoreService: FirestoreService, // Inject FirestoreService
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private auth: Auth
   ) {}
 
   ngOnInit() {
-    const auth = getAuth();
-    onAuthStateChanged(auth, async (user: User | null) => {
+    // Use Angular Fire's authState observable instead of direct Firebase calls
+    authState(this.auth).subscribe(async (user: User | null) => {
       if (user) {
-        // Wrap the Firebase call in ngZone.run to avoid injection context warnings
-        this.ngZone.run(async () => {
-          const profile = await this.firestoreService.getUserByUID(user.uid);
-          this.user = profile ? { userName: profile.userName || 'User' } : { userName: 'User' };
-        });
+        const profile = await this.firestoreService.getUserByUID(user.uid);
+        this.user = profile ? { userName: profile.userName || 'User' } : { userName: 'User' };
       } else {
         this.user = null;
       }
@@ -55,27 +53,23 @@ export class HomePage implements OnInit, AfterViewInit {
   }
 
   fetchFeaturedMissions() {
-    this.ngZone.run(() => {
-      this.firestoreService.getMissions(3).subscribe(missions => {
-        this.featuredMissions = missions;
-      });
+    this.firestoreService.getMissions(3).subscribe(missions => {
+      this.featuredMissions = missions;
     });
   }
 
   private watchAllMissionsAndNotify() {
-    this.ngZone.run(() => {
-      this.firestoreService.getMissions().subscribe(async (missions) => {
-        this.allMissions = missions;
-        // Notify on newly observed missions
-        for (const m of missions) {
-          if (m.id && !this.knownMissionIds.has(m.id)) {
-            this.knownMissionIds.add(m.id);
-            await this.sendLocalNotification(m);
-          }
+    this.firestoreService.getMissions().subscribe(async (missions) => {
+      this.allMissions = missions;
+      // Notify on newly observed missions
+      for (const m of missions) {
+        if (m.id && !this.knownMissionIds.has(m.id)) {
+          this.knownMissionIds.add(m.id);
+          await this.sendLocalNotification(m);
         }
-        // Plot markers for all missions
-        this.plotMissionMarkers();
-      });
+      }
+      // Plot markers for all missions
+      this.plotMissionMarkers();
     });
   }
 
@@ -113,7 +107,7 @@ export class HomePage implements OnInit, AfterViewInit {
       this.ongoingMissions.forEach(mission => {
         new mapboxgl.Marker({ color: '#218838' })
           .setLngLat([mission.lng, mission.lat])
-          .setPopup(new mapboxgl.Popup().setText(mission.name))
+          .setPopup(new mapboxgl.Popup().setText(mission.missionName))
           .addTo(this.map as mapboxgl.Map);
       });
       // Start watching missions for markers & notifications
@@ -143,8 +137,7 @@ export class HomePage implements OnInit, AfterViewInit {
   }
 
   async joinMission(missionId: string) {
-    const auth = getAuth();
-    const user = auth.currentUser;
+    const user = this.auth.currentUser;
     if (!user) {
       alert('Please login first');
       this.nav.navigateForward('/login');
@@ -165,7 +158,7 @@ export class HomePage implements OnInit, AfterViewInit {
           {
             id: Date.now(),
             title: 'New Mission Posted',
-            body: `${mission.name || 'A new mission'} at ${mission.location || ''}`.trim(),
+            body: `${mission.missionName || 'A new mission'} at ${mission.location || ''}`.trim(),
             schedule: { at: new Date(Date.now() + 500) },
             extra: { missionId: mission.id }
           }
@@ -181,7 +174,7 @@ export class HomePage implements OnInit, AfterViewInit {
       if (!coords) continue;
       new mapboxgl.Marker({ color: '#e53935' })
         .setLngLat([coords.lng, coords.lat])
-        .setPopup(new mapboxgl.Popup().setText(m.name || 'Mission'))
+        .setPopup(new mapboxgl.Popup().setText(m.missionName || 'Mission'))
         .addTo(this.map as mapboxgl.Map);
     }
   }

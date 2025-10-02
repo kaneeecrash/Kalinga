@@ -1,18 +1,18 @@
-  import { Injectable, NgZone } from '@angular/core';
-  import { Firestore, doc, docData, setDoc, updateDoc, getDoc, collection, addDoc, collectionData } from '@angular/fire/firestore';
-  import { query, where, orderBy, limit, getDocs } from '@angular/fire/firestore';
-  import { Storage, ref, uploadBytes, getDownloadURL } from '@angular/fire/storage';
-  import { Observable, from } from 'rxjs';
+import { Injectable, NgZone } from '@angular/core';
+import { Firestore, doc, docData, setDoc, updateDoc, getDoc, collection, addDoc, collectionData } from '@angular/fire/firestore';
+import { query, where, orderBy, limit, getDocs } from '@angular/fire/firestore';
+import { Storage, ref, uploadBytes, getDownloadURL } from '@angular/fire/storage';
+import { Observable, from } from 'rxjs';
 
-  @Injectable({ providedIn: 'root' })
-  export class FirestoreService {
-    constructor(
-      private firestore: Firestore,
-      private storage: Storage,
-      private ngZone: NgZone
-    ) {}
+@Injectable({ providedIn: 'root' })
+export class FirestoreService {
+  constructor(
+    private firestore: Firestore,
+    private storage: Storage,
+    private ngZone: NgZone
+  ) {}
 
-    async getSomeData() {
+  async getSomeData() {
       return this.ngZone.run(async () => {
         const colRef = collection(this.firestore, 'my-collection');
         const docsSnap = await getDocs(colRef);
@@ -21,18 +21,24 @@
     }
 
     setDocument(collectionName: string, docId: string, data: any) {
-      const docRef = doc(this.firestore, collectionName, docId);
-      return from(setDoc(docRef, data));
+      return this.ngZone.run(() => {
+        const docRef = doc(this.firestore, collectionName, docId);
+        return from(setDoc(docRef, data));
+      });
     }
 
     addUser(user: any) {
-      const usersRef = collection(this.firestore, 'users');
-      return addDoc(usersRef, user);
+      return this.ngZone.run(() => {
+        const usersRef = collection(this.firestore, 'users');
+        return addDoc(usersRef, user);
+      });
     }
 
     getUsers(): Observable<any[]> {
-      const usersRef = collection(this.firestore, 'users');
-      return collectionData(usersRef, { idField: 'id' }) as Observable<any[]>;
+      return this.ngZone.run(() => {
+        const usersRef = collection(this.firestore, 'users');
+        return collectionData(usersRef, { idField: 'id' }) as Observable<any[]>;
+      });
     }
 
     async getUserByUsername(userName: string): Promise<any> {
@@ -60,8 +66,10 @@
 
     // ---- NEW: Update user profile by UID ----
     async updateUserProfile(uid: string, data: any): Promise<void> {
-      const userRef = doc(this.firestore, 'users', uid);
-      return updateDoc(userRef, data);
+      return this.ngZone.run(async () => {
+        const userRef = doc(this.firestore, 'users', uid);
+        return updateDoc(userRef, data);
+      });
     }
 
     // ---- NEW: Upload avatar to storage, return download URL ----
@@ -143,34 +151,30 @@
 
           //missions//
     getMissions(limitTo:number = 100): Observable<any[]> {
-      return this.ngZone.run(() => {
-        const ref = collection(this.firestore, 'missions');
-        const q = query(ref, orderBy('createdAt', 'desc'), limit(limitTo));
-        return collectionData(q, { idField: 'id' }) as Observable<any[]>;
-      });
+      const ref = collection(this.firestore, 'missions');
+      const q = query(ref, orderBy('createdAt', 'desc'), limit(limitTo));
+      return collectionData(q, { idField: 'id' }) as Observable<any[]>;
     }
 
     getOpenMissions(limitTo:number = 100): Observable<any[]> {
-      return this.ngZone.run(() => {
-        const ref = collection(this.firestore, 'missions');
-        const q = query(ref, where('status', '==', 'open'), orderBy('createdAt', 'desc'), limit(limitTo));
-        return collectionData(q, { idField: 'id' }) as Observable<any[]>;
-      });
+      const ref = collection(this.firestore, 'missions');
+      const q = query(ref, where('status', '==', 'open'), orderBy('createdAt', 'desc'), limit(limitTo));
+      return collectionData(q, { idField: 'id' }) as Observable<any[]>;
     }
 
     getMissionById(id: string): Observable<any> {
-      return this.ngZone.run(() => {
-        const ref = doc(this.firestore, 'missions', id);
-        return docData(ref, { idField: 'id' });
-      });
+      const ref = doc(this.firestore, 'missions', id);
+      return docData(ref, { idField: 'id' });
     }
 
     async joinMission(missionId: string, userId: string, name: string) {
-      const participantsRef = collection(this.firestore, `missions/${missionId}/participants`);
-      return await addDoc(participantsRef, {
-        userId,
-        name,
-        joinedAt: new Date()
+      return this.ngZone.run(async () => {
+        const participantsRef = collection(this.firestore, `missions/${missionId}/participants`);
+        return await addDoc(participantsRef, {
+          userId,
+          name,
+          joinedAt: new Date()
+        });
       });
     }
   }
