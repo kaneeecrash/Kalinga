@@ -31,3 +31,59 @@
 	margin-bottom: 8px;
 }
 
+// Application Status Styles
+.application-status {
+	margin: 16px 0;
+	display: flex;
+	justify-content: center;
+}
+
+.application-status ion-chip {
+	font-weight: 600;
+}
+
+.action-buttons {
+	margin: 16px 0;
+}
+
+.action-buttons ion-button {
+	margin: 8px 0;
+}
+
+// Status-specific styling
+.status-pending {
+	--color: var(--ion-color-warning);
+}
+
+.status-approved {
+	--color: var(--ion-color-success);
+}
+
+.status-rejected {
+	--color: var(--ion-color-danger);
+}
+
+// Mission Communication Section
+.section:last-child {
+	border-top: 1px solid var(--ion-color-light);
+	padding-top: 16px;
+	margin-top: 24px;
+}
+
+// Loading skeleton styles
+ion-skeleton-text {
+	--border-radius: 4px;
+	margin: 8px 0;
+}
+
+// Chips styling
+.chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-top: 8px;
+}
+
+.chips ion-chip {
+	margin: 0;
+}

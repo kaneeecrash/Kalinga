@@ -3,6 +3,7 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
 import { FirestoreService } from '../services/firestore.service';
 import { NavController } from '@ionic/angular';
+import { NgZone } from '@angular/core';
 
 @Component({
   selector: 'app-login',
@@ -23,7 +24,8 @@ export class LoginPage {
     private fb: FormBuilder,
     private auth: AuthService,
     private firestore: FirestoreService,
-    private nav: NavController
+    private nav: NavController,
+    private ngZone: NgZone
   ) {}
 
   onLogin() {
@@ -59,28 +61,30 @@ export class LoginPage {
       // Case-insensitive username support
       const normalizedUserName = emailOrUserName.toLowerCase();
 
-      this.firestore.getUserByUsername(normalizedUserName)
-        .then(userDoc => {
-          if (userDoc && userDoc.email) {
-            this.auth.login(userDoc.email, password).subscribe({
-              next: () => {
-                this.loading = false;
-                this.nav.navigateRoot('/home');
-              },
-              error: err => {
-                this.loading = false;
-                this.errorMsg = err?.message || 'Login failed. Please try again.';
-              }
-            });
-          } else {
+      this.ngZone.run(() => {
+        this.firestore.getUserByUsername(normalizedUserName)
+          .then(userDoc => {
+            if (userDoc && userDoc.email) {
+              this.auth.login(userDoc.email, password).subscribe({
+                next: () => {
+                  this.loading = false;
+                  this.nav.navigateRoot('/home');
+                },
+                error: err => {
+                  this.loading = false;
+                  this.errorMsg = err?.message || 'Login failed. Please try again.';
+                }
+              });
+            } else {
+              this.loading = false;
+              this.errorMsg = 'No account found for this username.';
+            }
+          })
+          .catch(() => {
             this.loading = false;
-            this.errorMsg = 'No account found for this username.';
-          }
-        })
-        .catch(() => {
-          this.loading = false;
-          this.errorMsg = 'Error checking username. Please try again.';
-        });
+            this.errorMsg = 'Error checking username. Please try again.';
+          });
+      });
     }
   }
 }

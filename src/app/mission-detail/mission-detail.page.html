@@ -1,8 +1,8 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>{{ mission?.name || 'Mission Details' }}</ion-title>
+    <ion-title>{{ mission?.missionName || 'Mission Details' }}</ion-title>
   </ion-toolbar>
-  </ion-header>
+</ion-header>
 
 <ion-content [fullscreen]="true" *ngIf="mission as m">
   <div class="poster">
@@ -10,7 +10,7 @@
   </div>
 
   <div class="ion-padding">
-    <h2 class="title">{{ m.name }}</h2>
+    <h2 class="title">{{ m.missionName }}</h2>
     <p class="subtitle">{{ m.tagline }}</p>
 
     <div class="detail"><ion-icon name="location"></ion-icon> {{ m.location }}</div>
@@ -18,8 +18,55 @@
     <div class="detail"><ion-icon name="time"></ion-icon> {{ formatTimeTo12Hour(m.start_time || m.startTime) }} - {{ formatTimeTo12Hour(m.end_time || m.endTime) }}</div>
     <div class="detail"><ion-icon name="people"></ion-icon> Volunteers needed: {{ m.volunteers }}</div>
 
-    <ion-button expand="block" color="success" *ngIf="(m.status || '').toLowerCase() === 'open'">Join Now</ion-button>
-    <ion-button expand="block" color="medium" *ngIf="(m.status || '').toLowerCase() !== 'open'">Closed</ion-button>
+    <!-- Application Status Section -->
+    <div class="application-status" *ngIf="user">
+      <ion-chip [color]="getStatusColor()">
+        <ion-icon name="person"></ion-icon>
+        <ion-label>{{ getStatusText() }}</ion-label>
+      </ion-chip>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <ion-button 
+        expand="block" 
+        color="success" 
+        *ngIf="canJoin()"
+        (click)="joinMission()">
+        Join Now
+      </ion-button>
+      
+      <ion-button 
+        expand="block" 
+        color="warning" 
+        *ngIf="applicationStatus === 'pending'"
+        disabled>
+        Application Pending
+      </ion-button>
+      
+      <ion-button 
+        expand="block" 
+        color="success" 
+        *ngIf="applicationStatus === 'approved'"
+        disabled>
+        ✓ You're a Volunteer!
+      </ion-button>
+      
+      <ion-button 
+        expand="block" 
+        color="danger" 
+        *ngIf="applicationStatus === 'rejected'"
+        disabled>
+        Application Rejected
+      </ion-button>
+      
+      <ion-button 
+        expand="block" 
+        color="medium" 
+        *ngIf="(m.status || '').toLowerCase() !== 'open'">
+        Mission Closed
+      </ion-button>
+    </div>
 
     <div class="section">
       <div class="section-title">Services</div>
@@ -39,5 +86,23 @@
       <p>Contact: {{ m.orgContact }}</p>
       <p>Email: {{ m.orgEmail }}</p>
     </div>
+
+    <!-- Mission Chat Access (if approved) -->
+    <div class="section" *ngIf="applicationStatus === 'approved'">
+      <div class="section-title">Mission Communication</div>
+      <ion-button expand="block" color="primary" fill="outline">
+        <ion-icon name="chatbubbles"></ion-icon>
+        Access Mission Chat
+      </ion-button>
+    </div>
+  </div>
+</ion-content>
+
+<!-- Loading State -->
+<ion-content *ngIf="isLoading">
+  <div class="ion-padding">
+    <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text>
+    <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+    <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
   </div>
 </ion-content>

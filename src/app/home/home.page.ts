@@ -16,19 +16,16 @@ import { LocalNotifications } from '@capacitor/local-notifications';
 export class HomePage implements OnInit, AfterViewInit {
 
   user: { userName?: string } | null = null;
-  userLat = 10.317347; // default coordinates for Cebu City
-  userLng = 123.885437;
+  userLat = 10.291389; // Your current location: 10°17'29.0"N
+  userLng = 123.860500; // Your current location: 123°51'37.8"E
 
   featuredMissions: any[] = [];  // To store the fetched missions
   allMissions: any[] = [];
   knownMissionIds = new Set<string>();
 
-  ongoingMissions = [
-    { lat: 10.307, lng: 123.892, missionName: "Mission A" },
-    { lat: 10.300, lng: 123.900, missionName: "Mission B" },
-  ];
-
   map?: mapboxgl.Map;
+  userMarker?: mapboxgl.Marker;
+  missionMarkers: mapboxgl.Marker[] = [];
 
   constructor(
     private nav: NavController,
@@ -38,14 +35,16 @@ export class HomePage implements OnInit, AfterViewInit {
   ) {}
 
   ngOnInit() {
-    // Use Angular Fire's authState observable instead of direct Firebase calls
-    authState(this.auth).subscribe(async (user: User | null) => {
-      if (user) {
-        const profile = await this.firestoreService.getUserByUID(user.uid);
-        this.user = profile ? { userName: profile.userName || 'User' } : { userName: 'User' };
-      } else {
-        this.user = null;
-      }
+    // Use Angular Fire's authState observable with proper zone handling
+    this.ngZone.run(() => {
+      authState(this.auth).subscribe(async (user: User | null) => {
+        if (user) {
+          const profile = await this.firestoreService.getUserByUID(user.uid);
+          this.user = profile ? { userName: profile.userName || 'User' } : { userName: 'User' };
+        } else {
+          this.user = null;
+        }
+      });
     });
 
     // Fetch the latest 3 missions for Featured Missions
@@ -77,43 +76,50 @@ export class HomePage implements OnInit, AfterViewInit {
     // Set Mapbox access token
     (mapboxgl as any).accessToken = environment.mapbox.accessToken;
 
-    let lat = 10.317347;
-    let lng = 123.885437;
+    // Get user's current location
+    await this.getUserLocation();
 
-    try {
-      const coords = await Geolocation.getCurrentPosition();
-      lat = coords.coords.latitude;
-      lng = coords.coords.longitude;
-    } catch (err) {
-      console.warn('Could not get location, using default:', err);
-    }
-
-    // Initialize map
+    // Initialize map with user's location
     this.map = new mapboxgl.Map({
       container: 'map',
       style: 'mapbox://styles/mapbox/streets-v11',
-      center: [lng, lat],
+      center: [this.userLng, this.userLat],
       zoom: 13,
     });
 
-    // Add user marker (red)
-    if (this.map) {
-      new mapboxgl.Marker({ color: '#e53935' })
-        .setLngLat([lng, lat])
-        .setPopup(new mapboxgl.Popup().setText("You are here"))
-        .addTo(this.map);
+    // Add user marker (red pin)
+    this.addUserMarker();
 
-      // Add ongoing mission markers (green)
-      this.ongoingMissions.forEach(mission => {
-        new mapboxgl.Marker({ color: '#218838' })
-          .setLngLat([mission.lng, mission.lat])
-          .setPopup(new mapboxgl.Popup().setText(mission.missionName))
-          .addTo(this.map as mapboxgl.Map);
-      });
-      // Start watching missions for markers & notifications
-      await LocalNotifications.requestPermissions();
-      this.watchAllMissionsAndNotify();
+    // Start watching missions for markers & notifications
+    await LocalNotifications.requestPermissions();
+    this.watchAllMissionsAndNotify();
+  }
+
+  private async getUserLocation() {
+    try {
+      const coords = await Geolocation.getCurrentPosition();
+      this.userLat = coords.coords.latitude;
+      this.userLng = coords.coords.longitude;
+      console.log('User location:', this.userLat, this.userLng);
+    } catch (err) {
+      console.warn('Could not get location, using default Cebu City:', err);
+      // Keep default coordinates for Cebu City
     }
+  }
+
+  private addUserMarker() {
+    if (!this.map) return;
+
+    // Remove existing user marker if any
+    if (this.userMarker) {
+      this.userMarker.remove();
+    }
+
+    // Add new user marker (red pin)
+    this.userMarker = new mapboxgl.Marker({ color: '#e53935' })
+      .setLngLat([this.userLng, this.userLat])
+      .setPopup(new mapboxgl.Popup().setText("You are here"))
+      .addTo(this.map);
   }
 
   recenterMap() {
@@ -136,18 +142,8 @@ export class HomePage implements OnInit, AfterViewInit {
     this.nav.navigateForward('/notifications');
   }
 
-  async joinMission(missionId: string) {
-    const user = this.auth.currentUser;
-    if (!user) {
-      alert('Please login first');
-      this.nav.navigateForward('/login');
-      return;
-    }
-    await this.firestoreService.joinMission(
-      missionId,
-      user.uid,
-      user.displayName || user.email || 'Volunteer'
-    );
+  // Updated: Redirect to mission detail page instead of directly joining
+  joinMission(missionId: string) {
     this.nav.navigateForward(['/mission', missionId]);
   }
 
@@ -169,30 +165,47 @@ export class HomePage implements OnInit, AfterViewInit {
 
   private async plotMissionMarkers() {
     if (!this.map) return;
-    for (const m of this.allMissions) {
-      const coords = await this.ensureCoordinates(m);
+
+    // Clear existing mission markers
+    this.missionMarkers.forEach(marker => marker.remove());
+    this.missionMarkers = [];
+
+    // Add markers for all missions
+    for (const mission of this.allMissions) {
+      const coords = await this.ensureCoordinates(mission);
       if (!coords) continue;
-      new mapboxgl.Marker({ color: '#e53935' })
+
+      // Create green marker for mission
+      const marker = new mapboxgl.Marker({ color: '#218838' })
         .setLngLat([coords.lng, coords.lat])
-        .setPopup(new mapboxgl.Popup().setText(m.missionName || 'Mission'))
-        .addTo(this.map as mapboxgl.Map);
+        .setPopup(new mapboxgl.Popup().setText(mission.missionName || 'Mission'))
+        .addTo(this.map);
+
+      this.missionMarkers.push(marker);
     }
   }
 
   private async ensureCoordinates(mission: any): Promise<{ lng: number; lat: number } | null> {
+    // If mission has exact coordinates, use them
     if (typeof mission?.lng === 'number' && typeof mission?.lat === 'number') {
       return { lng: mission.lng, lat: mission.lat };
     }
-    if (!mission?.location) return null;
-    try {
-      const token = environment.mapbox.accessToken;
-      const resp = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(mission.location)}.json?access_token=${token}`);
-      const data = await resp.json();
-      const center = data?.features?.[0]?.center;
-      if (Array.isArray(center) && center.length >= 2) {
-        return { lng: center[0], lat: center[1] };
+
+    // If mission has location string, geocode it
+    if (mission?.location) {
+      try {
+        const token = environment.mapbox.accessToken;
+        const resp = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(mission.location)}.json?access_token=${token}`);
+        const data = await resp.json();
+        const center = data?.features?.[0]?.center;
+        if (Array.isArray(center) && center.length >= 2) {
+          return { lng: center[0], lat: center[1] };
+        }
+      } catch (error) {
+        console.error('Geocoding error for mission:', mission.missionName, error);
       }
-    } catch {}
+    }
+
     return null;
   }
 }
