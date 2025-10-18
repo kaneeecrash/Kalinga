@@ -31,6 +31,16 @@ export class ProfilePage implements OnInit {
   ) {}
 
   async ngOnInit() {
+    await this.loadUserData();
+  }
+
+  // Refresh data when page becomes active (when navigating back from Profile Info)
+  async ionViewWillEnter() {
+    await this.loadUserData();
+  }
+
+  // Extract user loading logic into a reusable method
+  private async loadUserData() {
     const currentUser = this.auth.currentUser;
     if (currentUser) {
       await this.ngZone.run(async () => {
@@ -42,6 +52,8 @@ export class ProfilePage implements OnInit {
           this.user.email = data['email'] || '';
           this.user.occupation = data['occupation'] || '';
           this.user.photoURL = data['photoURL'] || '';
+          
+          console.log('Profile data refreshed:', this.user);
         }
       });
     }

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">api.mapbox.com</domain>
+        <domain includeSubdomains="true">tiles.mapbox.com</domain>
+        <domain includeSubdomains="true">events.mapbox.com</domain>
+        <domain includeSubdomains="true">styles.mapbox.com</domain>
+        <domain includeSubdomains="true">fonts.mapbox.com</domain>
+        <domain includeSubdomains="true">sprites.mapbox.com</domain>
+    </domain-config>
+</network-security-config>

@@ -65,20 +65,35 @@ export class MissionDetailPage implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    // Get user location first, then initialize map
+    // Get user location first, then initialize map immediately
     this.getUserLocation().then(() => {
-      setTimeout(() => {
-        this.initializeMap();
-      }, 100);
+      this.initializeMap();
     });
   }
 
   private async getUserLocation() {
     try {
-      const coords = await Geolocation.getCurrentPosition();
+      console.log('Requesting high accuracy location for mission detail...');
+      
+      const coords = await Geolocation.getCurrentPosition({
+        enableHighAccuracy: true,        // Use GPS instead of network
+        timeout: 15000,                   // 15 second timeout
+        maximumAge: 60000                // Accept cached location up to 1 minute old
+      });
+      
       this.userLat = coords.coords.latitude;
       this.userLng = coords.coords.longitude;
+      
       console.log('User location for mission detail:', this.userLat, this.userLng);
+      console.log('Location accuracy:', coords.coords.accuracy, 'meters');
+      
+      // Check if location is accurate enough
+      if (coords.coords.accuracy > 100) {
+        console.warn('Location accuracy is poor:', coords.coords.accuracy, 'meters');
+      } else {
+        console.log('Location accuracy is good:', coords.coords.accuracy, 'meters');
+      }
+      
     } catch (err) {
       console.warn('Could not get location, using default Cebu City:', err);
       // Keep default coordinates for Cebu City
@@ -89,7 +104,9 @@ export class MissionDetailPage implements OnInit, AfterViewInit {
     if (this.mapInitialized || !this.mission) return;
 
     try {
+      console.log('Initializing mission detail map...');
       (mapboxgl as any).accessToken = environment.mapbox.accessToken;
+      console.log('Mapbox token set:', environment.mapbox.accessToken ? 'Present' : 'Missing');
       
       // Determine map center - use mission location if available, otherwise user location
       let centerLng = this.userLng;
@@ -107,6 +124,16 @@ export class MissionDetailPage implements OnInit, AfterViewInit {
         style: 'mapbox://styles/mapbox/streets-v11',
         center: [centerLng, centerLat],
         zoom: zoom,
+        attributionControl: false
+      });
+
+      // Add event listeners for debugging
+      this.map.on('load', () => {
+        console.log('Mission detail map loaded successfully');
+      });
+
+      this.map.on('error', (e) => {
+        console.error('Mission detail map error:', e);
       });
 
       this.mapInitialized = true;
@@ -121,7 +148,7 @@ export class MissionDetailPage implements OnInit, AfterViewInit {
         this.geocodeIfNeeded();
       }
     } catch (error) {
-      console.error('Error initializing map:', error);
+      console.error('Error initializing mission detail map:', error);
     }
   }
 

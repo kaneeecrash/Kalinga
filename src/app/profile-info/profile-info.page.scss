@@ -89,7 +89,7 @@ body {
   height: 120px;
   border-radius: 50%;
   border: 4px solid #fff;
-  box-shadow: 0 4px 22px #a300d653;
+  box-shadow: 0 4px 22px rgba(163, 0, 214, 0.3);
   object-fit: cover;
   background: #fff;
   display: block;
@@ -97,6 +97,20 @@ body {
   
   &:hover {
     transform: scale(1.05);
+  }
+  
+  // Fallback for missing images
+  &[src=""], &[src="undefined"], &:not([src]) {
+    background: linear-gradient(135deg, #A300D6, #FF3C8E);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    &::before {
+      content: "👤";
+      font-size: 2em;
+      color: white;
+    }
   }
 }
 
@@ -128,6 +142,15 @@ ion-item.profile-field {
   display: flex;
   flex-direction: column;
   width: 100%;
+  position: relative;
+  
+  .field-error {
+    color: #e74c3c;
+    font-size: 0.85em;
+    margin-top: 4px;
+    margin-left: 2px;
+    font-weight: 500;
+  }
 }
 
 .field-label {
@@ -190,6 +213,14 @@ select[disabled].outlined-pill {
   border: 1.5px solid #e5e6ec;
   cursor: default;
   /* user-select: text; */
+}
+
+// Form validation error styles
+.field-group input.outlined-pill.ng-invalid.ng-touched,
+.field-group textarea.outlined-pill.ng-invalid.ng-touched,
+.field-group select.outlined-pill.ng-invalid.ng-touched {
+  border-color: #e74c3c !important;
+  box-shadow: 0 2px 8px rgba(231, 76, 60, 0.2);
 }
 
 
@@ -256,10 +287,48 @@ select[disabled].outlined-pill {
   margin-top: 10px;
   padding: 0 10px;
   
+  ion-progress-bar {
+    height: 6px;
+    border-radius: 3px;
+  }
+  
   .progress-text {
     text-align: center;
     font-size: 12px;
     color: #666;
     margin: 5px 0;
+  }
+}
+
+// Loading and Error States
+.loading-container, .error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+  
+  ion-spinner {
+    margin-bottom: 16px;
+  }
+  
+  ion-icon {
+    font-size: 48px;
+    color: #e74c3c;
+    margin-bottom: 16px;
+  }
+  
+  p {
+    color: #666;
+    font-size: 16px;
+    margin: 0 0 20px 0;
+  }
+  
+  ion-button {
+    --background: $accent-green;
+    --color: white;
+    --border-radius: 20px;
+    font-weight: 600;
   }
 }

@@ -74,7 +74,8 @@ export class FirestoreService {
 
   // ---- NEW: Upload avatar to storage, return download URL ----
   async uploadAvatar(file: File, uid: string): Promise<string> {
-    try {
+    return this.ngZone.run(async () => {
+      try {
       // Validate file before upload
       if (!file || file.size === 0) {
         throw new Error('Invalid file selected');
@@ -115,18 +116,38 @@ export class FirestoreService {
         }
       };
       
-      // Upload the file with metadata
-      console.log('Starting upload...');
-      const uploadResult = await uploadBytes(storageRef, file, metadata);
-      console.log('Upload completed:', uploadResult);
+        // Upload the file with metadata
+        console.log('Starting upload...');
+        
+        // Add retry logic for CORS issues
+        let uploadResult;
+        let retryCount = 0;
+        const maxRetries = 3;
+        
+        while (retryCount < maxRetries) {
+          try {
+            uploadResult = await uploadBytes(storageRef, file, metadata);
+            console.log('Upload completed:', uploadResult);
+            break;
+          } catch (uploadError) {
+            retryCount++;
+            console.warn(`Upload attempt ${retryCount} failed:`, uploadError);
+            
+            if (retryCount >= maxRetries) {
+              throw uploadError;
+            }
+            
+            // No delay - retry immediately
+          }
+        }
       
       // Get the download URL
       console.log('Getting download URL...');
       const downloadURL = await getDownloadURL(storageRef);
       console.log('Download URL obtained:', downloadURL);
       
-      return downloadURL;
-    } catch (error) {
+        return downloadURL;
+      } catch (error) {
       console.error('Avatar upload error:', error);
       
       // Provide more specific error messages
@@ -146,7 +167,8 @@ export class FirestoreService {
       
       // Re-throw with more context
       throw new Error(`Failed to upload avatar: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    }
+      }
+    });
   }
 
   //missions//

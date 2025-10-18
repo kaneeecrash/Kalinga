@@ -1,11 +1,11 @@
 <ion-content class="home-bg" fullscreen>
   <div class="home-header">
     <div class="avatar">
-      <img src="assets/avatar.png" alt="Avatar" />
+      <img [src]="user?.photoURL || 'assets/avatar.png'" alt="Avatar" />
     </div>
     <div>
       <div class="subtitle">Welcome back,</div>
-      <div class="header-username">{{ user?.userName || 'User' }}</div>
+      <div class="header-username">{{ user?.displayName || user?.userName || 'User' }}</div>
       <div class="header-tagline">Ready to make a difference today?</div>
     </div>
     <ion-icon name="notifications-outline" class="notif-icon" (click)="goToNotifications()"></ion-icon>
@@ -16,7 +16,7 @@
     <div class="mission-card" *ngFor="let mission of featuredMissions" [ngClass]="{'open': mission.status?.toLowerCase() === 'open'}">
       <div class="mission-type">{{ mission.missionName }}</div>
       <div class="mission-details">📍{{ mission.location }}</div>
-      <div class="mission-datetime">⏰{{ mission.date }} | {{ mission.time || (mission.start_time + ' - ' + mission.end_time) }}</div>
+      <div class="mission-datetime">⏰{{ mission.date | date:'MMMM d, y' }} | {{ formatTimeTo12Hour(mission.start_time || mission.startTime) }} - {{ formatTimeTo12Hour(mission.end_time || mission.endTime) }}</div>
       <div class="mission-details">volunteers needed: {{ mission.volunteers }}</div>
       <div class="mission-details">{{ mission.distance }}</div>
       <div class="mission-actions">
@@ -53,6 +53,11 @@
   <div class="ongoing-title">Ongoing Missions near you</div>
   <div class="map-container">
     <div id="map" aria-label="Map of ongoing missions"></div>
+    <div id="map-error" class="map-error" style="display: none;">
+      <ion-icon name="warning-outline"></ion-icon>
+      <p>Map temporarily unavailable</p>
+      <ion-button size="small" (click)="retryMapLoad()">Retry</ion-button>
+    </div>
     <button class="locate-btn" (click)="recenterMap()" title="Recenter map">
       <ion-icon name="locate"></ion-icon>
     </button>

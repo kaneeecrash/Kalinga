@@ -24,25 +24,44 @@
       <ion-button fill="clear" (click)="selectAvatar()" *ngIf="editMode" [disabled]="isUploadingAvatar">
         <ion-spinner *ngIf="isUploadingAvatar" name="crescent" size="small"></ion-spinner>
         <span *ngIf="!isUploadingAvatar">Change Avatar</span>
-        <span *ngIf="isUploadingAvatar">Uploading... {{uploadProgress}}%</span>
+        <span *ngIf="isUploadingAvatar">Processing...</span>
       </ion-button>
       
-      <!-- Upload Progress Bar -->
+      <!-- Processing Indicator -->
       <div *ngIf="isUploadingAvatar" class="upload-progress">
-        <ion-progress-bar [value]="uploadProgress / 100" color="primary"></ion-progress-bar>
-        <p class="progress-text">Uploading avatar... {{uploadProgress}}%</p>
+        <ion-spinner name="crescent"></ion-spinner>
+        <p class="progress-text">Processing avatar...</p>
       </div>
     </div>
   </div>
 
-  <form [formGroup]="profileForm" (ngSubmit)="onFormSubmit($event)" role="form" aria-label="Profile Information Form">
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Loading profile...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="!isLoading && !user" class="error-container">
+    <ion-icon name="warning-outline"></ion-icon>
+    <p>Failed to load profile</p>
+    <ion-button (click)="loadUser()">Retry</ion-button>
+  </div>
+
+  <!-- Profile Form -->
+  <form *ngIf="!isLoading && profileForm && user" [formGroup]="profileForm" (ngSubmit)="onFormSubmit($event)" role="form" aria-label="Profile Information Form">
     <ion-list class="profile-info-list">
       <ion-item lines="none" class="profile-field">
         <div class="field-group">
           <label class="field-label" for="displayName">Full Name *</label>
           <input id="displayName" class="outlined-pill" formControlName="displayName" 
-                 [readonly]="!editMode" [value]="user.displayName" autocomplete="name" 
+                 [readonly]="!editMode" [value]="user?.displayName || ''" autocomplete="name" 
                  aria-required="true" aria-describedby="displayName-help" />
+          <div *ngIf="profileForm.get('displayName')?.invalid && profileForm.get('displayName')?.touched" 
+               class="field-error">
+            <span *ngIf="profileForm.get('displayName')?.errors?.['required']">Full Name is required</span>
+            <span *ngIf="profileForm.get('displayName')?.errors?.['minlength']">Full Name must be at least 2 characters</span>
+          </div>
         </div>
       </ion-item>
 
@@ -74,7 +93,7 @@
       <ion-item lines="none" class="profile-field">
         <div class="field-group">
           <label class="field-label" for="gender">Gender</label>
-          <select id="gender" class="outlined-pill" formControlName="gender" [disabled]="!editMode">
+          <select id="gender" class="outlined-pill" formControlName="gender">
             <option value="">Select Gender</option>
             <option value="male">Male</option>
             <option value="female">Female</option>
@@ -86,7 +105,7 @@
       <ion-item lines="none" class="profile-field">
         <div class="field-group">
           <label class="field-label" for="email">Email Address</label>
-          <input id="email" class="outlined-pill" [value]="user.email" readonly autocomplete="email" />
+          <input id="email" class="outlined-pill" [value]="user?.email || ''" readonly autocomplete="email" />
         </div>
       </ion-item>
 
@@ -107,10 +126,6 @@
       </ion-item>
     </ion-list>
 
-    <!-- Debug Info (remove in production) -->
-    <div class="debug-info">
-      Debug: Edit Mode = {{editMode}}, Form Valid = {{profileForm.valid}}, User = {{user?.displayName}}
-    </div>
 
     <!-- Save and Cancel Buttons -->
     <div *ngIf="editMode" class="edit-actions">

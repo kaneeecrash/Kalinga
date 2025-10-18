@@ -28,6 +28,16 @@ repositories {
     flatDir{
         dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
     }
+    maven {
+        url 'https://api.mapbox.com/downloads/v2/releases/maven'
+        authentication {
+            basic(BasicAuthentication)
+        }
+        credentials {
+            username = "mapbox"
+            password = System.getenv('MAPBOX_DOWNLOADS_TOKEN') ?: ""
+        }
+    }
 }
 
 dependencies {
@@ -40,6 +50,9 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
     implementation project(':capacitor-cordova-android-plugins')
+    
+    // Mapbox dependencies
+    implementation 'com.mapbox.maps:android:10.16.1'
 }
 
 apply from: 'capacitor.build.gradle'
