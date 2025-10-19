@@ -1,4 +1,12 @@
 ion-footer {
+  margin: 0;
+  padding: 0;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  
   ion-tab-bar {
     --background: #fff;
     --color-selected: #ff3c6f;
@@ -6,8 +14,29 @@ ion-footer {
     border-radius: 18px 18px 0 0;
     box-shadow: 0 -2px 10px #0001;
     height: 60px;
+    margin: 0;
+    padding: 0;
+    padding-bottom: 0 !important;
+    margin-bottom: 0 !important;
+    border-bottom: none;
   }
+  
   ion-icon {
     font-size: 22px;
   }
+}
+
+// Remove safe area bottom spacing
+ion-app {
+  --ion-safe-area-bottom: 0px;
+}
+
+ion-footer {
+  --ion-safe-area-bottom: 0px;
+}
+
+// Ensure content doesn't overlap with fixed footer
+ion-content {
+  --padding-bottom: 0px;
+  margin-bottom: 0px;
 }

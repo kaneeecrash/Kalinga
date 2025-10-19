@@ -74,135 +74,90 @@ ion-buttons ion-button {
   padding: 4px;
 }
 
-// Mission Card Styling
+// Mission Card Styling (matching homepage)
 ion-list {
   width: 100%;
   max-width: 940px;
   display: flex;
-  flex-direction: column;  // Mission cards stacked vertically
-  gap: 12px;               // tighter spacing between cards
-  padding: 6px 10px 18px;  // slightly reduced outer padding
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px 10px;
 }
 
-.mission-container {
+// ---- MISSION CARD ----
+.mission-card {
+  background: #fff;
+  color: #0b0b0b;
+  font-weight: 400;
+  border: 2px solid rgba(0, 100, 0, 0.18);
+  box-shadow: 0 2px 12px $accent-shadow;
+  border-radius: 20px;
+  padding: 16px 16px 8px 16px;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  width: 100%;
-  background: #ffffff;
-  border: 2px solid rgba(0, 100, 0, 0.18);
-  border-radius: 16px;
-  box-shadow: 0 4px 12px $accent-shadow;
-  overflow: hidden;
+  gap: 4px;
+  transition: box-shadow 0.2s, border-color 0.2s, transform 0.13s;
+  outline: none;
+  cursor: pointer;
 }
 
-ion-item {
-  background: transparent;
-  margin: 0;
-  border-radius: 0;
-  box-shadow: none;
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  padding: 12px 14px;       // reduced inner padding
-  border: none;
-  width: 100%;
+.mission-card:hover,
+.mission-card:focus,
+.mission-card.open {
+  border-color: $accent-green-dark;
+  box-shadow: 0 6px 24px $accent-shadow;
+  transform: scale(1.022);
 }
 
-// Mission Label Styling
-ion-label {
-  display: flex;
-  flex-direction: column;  // Vertical layout inside mission card
-  justify-content: space-between;
-  width: 100%;
-}
-
-h3.date {
-  font-size: 14px;          // slightly larger for readability
-  color: $accent-red;
-  font-weight: 700;
-  margin: 0 0 4px 0;
-  letter-spacing: 0.4px;
-  text-transform: uppercase;
-}
-
-h2.title {
-  font-size: 21px;          // a bit bigger headline
+.mission-type {
   font-weight: 800;
   color: $accent-green;
-  margin: 0 0 6px 0;
-  line-height: 1.25;
+  font-size: 15px;
+  margin-bottom: 2px;
 }
 
-p {
-  font-size: 17px;          // bump base copy size slightly
-  color: $accent-gray;
-  margin: 0 4px;  // Reduced margin to minimize spacing
-  line-height: 1.4;
-}
-
-.mission-details {
+.mission-details, .mission-datetime, .mission-status {
   display: flex;
-  justify-content: space-between;
-  width: 100%;
   align-items: center;
-  gap: 6px;                 // tighter spacing within details row
-}
-
-.mission-details p {
-  font-size: 16px;          // improve legibility in details
+  font-size: 14px;
+  gap: 5px;
   color: $accent-gray;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
 }
 
-.mission-details ion-icon {
-  color: $accent-green;
-  font-size: 18px;
+.mission-status {
+  color: $accent-green-dark;
+  font-size: 13px;
+  margin-bottom: 4px;
+  font-weight: 600;
 }
 
-// Actions: I AM IN and DETAILS buttons below mission cards
-.actions {
+.mission-actions {
   display: flex;
   justify-content: flex-end;
-  align-items: center;
-  gap: 8px;                 // tighter button spacing
-  padding: 8px 12px 10px;   // reduced vertical padding
-  background: #ffffff;
-  border-top: 1px solid rgba(0, 100, 0, 0.12);
-
+  margin-top: auto;
+  padding-top: 8px;
+  
   ion-button {
-    flex: 0 1 auto;
-    min-width: 110px;       // allow a bit smaller buttons
-    margin: 0;
+    margin-left: auto;
+    min-width: 80px;
   }
 }
 
-// Action Button Styling
-.actions ion-button {
-  --border-radius: 16px;
-  --background: $accent-green;
-  --color: #fff;
-  font-size: 16px;          // prioritize readability
-  padding: 12px 16px;       // larger tap target
-  width: auto;
-  box-shadow: 0 2px 8px $accent-shadow;
-  text-transform: uppercase;
-  font-weight: 700;
-}
-
-ion-button[color="success"] {
-  --background: $accent-green;
-  --color: $accent-white;
-}
-
 ion-button[size="small"] {
-  --background: $accent-green-dark;
-  --color: $accent-white;
+  --background: $accent-green;
+  --background-hover: $accent-green-dark;
+  --border-radius: 18px;
+  --color: #fff;
+  height: 32px;
+  font-size: 15px;
+  font-weight: 700;
+  text-transform: uppercase;
+  box-shadow: 0 2px 10px $accent-shadow;
 }
 
-// Ensure clear buttons are still visible with outline and strong label
-.actions ion-button[fill="clear"] {
+.mission-card ion-button[fill="clear"],
+.action-card ion-button[fill="clear"] {
   --background: transparent;
   --color: $accent-green;
   border: 2px solid $accent-green;

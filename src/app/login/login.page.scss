@@ -1,196 +1,305 @@
-:host, .register-bg, body {
-  min-height: 100vh;
-  width: 100vw;
-  overflow-x: hidden;
-}
-
-.register-bg {
+// Modern Login Page Styling
+.login-bg {
   --ion-background-color: #f7f9fa;
   background: #f7f9fa;
+  min-height: 100vh;
 }
 
-.auth-header {
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 140px;
-  background: #006400;
-  color: #ffffff;
-  border-radius: 0 0 28px 28px;
-  display: flex;
-  align-items: flex-end;
-  padding: 0 16px 16px 16px;
-  box-shadow: 0 2px 14px rgba(0,100,0,0.15);
-  z-index: 1; // sit behind the card for a neat overlap
-}
-
-.auth-title {
-  font-size: 1.8rem;
-  font-weight: 800;
-  letter-spacing: 0.3px;
-}
-
-.register-card {
+// Header Section
+.login-header {
   position: relative;
-  z-index: 2;
-  margin: 0 auto;
-  max-width: 380px;
-  width: 92vw;
-  top: 140px; // push down to reveal more green header
-  padding: 32px 0 20px 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  border-radius: 28px;
-  border: 1.5px solid rgba(255, 255, 255, 0.18);
-  transition: box-shadow 0.2s;
-  background: #ffffff;
-  box-shadow: 0 8px 22px rgba(0,0,0,0.08);
-}
-
-.register-form {
-  width: 90%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 18px;
-  margin-top: 16px;
-}
-
-.input-row {
+  height: 200px;
+  overflow: hidden;
   display: flex;
   align-items: center;
-  width: 100%;
-  background: #fff;
-  border-radius: 30px;
-  padding: 2px 14px 2px 12px;
-  box-shadow: 0 2px 9px 0 rgba(234, 164, 255, 0.08);
-  border: 1.5px solid #e6f0e6;
-  transition: border 0.17s, background 0.18s;
-
-  ion-icon {
-    font-size: 1.37em;
-    color: #006400;
-    margin-right: 8px;
-    margin-left: 2px;
-    flex-shrink: 0;
+  justify-content: center;
+  
+  .header-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    
+    .header-svg {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
   }
-  ion-input {
-    border: none;
-    background: transparent !important;
-    box-shadow: none !important;
-    font-size: 1.07rem;
-    font-weight: 500;
-    color: #1f3b1f;
-    width: 100%;
-    --padding-start: 0;
-    --padding-end: 0;
-    --padding-top: 16px;
-    --padding-bottom: 12px;
-    outline: none;
-  }
-  &:focus-within, &:has(ion-input:focus) {
-    border: 1.5px solid #006400;
-    background: #fff;
-  }
-}
-
-.login-options-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  margin: -8px 0 0 0;
-
-  .remember-me-label {
-    font-size: 13px;
-    color: #555;
-    margin-left: 7px;
-    font-weight: 500;
-    vertical-align: middle;
-  }
-.forgot-link {
-    font-size: 13px;
-  color: #006400;
-    text-decoration: underline;
-    font-weight: 600;
-    transition: color 0.18s;
-    &:hover, &:focus {
-    color: #004d00;
-      text-decoration: underline;
+  
+  .header-content {
+    position: relative;
+    text-align: center;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    
+    .welcome-icon {
+      margin-bottom: 16px;
+      
+      ion-icon {
+        font-size: 48px;
+        color: white;
+        opacity: 0.9;
+      }
+    }
+    
+    .welcome-title {
+      font-size: 2rem;
+      font-weight: 700;
+      color: white;
+      margin: 0 0 8px 0;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+    
+    .welcome-subtitle {
+      font-size: 1rem;
+      color: rgba(255, 255, 255, 0.9);
+      margin: 0;
+      font-weight: 400;
     }
   }
 }
 
-.register-btn, ion-button[type="submit"] {
-  --background: #0000;
-  background: linear-gradient(135deg, #006400 0%, #2f7d32 100%) !important;
-  --border-radius: 22px;
-  --color: #fff;
-  font-weight: 700;
-  font-size: 1.09rem;
-  letter-spacing: 0.4px;
-  box-shadow: 0 2px 14px rgba(0,100,0,0.18);
-  border: none;
-  min-height: 46px;
-  margin-top: 8px;
-  margin-bottom: 8px;
-  width: 100%;
-  transition: filter 0.17s;
-  cursor: pointer;
-
-  &:hover, &:focus {
-    filter: brightness(1.05);
-  }
-  &:disabled {
-    filter: grayscale(0.24) opacity(0.7);
-    background: linear-gradient(135deg, #b4d7b6 0%, #d6ead6 100%) !important;
-    box-shadow: none;
-  }
+// Login Card
+.login-card {
+  position: relative;
+  z-index: 2;
+  margin: -40px auto 0 auto;
+  max-width: 400px;
+  width: 90vw;
+  background: white;
+  border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(0, 100, 0, 0.15);
+  padding: 32px 24px;
 }
 
-.register-footer {
-  margin-top: 18px;
-  text-align: center;
-  font-size: 15px;
-  color: #3b4a3b;
-  a {
-    color: #006400;
-    text-decoration: underline;
-    font-weight: 600;
-    transition: color 0.2s;
-    &:hover, &:focus { color: #004d00; }
-  }
+// Form Styling
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
-ion-text[color="danger"] {
-  display: block;
-  margin-top: 10px;
-  font-size: 15px;
-  text-align: center;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-}
-
-@media (max-width: 540px) {
-  .register-card {
-    max-width: 99vw;
-    border-radius: 0 0 18px 18px;
-    top: 120px;
-    padding-top: 18px;
-  }
-  .auth-title { font-size: 1.5rem; }
+.form-group {
+  display: flex;
+  flex-direction: column;
   
-  .register-form {
-    width: 98%;
-    gap: 12px;
+  .form-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #006400;
+    margin-bottom: 8px;
   }
-  .input-row {
-    padding-left: 8px;
-    padding-right: 7px;
+  
+  .input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    
+    .input-icon {
+      position: absolute;
+      left: 16px;
+      font-size: 20px;
+      color: #006400;
+      z-index: 2;
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 16px 16px 16px 48px;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      font-size: 1rem;
+      color: #1f2937;
+      background: #f9fafb;
+      transition: all 0.2s ease;
+      outline: none;
+      
+      &:focus {
+        border-color: #006400;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(0, 100, 0, 0.1);
+      }
+      
+      &.error {
+        border-color: #ef4444;
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+      }
+    }
+  }
+  
+  .error-message {
+    margin-top: 6px;
+    font-size: 0.85rem;
+    color: #ef4444;
+    font-weight: 500;
   }
 }
 
-.checkbox-container {
+// Login Options
+.login-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: -8px 0;
+  
+  .remember-me {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    
+    .remember-checkbox {
+      --color: #006400;
+      --color-checked: #006400;
+    }
+    
+    .remember-label {
+      font-size: 0.9rem;
+      color: #6b7280;
+      font-weight: 500;
+      cursor: pointer;
+    }
+  }
+  
+  .forgot-password {
+    font-size: 0.9rem;
+    color: #006400;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s ease;
+    
+    &:hover {
+      color: #004d00;
+    }
+  }
+}
+
+// Login Button
+.login-btn {
+  --background: linear-gradient(135deg, #006400, #004d00);
+  --color: white;
+  --border-radius: 12px;
+  --box-shadow: 0 4px 20px rgba(0, 100, 0, 0.3);
+  height: 48px;
+  font-weight: 600;
+  font-size: 1rem;
+  margin-top: 8px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    --box-shadow: 0 8px 30px rgba(0, 100, 0, 0.4);
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    transform: none;
+  }
+}
+
+// Error Container
+.error-container {
   display: flex;
   align-items: center;
+  gap: 8px;
+  padding: 16px;
+  background: #fef2f2;
+  border: 2px solid #fecaca;
+  border-radius: 12px;
+  color: #dc2626;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-top: 8px;
+  animation: slideIn 0.3s ease-out;
+  
+  ion-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  
+  span {
+    line-height: 1.4;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Sign Up Link
+.signup-link {
+  text-align: center;
+  margin-top: 8px;
+  
+  p {
+    font-size: 0.95rem;
+    color: #6b7280;
+    margin: 0;
+    
+    a {
+      color: #006400;
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.2s ease;
+      
+      &:hover {
+        color: #004d00;
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 480px) {
+  .login-header {
+    height: 180px;
+    
+    .header-content {
+      .welcome-icon ion-icon {
+        font-size: 40px;
+      }
+      
+      .welcome-title {
+        font-size: 1.7rem;
+      }
+      
+      .welcome-subtitle {
+        font-size: 0.9rem;
+      }
+    }
+  }
+  
+  .login-card {
+    margin: -30px auto 0 auto;
+    width: 95vw;
+    padding: 24px 20px;
+  }
+  
+  .login-form {
+    gap: 20px;
+  }
+  
+  .form-group .input-container .form-input {
+    padding: 14px 14px 14px 44px;
+    font-size: 0.95rem;
+  }
+  
+  .login-btn {
+    height: 44px;
+    font-size: 0.95rem;
+  }
 }

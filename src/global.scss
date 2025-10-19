@@ -44,3 +44,28 @@
 //   --ion-background-color: transparent !important;
 //   overflow-x: hidden;
 // }
+
+/* Footer spacing fixes */
+ion-footer {
+  margin: 0 !important;
+  padding: 0 !important;
+  --ion-safe-area-bottom: 0px !important;
+}
+
+ion-tab-bar {
+  margin: 0 !important;
+  padding: 0 !important;
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* Remove extra spacing from content */
+ion-content {
+  --padding-bottom: 0px !important;
+  margin-bottom: 0px !important;
+}
+
+/* Ensure no extra space below footer */
+ion-app {
+  --ion-safe-area-bottom: 0px !important;
+}

@@ -1,13 +1,10 @@
 import { Injectable} from '@angular/core';
-import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, signOut, User } from '@angular/fire/auth';
+import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, signOut, User, authState } from '@angular/fire/auth';
 import { from, Observable, of } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  constructor(
-    private auth: Auth,
-  
-  ) {}
+  constructor(private auth: Auth) {}
 
   register(email: string, password: string, displayName: string, userName: string) {
     return from(
@@ -34,5 +31,10 @@ export class AuthService {
 
   getCurrentUser(): Observable<User | null> {
     return of(this.auth.currentUser);
+  }
+
+  // Add proper authState observable
+  get authState$(): Observable<User | null> {
+    return authState(this.auth);
   }
 }

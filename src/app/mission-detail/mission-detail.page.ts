@@ -6,6 +6,8 @@ import { AlertController } from '@ionic/angular';
 import { Geolocation } from '@capacitor/geolocation';
 import * as mapboxgl from 'mapbox-gl';
 import { environment } from '../../environments/environment';
+import { switchMap, map, catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 type ApplicationStatus = 'not_applied' | 'pending' | 'approved' | 'rejected';
 
@@ -172,68 +174,72 @@ export class MissionDetailPage implements OnInit, AfterViewInit {
       .addTo(this.map);
   }
 
-  async checkApplicationStatus() {
+  checkApplicationStatus() {
     if (!this.user || !this.mission) return;
 
-    try {
-      const status = await this.firestore.getUserApplicationStatus(this.mission.id, this.user.uid);
-      this.applicationStatus = (status as ApplicationStatus) || 'not_applied';
-    } catch (error) {
-      console.error('Error checking application status:', error);
-      this.applicationStatus = 'not_applied';
-    }
+    this.firestore.getUserApplicationStatus(this.mission.id, this.user.uid).pipe(
+      map(status => (status as ApplicationStatus) || 'not_applied'),
+      catchError(error => {
+        console.error('Error checking application status:', error);
+        return of('not_applied' as ApplicationStatus);
+      })
+    ).subscribe({
+      next: (status) => {
+        this.applicationStatus = status;
+      },
+      error: (error) => {
+        console.error('Error checking application status:', error);
+        this.applicationStatus = 'not_applied';
+      }
+    });
   }
 
-  async joinMission() {
+  joinMission() {
     if (!this.user) {
-      const alert = await this.alertController.create({
-        header: 'Login Required',
-        message: 'Please login to join this mission.',
-        buttons: ['OK']
-      });
-      await alert.present();
+      this.showAlert('Login Required', 'Please login to join this mission.', ['OK']);
       this.router.navigate(['/login']);
       return;
     }
 
     if (!this.mission) return;
 
-    try {
-      // Check if organization requires manual approval
-      const requiresApproval = this.mission.requiresApproval !== false; // Default to true if not specified
-      
-      if (requiresApproval) {
-        // Manual approval required
-        await this.firestore.applyToMission(this.mission.id, this.user.uid, this.user.displayName || this.user.email || 'Volunteer');
-        this.applicationStatus = 'pending';
-        
-        const alert = await this.alertController.create({
-          header: 'Application Submitted',
-          message: 'Your application is now pending. The organization will review your application and notify you of their decision.',
-          buttons: ['OK']
-        });
-        await alert.present();
-      } else {
-        // Auto-approval
-        await this.firestore.joinMission(this.mission.id, this.user.uid, this.user.displayName || this.user.email || 'Volunteer');
-        this.applicationStatus = 'approved';
-        
-        const alert = await this.alertController.create({
-          header: 'Welcome to the Mission!',
-          message: 'You\'re now a volunteer! Stay tuned on your designated mission channel for updates and coordination.',
-          buttons: ['OK']
-        });
-        await alert.present();
-      }
-    } catch (error) {
-      console.error('Error joining mission:', error);
-      const alert = await this.alertController.create({
-        header: 'Error',
-        message: 'Failed to join mission. Please try again.',
-        buttons: ['OK']
+    // Check if organization requires manual approval
+    const requiresApproval = this.mission.requiresApproval !== false; // Default to true if not specified
+    
+    if (requiresApproval) {
+      // Manual approval required
+      this.firestore.applyToMission(this.mission.id, this.user.uid, this.user.displayName || this.user.email || 'Volunteer').subscribe({
+        next: () => {
+          this.applicationStatus = 'pending';
+          this.showAlert('Application Submitted', 'Your application is now pending. The organization will review your application and notify you of their decision.', ['OK']);
+        },
+        error: (error) => {
+          console.error('Error applying to mission:', error);
+          this.showAlert('Error', 'Failed to apply to mission. Please try again.', ['OK']);
+        }
       });
-      await alert.present();
+    } else {
+      // Auto-approval
+      this.firestore.joinMission(this.mission.id, this.user.uid, this.user.displayName || this.user.email || 'Volunteer').subscribe({
+        next: () => {
+          this.applicationStatus = 'approved';
+          this.showAlert('Welcome to the Mission!', 'You\'re now a volunteer! Stay tuned on your designated mission channel for updates and coordination.', ['OK']);
+        },
+        error: (error) => {
+          console.error('Error joining mission:', error);
+          this.showAlert('Error', 'Failed to join mission. Please try again.', ['OK']);
+        }
+      });
     }
+  }
+
+  private async showAlert(header: string, message: string, buttons: string[]) {
+    const alert = await this.alertController.create({
+      header,
+      message,
+      buttons
+    });
+    await alert.present();
   }
 
   getStatusText(): string {

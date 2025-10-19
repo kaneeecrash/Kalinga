@@ -105,6 +105,7 @@ $accent-shadow: rgba(0, 100, 0, 0.09); // Adjust shadow to match dark green
   scroll-snap-align: start;
   flex-shrink: 0;
   outline: none;
+  cursor: pointer;
 }
 
 .mission-card:hover,
@@ -130,11 +131,16 @@ $accent-shadow: rgba(0, 100, 0, 0.09); // Adjust shadow to match dark green
   color: $accent-gray;
 }
 
-.mission-status {
-  color: $accent-green-dark; // Dark green color for status
-  font-size: 13px;
-  margin-bottom: 4px;
-  font-weight: 600;
+.mission-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: auto;
+  padding-top: 8px;
+  
+  ion-button {
+    margin-left: auto;
+    min-width: 80px;
+  }
 }
 
 ion-button[size="small"] {

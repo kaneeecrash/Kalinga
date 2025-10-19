@@ -1,66 +1,174 @@
 <ion-content class="register-bg" fullscreen>
-  <div class="auth-header">
-    <div class="auth-title">Create New Account</div>
+  <!-- Modern Header with Gradient -->
+  <div class="register-header">
+    <div class="header-background">
+      <svg viewBox="0 0 400 120" class="header-svg" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="registerGradient" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#006400"/>
+            <stop offset="100%" stop-color="#004d00"/>
+          </linearGradient>
+        </defs>
+        <path d="M0,60 Q120,120 260,60 T400,60 L400,0 L0,0 Z"
+          fill="url(#registerGradient)" />
+      </svg>
+    </div>
+    
+    <!-- Header Content -->
+    <div class="header-content">
+      <div class="welcome-icon">
+        <ion-icon name="person-add-outline"></ion-icon>
+      </div>
+      <h1 class="welcome-title">Create Account</h1>
+      <p class="welcome-subtitle">Join our community today</p>
+    </div>
   </div>
 
+  <!-- Register Form Card -->
   <div class="register-card">
     <form [formGroup]="regForm" (ngSubmit)="onRegister()" class="register-form">
-      <div class="input-row">
-        <ion-icon name="person-outline"></ion-icon>
-        <ion-input
-          formControlName="userName"
-          placeholder="Username"
-          autocomplete="username"
-          required
-        ></ion-input>
-      </div>
-      <div class="input-row">
-        <ion-icon name="id-card-outline"></ion-icon>
-        <ion-input
-          formControlName="displayName"
-          placeholder="Full Name"
-          autocomplete="name"
-          required
-        ></ion-input>
-      </div>
-      <div class="input-row">
-        <ion-icon name="mail-outline"></ion-icon>
-        <ion-input
-          formControlName="email"
-          type="email"
-          placeholder="Email Address"
-          autocomplete="email"
-          required></ion-input>
-      </div>
-
-      <div class="input-row">
-        <ion-icon name="lock-closed-outline"></ion-icon>
-        <ion-input
-          formControlName="password"
-          type="password"
-          placeholder="Password"
-          autocomplete="new-password"
-          required></ion-input>
-      </div>
-      <div class="input-row">
-        <ion-icon name="checkmark-done-outline"></ion-icon>
-        <ion-input
-          formControlName="confirmPassword"
-          type="password"
-          placeholder="Confirm Password"
-          autocomplete="new-password"
-          required></ion-input>
+      
+      <!-- Username Field -->
+      <div class="form-group">
+        <label class="form-label" for="userName">Username</label>
+        <div class="input-container">
+          <ion-icon name="person-outline" class="input-icon"></ion-icon>
+          <ion-input
+            id="userName"
+            formControlName="userName"
+            placeholder="Choose a username"
+            autocomplete="username"
+            class="form-input"
+            [class.error]="regForm.get('userName')?.invalid && regForm.get('userName')?.touched || usernameError">
+          </ion-input>
+          <!-- Username validation indicator -->
+          <div class="username-indicator">
+            <ion-spinner *ngIf="usernameChecking" name="crescent" size="small"></ion-spinner>
+            <ion-icon *ngIf="usernameAvailable === true && !usernameChecking" name="checkmark-circle" class="success-icon"></ion-icon>
+            <ion-icon *ngIf="usernameAvailable === false && !usernameChecking" name="close-circle" class="error-icon"></ion-icon>
+          </div>
+        </div>
+        <div *ngIf="regForm.get('userName')?.invalid && regForm.get('userName')?.touched" 
+             class="error-message">
+          Username is required
+        </div>
+        <div *ngIf="usernameError" class="error-message">
+          {{ usernameError }}
+        </div>
+        <div *ngIf="usernameAvailable === true && !usernameChecking" class="success-message">
+          ✓ Username is available
+        </div>
       </div>
 
+      <!-- Full Name Field -->
+      <div class="form-group">
+        <label class="form-label" for="displayName">Full Name</label>
+        <div class="input-container">
+          <ion-icon name="id-card-outline" class="input-icon"></ion-icon>
+          <ion-input
+            id="displayName"
+            formControlName="displayName"
+            placeholder="Enter your full name"
+            autocomplete="name"
+            class="form-input"
+            [class.error]="regForm.get('displayName')?.invalid && regForm.get('displayName')?.touched">
+          </ion-input>
+        </div>
+        <div *ngIf="regForm.get('displayName')?.invalid && regForm.get('displayName')?.touched" 
+             class="error-message">
+          Full name is required
+        </div>
+      </div>
+
+      <!-- Email Field -->
+      <div class="form-group">
+        <label class="form-label" for="email">Email Address</label>
+        <div class="input-container">
+          <ion-icon name="mail-outline" class="input-icon"></ion-icon>
+          <ion-input
+            id="email"
+            formControlName="email"
+            type="email"
+            placeholder="Enter your email address"
+            autocomplete="email"
+            class="form-input"
+            [class.error]="regForm.get('email')?.invalid && regForm.get('email')?.touched">
+          </ion-input>
+        </div>
+        <div *ngIf="regForm.get('email')?.invalid && regForm.get('email')?.touched" 
+             class="error-message">
+          <span *ngIf="regForm.get('email')?.errors?.['required']">Email is required</span>
+          <span *ngIf="regForm.get('email')?.errors?.['email']">Please enter a valid email</span>
+        </div>
+      </div>
+
+      <!-- Password Field -->
+      <div class="form-group">
+        <label class="form-label" for="password">Password</label>
+        <div class="input-container">
+          <ion-icon name="lock-closed-outline" class="input-icon"></ion-icon>
+          <ion-input
+            id="password"
+            formControlName="password"
+            type="password"
+            placeholder="Create a password"
+            autocomplete="new-password"
+            class="form-input"
+            [class.error]="regForm.get('password')?.invalid && regForm.get('password')?.touched">
+          </ion-input>
+        </div>
+        <div *ngIf="regForm.get('password')?.invalid && regForm.get('password')?.touched" 
+             class="error-message">
+          <span *ngIf="regForm.get('password')?.errors?.['required']">Password is required</span>
+          <span *ngIf="regForm.get('password')?.errors?.['minlength']">Password must be at least 6 characters</span>
+        </div>
+      </div>
+
+      <!-- Confirm Password Field -->
+      <div class="form-group">
+        <label class="form-label" for="confirmPassword">Confirm Password</label>
+        <div class="input-container">
+          <ion-icon name="checkmark-done-outline" class="input-icon"></ion-icon>
+          <ion-input
+            id="confirmPassword"
+            formControlName="confirmPassword"
+            type="password"
+            placeholder="Confirm your password"
+            autocomplete="new-password"
+            class="form-input"
+            [class.error]="regForm.get('confirmPassword')?.invalid && regForm.get('confirmPassword')?.touched">
+          </ion-input>
+        </div>
+        <div *ngIf="regForm.get('confirmPassword')?.invalid && regForm.get('confirmPassword')?.touched" 
+             class="error-message">
+          Please confirm your password
+        </div>
+        <div *ngIf="regForm.get('password')?.value && regForm.get('confirmPassword')?.value && regForm.get('password')?.value !== regForm.get('confirmPassword')?.value" 
+             class="error-message">
+          Passwords do not match
+        </div>
+      </div>
+
+      <!-- Register Button -->
       <ion-button
         expand="block"
         type="submit"
         class="register-btn"
-        [disabled]="regForm.invalid || loading">Sign Up</ion-button>
+        [disabled]="regForm.invalid || loading || usernameAvailable === false || usernameChecking">
+        <ion-spinner *ngIf="loading" name="crescent" size="small"></ion-spinner>
+        <span *ngIf="!loading">Create Account</span>
+        <span *ngIf="loading">Creating Account...</span>
+      </ion-button>
 
-      <ion-text color="danger" *ngIf="errorMsg">{{ errorMsg }}</ion-text>
-      <div class="register-footer">
-        Already have an account? <a routerLink="/login"><b>Sign in</b></a>
+      <!-- Error Message -->
+      <div *ngIf="errorMsg" class="error-container">
+        <ion-icon name="warning-outline"></ion-icon>
+        <span>{{ errorMsg }}</span>
+      </div>
+
+      <!-- Sign In Link -->
+      <div class="signin-link">
+        <p>Already have an account? <a routerLink="/login">Sign in here</a></p>
       </div>
     </form>
   </div>

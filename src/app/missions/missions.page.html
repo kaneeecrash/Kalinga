@@ -63,24 +63,18 @@
   </div>
 
   <ion-list *ngIf="filtered.length; else empty">
-    <div class="mission-container" *ngFor="let m of filtered; trackBy: trackById">
-      <ion-item lines="none">
-        <ion-label>
-          <h3 class="date">{{ m.date | date:'MMMM d, y' }}</h3>
-          <h2 class="title">{{ m.missionName }} — {{ m.orgName }}</h2>
-          <p class="icon"><ion-icon name="location-outline"></ion-icon>{{ m.location }}</p>
-          <p class="icon"><ion-icon name="time-outline"></ion-icon>{{ formatTimeTo12Hour(m.startTime) }} - {{ formatTimeTo12Hour(m.endTime) }}</p>
-          <p>👥 Volunteers Needed: {{ m.volunteers }}</p>
-        </ion-label>
-      </ion-item>
-
-      <!-- Actions for each mission -->
-      <div class="actions">
-        <ion-button size="small" fill="clear" color="success" (click)="joinMission(m.id)">
-          I AM IN
-        </ion-button>
-        <ion-button size="small" fill="clear" [routerLink]="['/mission', m.id]">
-          DETAILS
+    <div class="mission-card" *ngFor="let m of filtered; trackBy: trackById" [ngClass]="{'open': m.status?.toLowerCase() === 'open'}" (click)="goToMissionDetail(m.id)">
+      <div class="mission-type">{{ m.missionName }}</div>
+      <div class="mission-details">📍{{ m.location }}</div>
+      <div class="mission-datetime">⏰{{ m.date | date:'MMMM d, y' }} | {{ formatTimeTo12Hour(m.startTime) }} - {{ formatTimeTo12Hour(m.endTime) }}</div>
+      <div class="mission-details">volunteers needed: {{ m.volunteers }}</div>
+      <div class="mission-details">{{ m.orgName }}</div>
+      <div class="mission-actions">
+        <ion-button size="small" 
+                    [color]="getButtonColor(m)" 
+                    [disabled]="!canJoinMission(m)"
+                    (click)="handleMissionAction(m, $event)">
+          {{ getButtonText(m) }}
         </ion-button>
       </div>
     </div>

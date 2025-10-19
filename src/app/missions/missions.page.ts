@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { FirestoreService } from '../services/firestore.service';
-import { Auth } from '@angular/fire/auth';
+import { Auth, authState, User } from '@angular/fire/auth';
+import { switchMap, of, from, map, Observable, forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-missions',
@@ -21,18 +23,33 @@ export class MissionsPage implements OnInit {
   sortOrder: 'desc' | 'asc' = 'desc';
   // Overlay state
   filtersOpen = false;
+  // User tracking
+  user: { userName?: string; displayName?: string; photoURL?: string; uid?: string } | null = null;
+  userMissionStatus: Map<string, string> = new Map(); // Track user's status for each mission
 
   constructor(
     private firestoreService: FirestoreService,
-    private auth: Auth
+    private auth: Auth,
+    private router: Router
   ) {}
 
   ngOnInit() {
+    this.loadUserData();
     this.firestoreService.getMissions().subscribe((res: any[]) => {
       console.log('Fetched missions:', res); // 🔎 Debug
 
+      // Filter out past missions first
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Start of today
+      
+      const upcomingMissions = res.filter(mission => {
+        const missionDate = new Date(mission.date);
+        missionDate.setHours(0, 0, 0, 0); // Start of mission date
+        return missionDate >= today; // Only include missions from today onwards
+      });
+
       // Sort by date first, then by duration if dates are the same
-      this.missions = res.sort((a, b) => {
+      this.missions = upcomingMissions.sort((a, b) => {
         const dateA = new Date(a.date); // Convert to Date objects
         const dateB = new Date(b.date);
 
@@ -46,6 +63,9 @@ export class MissionsPage implements OnInit {
 
         return durationB - durationA; // Sort longest duration first
       });
+      
+      // Load user's status for each mission
+      this.loadUserMissionStatuses();
       this.applyFilters();
     });
   }
@@ -82,17 +102,20 @@ export class MissionsPage implements OnInit {
     return time24; // Return original if format is not recognized
   }
 
-  async joinMission(missionId: string) {
+  joinMission(missionId: string): Observable<void> {
     const user = this.auth.currentUser;
     if (user) {
-      await this.firestoreService.joinMission(
+      return this.firestoreService.applyToMission(
         missionId,
         user.uid,
         user.displayName || user.email || 'Volunteer'
       );
-      alert('You joined this mission!');
     } else {
-      alert('Please login first');
+      return of(null).pipe(
+        switchMap(() => {
+          throw new Error('User not authenticated');
+        })
+      );
     }
   }
 
@@ -154,5 +177,148 @@ export class MissionsPage implements OnInit {
     // If multiple values come in (string[]), take the first one
     this.filterDate = Array.isArray(value) ? value[0] : value;
     this.applyFilters();
+  }
+
+  // Load user data
+  private loadUserData() {
+    authState(this.auth).pipe(
+      switchMap((user: User | null) => {
+        if (user) {
+          // Now getUserByUID returns an Observable, so we can use it directly
+          return this.firestoreService.getUserByUID(user.uid).pipe(
+            map(profile => {
+              if (profile) {
+                this.user = {
+                  userName: profile.userName || profile.displayName || 'User',
+                  displayName: profile.displayName || profile.userName || 'User',
+                  photoURL: profile.photoURL || '',
+                  uid: user.uid
+                };
+                console.log('Mission page user data loaded:', this.user);
+              } else {
+                this.user = { userName: 'User', displayName: 'User', photoURL: '', uid: user.uid };
+              }
+              return null;
+            })
+          );
+        } else {
+          this.user = null;
+          return of(null);
+        }
+      })
+    ).subscribe({
+      error: (error) => {
+        console.error('Error loading user data:', error);
+        this.user = null;
+      }
+    });
+  }
+
+  // Navigate to mission detail page
+  goToMissionDetail(missionId: string) {
+    this.router.navigate(['/mission', missionId]);
+  }
+
+  // Get button text based on user's status
+  getButtonText(mission: any): string {
+    const status = this.userMissionStatus.get(mission.id);
+    const missionStatus = mission.status?.toLowerCase();
+    
+    if (missionStatus !== 'open') {
+      return 'Closed';
+    }
+    
+    switch (status) {
+      case 'approved':
+      case 'accepted':
+        return 'Joined ✓';
+      case 'rejected':
+        return 'Rejected';
+      case 'pending':
+        return 'Pending...';
+      default:
+        return 'Join';
+    }
+  }
+
+  // Get button color based on user's status
+  getButtonColor(mission: any): string {
+    const status = this.userMissionStatus.get(mission.id);
+    const missionStatus = mission.status?.toLowerCase();
+    
+    if (missionStatus !== 'open') {
+      return 'medium';
+    }
+    
+    switch (status) {
+      case 'approved':
+      case 'accepted':
+        return 'success';
+      case 'rejected':
+        return 'danger';
+      case 'pending':
+        return 'warning';
+      default:
+        return 'success';
+    }
+  }
+
+  // Check if user can join mission
+  canJoinMission(mission: any): boolean {
+    const status = this.userMissionStatus.get(mission.id);
+    const missionStatus = mission.status?.toLowerCase();
+    
+    return missionStatus === 'open' && !status;
+  }
+
+  // Handle mission action (join or show status)
+  handleMissionAction(mission: any, event: Event) {
+    event.stopPropagation(); // Prevent card click
+    
+    const status = this.userMissionStatus.get(mission.id);
+    
+    if (!status && mission.status?.toLowerCase() === 'open') {
+      this.joinMission(mission.id).subscribe({
+        next: () => {
+          alert('You have applied to this mission! Your application is pending approval.');
+          // Refresh status after joining
+          this.loadUserMissionStatuses();
+        },
+        error: (error) => {
+          console.error('Error applying to mission:', error);
+          alert('Failed to apply to mission. Please try again.');
+        }
+      });
+    }
+    // If user has a status, clicking the button doesn't do anything
+  }
+
+  // Load user's mission statuses
+  private loadUserMissionStatuses() {
+    if (!this.user || !this.user.uid) return;
+    
+    // Use forkJoin to combine all observables
+    const missionStatusObservables = this.missions
+      .filter(mission => mission.id)
+      .map(mission => 
+        this.firestoreService.getUserMissionStatus(mission.id, this.user!.uid!).pipe(
+          map(status => ({ missionId: mission.id, status }))
+        )
+      );
+
+    if (missionStatusObservables.length > 0) {
+      forkJoin(missionStatusObservables).subscribe({
+        next: (results) => {
+          results.forEach(({ missionId, status }) => {
+            if (missionId) {
+              this.userMissionStatus.set(missionId, status);
+            }
+          });
+        },
+        error: (error) => {
+          console.error('Error loading user mission statuses:', error);
+        }
+      });
+    }
   }
 }

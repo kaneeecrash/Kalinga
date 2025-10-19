@@ -2,7 +2,9 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NavController, ToastController } from '@ionic/angular';
 import { FirestoreService } from '../services/firestore.service';
-import { Auth } from '@angular/fire/auth';
+import { Auth, authState } from '@angular/fire/auth';
+import { switchMap, map, catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-profile-info',
@@ -36,51 +38,69 @@ export class ProfileInfoPage implements OnInit {
     this.today = now.toISOString().substring(0, 10);
   }
 
-  async ngOnInit() {
-    try {
-      this.isLoading = true;
-      const currUser = this.auth.currentUser;
-      if (!currUser) {
-        this.presentToast('Not authenticated.');
-        this.navCtrl.back();
-        return;
+  ngOnInit() {
+    this.isLoading = true;
+    
+    // Use authState to get current user
+    authState(this.auth).pipe(
+      switchMap(user => {
+        if (!user) {
+          this.presentToast('Not authenticated.');
+          this.navCtrl.back();
+          return of(null);
+        }
+        
+        this.userUid = user.uid;
+        return this.loadUser();
+      }),
+      catchError(error => {
+        console.error('Error in ngOnInit:', error);
+        this.presentToast('Failed to initialize profile page.');
+        return of(null);
+      })
+    ).subscribe({
+      next: () => {
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Error loading user:', error);
+        this.isLoading = false;
+        this.presentToast('Failed to initialize profile page.');
       }
-      this.userUid = currUser.uid;
-      await this.loadUser();
-    } catch (error) {
-      console.error('Error in ngOnInit:', error);
-      this.presentToast('Failed to initialize profile page.');
-    } finally {
-      this.isLoading = false;
-    }
+    });
   }
 
   // Load user from FirestoreService
-  async loadUser() {
-    if (!this.userUid) return;
+  loadUser() {
+    if (!this.userUid) return of(null);
     
-    try {
-      this.user = await this.firestoreService.getUserByUID(this.userUid);
-      
-      if (!this.user) {
-        this.presentToast('User profile not found.');
-        this.navCtrl.back();
-        return;
-      }
-      
-      // Load avatar from localStorage first, then fallback to user.photoURL
-      const localAvatar = this.loadAvatarFromLocalStorage();
-      this.avatarPreview = localAvatar || this.user.photoURL || '';
-      
-      // Initialize form after user data is loaded
-      this.initializeForm();
-      
-      console.log('User loaded successfully:', this.user);
-    } catch (error) {
-      console.error('Error loading user:', error);
-      this.presentToast('Failed to load user profile.');
-      this.user = null; // Ensure user is null on error
-    }
+    return this.firestoreService.getUserByUID(this.userUid).pipe(
+      map(user => {
+        if (!user) {
+          this.presentToast('User profile not found.');
+          this.navCtrl.back();
+          return null;
+        }
+        
+        this.user = user;
+        
+        // Load avatar from localStorage first, then fallback to user.photoURL
+        const localAvatar = this.loadAvatarFromLocalStorage();
+        this.avatarPreview = localAvatar || this.user.photoURL || '';
+        
+        // Initialize form after user data is loaded
+        this.initializeForm();
+        
+        console.log('User loaded successfully:', this.user);
+        return user;
+      }),
+      catchError(error => {
+        console.error('Error loading user:', error);
+        this.presentToast('Failed to load user profile.');
+        this.user = null; // Ensure user is null on error
+        return of(null);
+      })
+    );
   }
 
   private initializeForm() {
