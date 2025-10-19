@@ -1,18 +1,20 @@
 // Modern Register Page Styling
 .register-bg {
-  --ion-background-color: #f7f9fa;
-  background: #f7f9fa;
-  min-height: 100vh;
+  --ion-background-color: transparent;
+  background: transparent;
+  height: 100vh;
+  overflow: hidden;
 }
 
 // Header Section
 .register-header {
   position: relative;
-  height: 200px;
+  height: 280px;
   overflow: hidden;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
+  padding-bottom: 20px;
   
   .header-background {
     position: absolute;
@@ -20,6 +22,7 @@
     left: 0;
     right: 0;
     bottom: 0;
+    opacity: 0.2;
     
     .header-svg {
       width: 100%;
@@ -39,29 +42,47 @@
     align-items: center;
     justify-content: center;
     
+    .logo-container {
+      margin-bottom: 12px;
+      
+      .kalinga-logo {
+        height: 40px;
+        width: auto;
+        max-width: 120px;
+        object-fit: contain;
+        filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.1));
+        transition: transform 0.3s ease;
+        
+        &:hover {
+          transform: scale(1.05);
+        }
+      }
+    }
+    
     .welcome-icon {
       margin-bottom: 16px;
       
       ion-icon {
         font-size: 48px;
-        color: white;
-        opacity: 0.9;
+        color: black;
+        opacity: 1;
       }
     }
     
     .welcome-title {
       font-size: 2rem;
-      font-weight: 700;
-      color: white;
+      font-weight: 800;
+      color: black;
       margin: 0 0 8px 0;
-      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      letter-spacing: 0.5px;
     }
     
     .welcome-subtitle {
       font-size: 1rem;
-      color: rgba(255, 255, 255, 0.9);
+      color: black;
       margin: 0;
-      font-weight: 400;
+      font-weight: 600;
+      opacity: 1;
     }
   }
 }
@@ -70,20 +91,26 @@
 .register-card {
   position: relative;
   z-index: 2;
-  margin: -40px auto 0 auto;
-  max-width: 400px;
+  margin: 20px auto;
+  max-width: 420px;
   width: 90vw;
-  background: white;
-  border-radius: 24px;
-  box-shadow: 0 8px 32px rgba(0, 100, 0, 0.15);
-  padding: 32px 24px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 28px;
+  box-shadow: 0 20px 40px rgba(0, 100, 0, 0.08), 0 8px 16px rgba(0, 100, 0, 0.04);
+  border: 2px solid rgba(144, 238, 144, 0.6);
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 // Form Styling
 .register-form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
 }
 
 .form-group {
@@ -112,24 +139,27 @@
     
     .form-input {
       width: 100%;
-      padding: 16px 16px 16px 48px;
-      border: 2px solid #e5e7eb;
-      border-radius: 12px;
+      padding: 14px 16px 14px 48px;
+      border: 1px solid rgba(0, 100, 0, 0.1);
+      border-radius: 16px;
       font-size: 1rem;
       color: #1f2937;
-      background: #f9fafb;
-      transition: all 0.2s ease;
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
       outline: none;
       
       &:focus {
         border-color: #006400;
-        background: white;
-        box-shadow: 0 0 0 3px rgba(0, 100, 0, 0.1);
+        background: rgba(255, 255, 255, 0.95);
+        box-shadow: 0 0 0 4px rgba(0, 100, 0, 0.08);
+        transform: translateY(-1px);
       }
       
       &.error {
         border-color: #ef4444;
-        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.08);
       }
     }
     
@@ -176,19 +206,36 @@
 
 // Register Button
 .register-btn {
-  --background: linear-gradient(135deg, #006400, #004d00);
+  --background: linear-gradient(135deg, #006400 0%, #004d00 100%);
   --color: white;
-  --border-radius: 12px;
-  --box-shadow: 0 4px 20px rgba(0, 100, 0, 0.3);
+  --border-radius: 16px;
+  --box-shadow: 0 8px 24px rgba(0, 100, 0, 0.2);
   height: 48px;
   font-weight: 600;
   font-size: 1rem;
-  margin-top: 8px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  margin-top: 12px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+  }
   
   &:hover:not(:disabled) {
     transform: translateY(-2px);
-    --box-shadow: 0 8px 30px rgba(0, 100, 0, 0.4);
+    --box-shadow: 0 12px 32px rgba(0, 100, 0, 0.3);
+    
+    &::before {
+      left: 100%;
+    }
   }
   
   &:disabled {
@@ -201,15 +248,17 @@
 .error-container {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 16px;
-  background: #fef2f2;
-  border: 2px solid #fecaca;
-  border-radius: 12px;
+  gap: 12px;
+  padding: 16px 20px;
+  background: rgba(254, 242, 242, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 16px;
   color: #dc2626;
   font-size: 0.9rem;
   font-weight: 500;
-  margin-top: 8px;
+  margin-top: 12px;
   animation: slideIn 0.3s ease-out;
   
   ion-icon {
@@ -236,7 +285,7 @@
 // Sign In Link
 .signin-link {
   text-align: center;
-  margin-top: 8px;
+  margin-top: 16px;
   
   p {
     font-size: 0.95rem;
@@ -247,11 +296,26 @@
       color: #006400;
       text-decoration: none;
       font-weight: 600;
-      transition: color 0.2s ease;
+      transition: all 0.3s ease;
+      position: relative;
+      
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: #006400;
+        transition: width 0.3s ease;
+      }
       
       &:hover {
         color: #004d00;
-        text-decoration: underline;
+        
+        &::after {
+          width: 100%;
+        }
       }
     }
   }
@@ -260,9 +324,14 @@
 // Responsive Design
 @media (max-width: 480px) {
   .register-header {
-    height: 180px;
+    height: 240px;
     
     .header-content {
+      .logo-container .kalinga-logo {
+        height: 35px;
+        max-width: 100px;
+      }
+      
       .welcome-icon ion-icon {
         font-size: 40px;
       }
@@ -278,9 +347,10 @@
   }
   
   .register-card {
-    margin: -30px auto 0 auto;
+    margin: 15px auto;
     width: 95vw;
     padding: 24px 20px;
+    max-width: 380px;
   }
   
   .register-form {

@@ -1,108 +1,177 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/missions"></ion-back-button>
+    </ion-buttons>
     <ion-title>{{ mission?.missionName || 'Mission Details' }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" (click)="shareMission()">
+        <ion-icon name="share-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true" *ngIf="mission as m">
-  <div class="poster">
-    <img [src]="m.posterUrl || 'assets/mission.png'" alt="Poster" />
+  <!-- Hero Section with Mission Image -->
+  <div class="hero-section">
+    <div class="mission-image">
+      <img [src]="m.posterUrl || 'assets/mission.png'" alt="Mission Poster" />
+      <div class="image-overlay">
+        <div class="mission-status-badge" [ngClass]="getMissionStatusClass(m)">
+          <ion-icon [name]="getMissionStatusIcon(m)"></ion-icon>
+          <span>{{ getMissionStatusText(m) }}</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Mission Header Info -->
+    <div class="mission-header">
+      <h1 class="mission-title">{{ m.missionName }}</h1>
+      <p class="mission-tagline">{{ m.description || m.tagline || 'Join us in making a meaningful difference in our community' }}</p>
+      
+      <!-- Quick Stats -->
+      <div class="quick-stats">
+        <div class="stat-item">
+          <ion-icon name="calendar-outline"></ion-icon>
+          <div class="stat-content">
+            <span class="stat-value">{{ m.date | date:'MMMM d, y' }}</span>
+            <span class="stat-label">Date</span>
+          </div>
+        </div>
+        <div class="stat-item">
+          <ion-icon name="time-outline"></ion-icon>
+          <div class="stat-content">
+            <span class="stat-value">{{ formatTimeTo12Hour(m.start_time || m.startTime) }} - {{ formatTimeTo12Hour(m.end_time || m.endTime) }}</span>
+            <span class="stat-label">Time</span>
+          </div>
+        </div>
+        <div class="stat-item">
+          <ion-icon name="people-outline"></ion-icon>
+          <div class="stat-content">
+            <span class="stat-value">{{ m.volunteers }}</span>
+            <span class="stat-label">Volunteers Needed</span>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <div class="ion-padding">
-    <h2 class="title">{{ m.missionName }}</h2>
-    <p class="subtitle">{{ m.tagline }}</p>
-
-    <div class="detail"><ion-icon name="location"></ion-icon> {{ m.location }}</div>
-    <div class="detail"><ion-icon name="calendar"></ion-icon> {{ m.date | date:'MMMM d, y' }}</div>
-    <div class="detail"><ion-icon name="time"></ion-icon> {{ formatTimeTo12Hour(m.start_time || m.startTime) }} - {{ formatTimeTo12Hour(m.end_time || m.endTime) }}</div>
-    <div class="detail"><ion-icon name="people"></ion-icon> Volunteers needed: {{ m.volunteers }}</div>
-
-    <!-- Application Status Section -->
-    <div class="application-status" *ngIf="user">
-      <ion-chip [color]="getStatusColor()">
-        <ion-icon name="person"></ion-icon>
-        <ion-label>{{ getStatusText() }}</ion-label>
-      </ion-chip>
+  <!-- Application Status Card -->
+  <div class="status-card" *ngIf="user">
+    <div class="status-content">
+      <div class="status-icon" [ngClass]="getApplicationStatusClass()">
+        <ion-icon [name]="getApplicationStatusIcon()"></ion-icon>
+      </div>
+      <div class="status-info">
+        <h3>{{ getStatusText() }}</h3>
+        <p>{{ getStatusDescription() }}</p>
+      </div>
     </div>
+  </div>
 
-    <!-- Action Buttons -->
-    <div class="action-buttons">
-      <ion-button 
-        expand="block" 
-        color="success" 
-        *ngIf="canJoin()"
-        (click)="joinMission()">
-        Join Now
-      </ion-button>
-      
-      <ion-button 
-        expand="block" 
-        color="warning" 
-        *ngIf="applicationStatus === 'pending'"
-        disabled>
-        Application Pending
-      </ion-button>
-      
-      <ion-button 
-        expand="block" 
-        color="success" 
-        *ngIf="applicationStatus === 'approved'"
-        disabled>
-        ✓ You're a Volunteer!
-      </ion-button>
-      
-      <ion-button 
-        expand="block" 
-        color="danger" 
-        *ngIf="applicationStatus === 'rejected'"
-        disabled>
-        Application Rejected
-      </ion-button>
-      
-      <ion-button 
-        expand="block" 
-        color="medium" 
-        *ngIf="(m.status || '').toLowerCase() !== 'open'">
-        Mission Closed
-      </ion-button>
-    </div>
+  <!-- Action Button -->
+  <div class="action-section">
+    <ion-button 
+      expand="block" 
+      [color]="getActionButtonColor()" 
+      [disabled]="!canJoin() && applicationStatus !== 'not_applied'"
+      (click)="joinMission()"
+      class="action-button">
+      <ion-icon [name]="getActionButtonIcon()"></ion-icon>
+      <span>{{ getActionButtonText() }}</span>
+    </ion-button>
+  </div>
 
-    <div class="section">
-      <div class="section-title">Services</div>
-      <div class="chips">
-        <ion-chip *ngFor="let s of m.services">{{ s }}</ion-chip>
+  <!-- Mission Details Cards -->
+  <div class="details-container">
+    <!-- Location Card -->
+    <div class="detail-card">
+      <div class="card-header">
+        <ion-icon name="location-outline"></ion-icon>
+        <h3>Location</h3>
+      </div>
+      <div class="card-content">
+        <p class="location-text">{{ m.location }}</p>
+        <div id="mission-map" class="mission-map"></div>
       </div>
     </div>
 
-    <div class="section">
-      <div class="section-title">Map</div>
-      <div id="mission-map"></div>
+    <!-- Services Card -->
+    <div class="detail-card" *ngIf="m.services && m.services.length">
+      <div class="card-header">
+        <ion-icon name="medical-outline"></ion-icon>
+        <h3>Services Provided</h3>
+      </div>
+      <div class="card-content">
+        <div class="services-grid">
+          <div class="service-item" *ngFor="let service of m.services">
+            <ion-icon [name]="getServiceIcon(service)"></ion-icon>
+            <span>{{ service }}</span>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="section">
-      <div class="section-title">Organizer</div>
-      <p><b>{{ m.orgName }}</b></p>
-      <p>Contact: {{ m.orgContact }}</p>
-      <p>Email: {{ m.orgEmail }}</p>
+    <!-- Organization Card -->
+    <div class="detail-card">
+      <div class="card-header">
+        <ion-icon name="business-outline"></ion-icon>
+        <h3>Organizer</h3>
+      </div>
+      <div class="card-content">
+        <div class="organization-info">
+          <div class="org-avatar">
+            <ion-icon name="business-outline"></ion-icon>
+          </div>
+          <div class="org-details">
+            <h4>{{ m.orgName }}</h4>
+            <p *ngIf="m.orgContact">Contact: {{ m.orgContact }}</p>
+            <p *ngIf="m.orgEmail">Email: {{ m.orgEmail }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mission Description Card -->
+    <div class="detail-card" *ngIf="m.description">
+      <div class="card-header">
+        <ion-icon name="document-text-outline"></ion-icon>
+        <h3>About This Mission</h3>
+      </div>
+      <div class="card-content">
+        <p class="mission-description">{{ m.description }}</p>
+      </div>
     </div>
 
     <!-- Mission Chat Access (if approved) -->
-    <div class="section" *ngIf="applicationStatus === 'approved'">
-      <div class="section-title">Mission Communication</div>
-      <ion-button expand="block" color="primary" fill="outline">
-        <ion-icon name="chatbubbles"></ion-icon>
-        Access Mission Chat
-      </ion-button>
+    <div class="detail-card" *ngIf="applicationStatus === 'approved'">
+      <div class="card-header">
+        <ion-icon name="chatbubbles-outline"></ion-icon>
+        <h3>Mission Communication</h3>
+      </div>
+      <div class="card-content">
+        <p>Stay connected with your fellow volunteers and mission coordinators.</p>
+        <ion-button expand="block" color="primary" fill="outline" class="chat-button">
+          <ion-icon name="chatbubbles-outline"></ion-icon>
+          <span>Access Mission Chat</span>
+        </ion-button>
+      </div>
     </div>
   </div>
 </ion-content>
 
 <!-- Loading State -->
 <ion-content *ngIf="isLoading">
-  <div class="ion-padding">
-    <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text>
-    <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
-    <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+  <div class="loading-container">
+    <div class="loading-skeleton">
+      <ion-skeleton-text animated class="skeleton-image"></ion-skeleton-text>
+      <div class="skeleton-content">
+        <ion-skeleton-text animated class="skeleton-title"></ion-skeleton-text>
+        <ion-skeleton-text animated class="skeleton-subtitle"></ion-skeleton-text>
+        <ion-skeleton-text animated class="skeleton-card"></ion-skeleton-text>
+        <ion-skeleton-text animated class="skeleton-card-small"></ion-skeleton-text>
+      </div>
+    </div>
   </div>
 </ion-content>

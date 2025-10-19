@@ -321,4 +321,76 @@ export class MissionsPage implements OnInit {
       });
     }
   }
+
+  // New methods for redesigned UI
+  getTotalVolunteers(): number {
+    return this.missions.reduce((total, mission) => total + (mission.volunteers || 0), 0);
+  }
+
+  toggleServiceFilter(service: string) {
+    if (this.selectedServices.includes(service)) {
+      this.selectedServices = this.selectedServices.filter(s => s !== service);
+    } else {
+      this.selectedServices = [...this.selectedServices, service];
+    }
+    this.applyFilters();
+  }
+
+  getServiceIcon(service: string): string {
+    const iconMap: { [key: string]: string } = {
+      'Medical': 'medical-outline',
+      'Dental': 'medical-outline',
+      'Surgical': 'medical-outline',
+      'Blood Donation': 'heart-outline',
+      'Education': 'school-outline',
+      'Community': 'people-outline',
+      'Environmental': 'leaf-outline',
+      'Emergency': 'warning-outline'
+    };
+    return iconMap[service] || 'help-outline';
+  }
+
+  getStatusClass(mission: any): string {
+    const status = mission.status?.toLowerCase();
+    const userStatus = this.userMissionStatus.get(mission.id);
+    
+    if (status !== 'open') return 'status-closed';
+    if (userStatus === 'approved' || userStatus === 'accepted') return 'status-approved';
+    if (userStatus === 'pending') return 'status-pending';
+    if (userStatus === 'rejected') return 'status-rejected';
+    return 'status-open';
+  }
+
+  getStatusIcon(mission: any): string {
+    const status = mission.status?.toLowerCase();
+    const userStatus = this.userMissionStatus.get(mission.id);
+    
+    if (status !== 'open') return 'lock-closed-outline';
+    if (userStatus === 'approved' || userStatus === 'accepted') return 'checkmark-circle-outline';
+    if (userStatus === 'pending') return 'time-outline';
+    if (userStatus === 'rejected') return 'close-circle-outline';
+    return 'radio-button-on-outline';
+  }
+
+  getStatusText(mission: any): string {
+    const status = mission.status?.toLowerCase();
+    const userStatus = this.userMissionStatus.get(mission.id);
+    
+    if (status !== 'open') return 'Closed';
+    if (userStatus === 'approved' || userStatus === 'accepted') return 'Joined';
+    if (userStatus === 'pending') return 'Pending';
+    if (userStatus === 'rejected') return 'Rejected';
+    return 'Open';
+  }
+
+  getActionIcon(mission: any): string {
+    const status = this.userMissionStatus.get(mission.id);
+    const missionStatus = mission.status?.toLowerCase();
+    
+    if (missionStatus !== 'open') return 'lock-closed-outline';
+    if (status === 'approved' || status === 'accepted') return 'checkmark-outline';
+    if (status === 'pending') return 'time-outline';
+    if (status === 'rejected') return 'close-outline';
+    return 'add-outline';
+  }
 }

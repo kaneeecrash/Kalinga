@@ -1,13 +1,368 @@
-<ion-header [translucent]="true">
+<ion-content class="donations-bg" fullscreen>
+  <!-- Header Section -->
+  <div class="donations-header">
+    <div class="header-content">
+      <div class="header-icon">
+        <ion-icon name="heart-outline"></ion-icon>
+      </div>
+      <div class="header-text">
+        <h1>Donation Drives</h1>
+        <p>Support causes that matter to our community</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter and Search -->
+  <div class="filter-section">
+    <div class="search-bar">
+      <ion-searchbar 
+        placeholder="Search donation drives..."
+        [(ngModel)]="searchQuery"
+        (ionInput)="onSearchChange($event)"
+        class="custom-searchbar">
+      </ion-searchbar>
+    </div>
+    
+    <div class="filter-tabs">
+      <ion-segment [(ngModel)]="selectedCategory" (ionChange)="onCategoryChange($event)" class="custom-segment">
+        <ion-segment-button value="all">
+          <ion-label>All</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="urgent">
+          <ion-label>Urgent</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="medical">
+          <ion-label>Medical</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="education">
+          <ion-label>Education</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="disaster">
+          <ion-label>Disaster</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </div>
+  </div>
+
+  <!-- Donation Drives List -->
+  <div class="drives-list">
+    <div class="drives-header">
+      <h2>Active Donation Drives</h2>
+      <div class="drives-count">{{ filteredDrives.length }} drives</div>
+    </div>
+
+    <div class="drives-container">
+      <div class="drive-card" 
+           *ngFor="let drive of filteredDrives" 
+           (click)="viewDriveDetails(drive)"
+           [class.urgent]="drive.isUrgent">
+        
+        <!-- Drive Header -->
+        <div class="drive-header">
+          <div class="organization-info">
+            <div class="org-avatar">
+              <img [src]="drive.organization.avatar || 'assets/avatar.png'" alt="Organization" />
+            </div>
+            <div class="org-details">
+              <div class="org-name">{{ drive.organization.name }}</div>
+              <div class="org-verified" *ngIf="drive.organization.isVerified">
+                <ion-icon name="checkmark-circle"></ion-icon>
+                Verified Organization
+              </div>
+            </div>
+          </div>
+          <div class="drive-status" [class]="drive.status">
+            {{ drive.status | titlecase }}
+          </div>
+        </div>
+
+        <!-- Drive Content -->
+        <div class="drive-content">
+          <h3 class="drive-title">{{ drive.title }}</h3>
+          <p class="drive-description">{{ drive.description }}</p>
+          
+          <!-- Drive Tags -->
+          <div class="drive-tags">
+            <span class="tag" [class]="drive.category">{{ drive.category | titlecase }}</span>
+            <span class="tag urgent" *ngIf="drive.isUrgent">Urgent</span>
+            <span class="tag featured" *ngIf="drive.isFeatured">Featured</span>
+          </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="drive-progress">
+          <div class="progress-info">
+            <span class="progress-label">Progress</span>
+            <span class="progress-percentage">{{ getProgressPercentage(drive) }}%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="getProgressPercentage(drive)"></div>
+          </div>
+          <div class="progress-amounts">
+            <span class="raised">₱{{ drive.amountRaised | number }}</span>
+            <span class="target">of ₱{{ drive.targetAmount | number }} goal</span>
+          </div>
+        </div>
+
+        <!-- Drive Stats -->
+        <div class="drive-stats">
+          <div class="stat">
+            <ion-icon name="people-outline"></ion-icon>
+            <span>{{ drive.donorCount }} donors</span>
+          </div>
+          <div class="stat">
+            <ion-icon name="time-outline"></ion-icon>
+            <span>{{ getTimeRemaining(drive.endDate) }} left</span>
+          </div>
+          <div class="stat">
+            <ion-icon name="location-outline"></ion-icon>
+            <span>{{ drive.location }}</span>
+          </div>
+        </div>
+
+        <!-- Drive Actions -->
+        <div class="drive-actions">
+          <ion-button 
+            expand="block" 
+            class="donate-btn"
+            (click)="donateToDrive(drive, $event)">
+            <ion-icon name="heart" slot="start"></ion-icon>
+            Donate Now
+          </ion-button>
+          
+          <ion-button 
+            fill="outline" 
+            size="small"
+            class="share-btn"
+            (click)="shareDrive(drive, $event)">
+            <ion-icon name="share-social" slot="icon-only"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="filteredDrives.length === 0">
+    <div class="empty-icon">
+      <ion-icon name="heart-outline"></ion-icon>
+    </div>
+    <h3>No donation drives found</h3>
+    <p>Try adjusting your search or filter criteria</p>
+    <ion-button fill="outline" (click)="clearFilters()">
+      Clear Filters
+    </ion-button>
+  </div>
+
+  <!-- Quick Stats -->
+  <div class="quick-stats">
+    <h3>Community Impact</h3>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">
+          <ion-icon name="people-outline"></ion-icon>
+        </div>
+        <div class="stat-content">
+          <div class="stat-number">{{ totalLivesImpacted | number }}</div>
+          <div class="stat-label">Lives Impacted</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">
+          <ion-icon name="cash-outline"></ion-icon>
+        </div>
+        <div class="stat-content">
+          <div class="stat-number">₱{{ totalRaised | number }}</div>
+          <div class="stat-label">Total Raised</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">
+          <ion-icon name="hand-left-outline"></ion-icon>
+        </div>
+        <div class="stat-content">
+          <div class="stat-number">{{ totalDonors | number }}</div>
+          <div class="stat-label">Active Donors</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>
+
+<!-- Drive Details Modal -->
+<ion-modal [isOpen]="isDriveModalOpen" (didDismiss)="closeDriveModal()">
+  <ng-template>
+    <ion-header>
   <ion-toolbar>
-    <ion-title>donations</ion-title>
+        <ion-title>{{ selectedDrive?.title }}</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="closeDriveModal()">
+            <ion-icon name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">donations</ion-title>
-    </ion-toolbar>
-  </ion-header>
+    <ion-content class="drive-details-content" *ngIf="selectedDrive">
+      <!-- Drive Header -->
+      <div class="modal-drive-header">
+        <div class="modal-org-info">
+          <img [src]="selectedDrive.organization.avatar || 'assets/avatar.png'" alt="Organization" />
+          <div class="modal-org-details">
+            <h4>{{ selectedDrive.organization.name }}</h4>
+            <p>{{ selectedDrive.organization.description }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Drive Details -->
+      <div class="modal-drive-content">
+        <h3>{{ selectedDrive.title }}</h3>
+        <p class="drive-description">{{ selectedDrive.description }}</p>
+        
+        <!-- Detailed Progress -->
+        <div class="detailed-progress">
+          <div class="progress-header">
+            <h4>Donation Progress</h4>
+            <span class="progress-percentage">{{ getProgressPercentage(selectedDrive) }}%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="getProgressPercentage(selectedDrive)"></div>
+          </div>
+          <div class="progress-details">
+            <div class="progress-item">
+              <span class="label">Raised:</span>
+              <span class="value">₱{{ selectedDrive.amountRaised | number }}</span>
+            </div>
+            <div class="progress-item">
+              <span class="label">Goal:</span>
+              <span class="value">₱{{ selectedDrive.targetAmount | number }}</span>
+            </div>
+            <div class="progress-item">
+              <span class="label">Donors:</span>
+              <span class="value">{{ selectedDrive.donorCount }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Drive Information -->
+        <div class="drive-info">
+          <div class="info-item">
+            <ion-icon name="calendar-outline"></ion-icon>
+            <div class="info-content">
+              <span class="info-label">Start Date</span>
+              <span class="info-value">{{ selectedDrive.startDate | date:'MMM d, y' }}</span>
+            </div>
+          </div>
+          <div class="info-item">
+            <ion-icon name="calendar-outline"></ion-icon>
+            <div class="info-content">
+              <span class="info-label">End Date</span>
+              <span class="info-value">{{ selectedDrive.endDate | date:'MMM d, y' }}</span>
+            </div>
+          </div>
+          <div class="info-item">
+            <ion-icon name="location-outline"></ion-icon>
+            <div class="info-content">
+              <span class="info-label">Location</span>
+              <span class="info-value">{{ selectedDrive.location }}</span>
+            </div>
+          </div>
+          <div class="info-item">
+            <ion-icon name="people-outline"></ion-icon>
+            <div class="info-content">
+              <span class="info-label">Beneficiaries</span>
+              <span class="info-value">{{ selectedDrive.beneficiaries }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Donations -->
+        <div class="recent-donations" *ngIf="selectedDrive.recentDonations && selectedDrive.recentDonations.length > 0">
+          <h4>Recent Donations</h4>
+          <div class="donations-list">
+            <div class="donation-item" *ngFor="let donation of selectedDrive.recentDonations">
+              <div class="donor-info">
+                <div class="donor-name">{{ donation.name }}</div>
+                <div class="donation-time">{{ donation.time }}</div>
+              </div>
+              <div class="donation-amount">₱{{ donation.amount | number }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Donation Form -->
+      <div class="donation-form">
+        <h4>Make a Donation</h4>
+        
+        <!-- Quick Amounts -->
+        <div class="quick-amounts">
+          <button class="amount-btn" 
+                  *ngFor="let amount of quickAmounts"
+                  [class.selected]="selectedAmount === amount"
+                  (click)="selectAmount(amount)">
+            ₱{{ amount | number }}
+          </button>
+        </div>
+
+        <!-- Custom Amount -->
+        <div class="custom-amount">
+          <ion-input 
+            type="number" 
+            placeholder="Enter custom amount"
+            [(ngModel)]="customAmount"
+            (ionInput)="onCustomAmountChange($event)">
+          </ion-input>
+        </div>
+
+        <!-- Donor Info -->
+        <div class="donor-info-form">
+          <ion-input 
+            type="text" 
+            placeholder="Your Name"
+            [(ngModel)]="donorName">
+          </ion-input>
+          <ion-input 
+            type="email" 
+            placeholder="Email Address"
+            [(ngModel)]="donorEmail">
+          </ion-input>
+          <ion-textarea 
+            placeholder="Message (Optional)"
+            [(ngModel)]="donorMessage">
+          </ion-textarea>
+        </div>
+
+        <!-- Donation Summary -->
+        <div class="donation-summary" *ngIf="selectedAmount > 0">
+          <div class="summary-row">
+            <span>Amount:</span>
+            <span>₱{{ selectedAmount | number }}</span>
+          </div>
+          <div class="summary-row">
+            <span>Processing Fee:</span>
+            <span>₱0</span>
+          </div>
+          <div class="summary-divider"></div>
+          <div class="summary-row total">
+            <span>Total:</span>
+            <span>₱{{ selectedAmount | number }}</span>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="modal-actions">
+          <ion-button 
+            expand="block" 
+            class="donate-btn"
+            [disabled]="!canDonate()"
+            (click)="processDonation()">
+            <ion-icon name="heart" slot="start"></ion-icon>
+            Donate ₱{{ selectedAmount | number }}
+          </ion-button>
+        </div>
+      </div>
 </ion-content>
+  </ng-template>
+</ion-modal>

@@ -37,6 +37,11 @@ ion-footer {
 
 // Ensure content doesn't overlap with fixed footer
 ion-content {
-  --padding-bottom: 0px;
+  --padding-bottom: 80px; // 60px footer height + 20px extra spacing
   margin-bottom: 0px;
+}
+
+// Alternative: Use CSS to add bottom margin to the last content element
+ion-content::part(scroll) {
+  padding-bottom: 80px;
 }

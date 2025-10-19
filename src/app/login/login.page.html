@@ -1,21 +1,23 @@
 <ion-content class="login-bg" fullscreen>
-  <!-- Modern Header with Gradient -->
+  <!-- Modern Header with Wavy Image -->
   <div class="login-header">
     <div class="header-background">
-      <svg viewBox="0 0 400 120" class="header-svg" preserveAspectRatio="none">
+      <svg viewBox="0 0 400 160" class="header-svg" preserveAspectRatio="xMidYMid meet">
         <defs>
-          <linearGradient id="loginGradient" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#006400"/>
-            <stop offset="100%" stop-color="#004d00"/>
-          </linearGradient>
+          <pattern id="cutePattern" x="0" y="0" width="100%" height="100%" patternUnits="objectBoundingBox">
+            <image x="0" y="0" width="100%" height="100%" href="../../assets/cute.JPG" preserveAspectRatio="xMidYMid slice"/>
+          </pattern>
         </defs>
-        <path d="M0,60 Q120,120 260,60 T400,60 L400,0 L0,0 Z"
-          fill="url(#loginGradient)" />
+        <path d="M0,80 Q120,160 260,80 T400,80 L400,0 L0,0 Z"
+          fill="url(#cutePattern)" />
       </svg>
     </div>
     
     <!-- Header Content -->
     <div class="header-content">
+      <div class="logo-container">
+        <img src="../../assets/kalinga-logo.png" alt="Kalinga Logo" class="kalinga-logo">
+      </div>
       <div class="welcome-icon">
         <ion-icon name="leaf-outline"></ion-icon>
       </div>

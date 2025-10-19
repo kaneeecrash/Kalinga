@@ -1,13 +1,197 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>leaderboards</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content class="leaderboards-bg" fullscreen>
+  <!-- Header Section -->
+  <div class="leaderboards-header">
+    <div class="header-content">
+      <div class="header-icon">
+        <ion-icon name="trophy-outline"></ion-icon>
+      </div>
+      <div class="header-text">
+        <h1>LEADERBOARD</h1>
+        <p>Top Community Contributors</p>
+      </div>
+    </div>
+  </div>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">leaderboards</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <!-- Filter Tabs -->
+  <div class="filter-tabs">
+    <ion-segment [(ngModel)]="selectedFilter" (ionChange)="onFilterChange($event)" class="custom-segment">
+      <ion-segment-button value="all">
+        <ion-label>All Time</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="monthly">
+        <ion-label>This Month</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="weekly">
+        <ion-label>This Week</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </div>
+
+  <!-- Main Leaderboard Card -->
+  <div class="leaderboard-card">
+    <!-- Top 3 Podium Section -->
+    <div class="podium-section">
+      <div class="podium-container">
+        <!-- 2nd Place (Left) -->
+        <div class="podium-player second" *ngIf="leaderboardData[1]">
+          <div class="crown-icon silver">
+            <ion-icon name="medal-outline"></ion-icon>
+          </div>
+          <div class="player-avatar">
+            <img [src]="leaderboardData[1].avatar || 'assets/avatar.png'" alt="Player 2" />
+          </div>
+          <div class="player-banner">
+            <span class="player-name">{{ leaderboardData[1].name }}</span>
+            <span class="player-score">{{ leaderboardData[1].points }}</span>
+          </div>
+        </div>
+
+        <!-- 1st Place (Center) -->
+        <div class="podium-player first" *ngIf="leaderboardData[0]">
+          <div class="crown-icon gold">
+            <ion-icon name="trophy"></ion-icon>
+          </div>
+          <div class="player-avatar">
+            <img [src]="leaderboardData[0].avatar || 'assets/avatar.png'" alt="Player 1" />
+          </div>
+          <div class="player-banner">
+            <span class="player-name">{{ leaderboardData[0].name }}</span>
+            <span class="player-score">{{ leaderboardData[0].points }}</span>
+          </div>
+        </div>
+
+        <!-- 3rd Place (Right) -->
+        <div class="podium-player third" *ngIf="leaderboardData[2]">
+          <div class="crown-icon bronze">
+            <ion-icon name="medal-outline"></ion-icon>
+          </div>
+          <div class="player-avatar">
+            <img [src]="leaderboardData[2].avatar || 'assets/avatar.png'" alt="Player 3" />
+          </div>
+          <div class="player-banner">
+            <span class="player-name">{{ leaderboardData[2].name }}</span>
+            <span class="player-score">{{ leaderboardData[2].points }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ranked List Section -->
+    <div class="ranked-list-section">
+      <div class="list-header">
+        <h3>Community Rankings</h3>
+        <div class="total-players">{{ leaderboardData.length }} players</div>
+      </div>
+      
+      <div class="players-list">
+        <div class="player-item" 
+             *ngFor="let player of leaderboardData.slice(3); let i = index"
+             [class.current-user]="player.isCurrentUser">
+          
+          <!-- Rank Number -->
+          <div class="rank-number">{{ i + 4 }}</div>
+          
+          <!-- Player Avatar -->
+          <div class="player-avatar-small">
+            <img [src]="player.avatar || 'assets/avatar.png'" alt="Player" />
+            <div class="online-indicator" *ngIf="player.isOnline"></div>
+          </div>
+          
+          <!-- Player Info -->
+          <div class="player-info">
+            <div class="player-name">{{ player.name }}</div>
+            <div class="player-title">{{ player.title }}</div>
+          </div>
+          
+          <!-- Player Score -->
+          <div class="player-score">
+            <div class="score-value">{{ player.points }}</div>
+            <div class="score-change" *ngIf="player.pointsChange">
+              <span [class]="player.pointsChange > 0 ? 'positive' : 'negative'">
+                {{ player.pointsChange > 0 ? '+' : '' }}{{ player.pointsChange }}
+              </span>
+            </div>
+          </div>
+          
+          <!-- Player Badges -->
+          <div class="player-badges" *ngIf="player.achievements && player.achievements.length > 0">
+            <div class="badge" 
+                 *ngFor="let achievement of player.achievements.slice(0, 2)"
+                 [title]="achievement.name">
+              <ion-icon [name]="achievement.icon"></ion-icon>
+            </div>
+            <div class="more-badges" *ngIf="player.achievements.length > 2">
+              +{{ player.achievements.length - 2 }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Current User Card -->
+  <div class="current-user-card" *ngIf="currentUserRank">
+    <div class="user-card-header">
+      <h3>Your Ranking</h3>
+      <ion-button fill="clear" size="small" (click)="scrollToUser()">
+        <ion-icon name="locate-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </div>
+    <div class="user-card-content">
+      <div class="user-rank">{{ currentUserRank.position }}</div>
+      <div class="user-avatar">
+        <img [src]="currentUserRank.avatar || 'assets/avatar.png'" alt="Your Avatar" />
+      </div>
+      <div class="user-details">
+        <div class="user-name">{{ currentUserRank.name }}</div>
+        <div class="user-points">{{ currentUserRank.points }} points</div>
+        <div class="user-progress">
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="currentUserRank.progressToNext"></div>
+          </div>
+          <span class="progress-text">{{ currentUserRank.pointsToNext }} points to next rank</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Achievement Categories -->
+  <div class="achievement-categories">
+    <h3>Achievement Categories</h3>
+    <div class="categories-grid">
+      <div class="category-card" *ngFor="let category of achievementCategories">
+        <div class="category-icon">
+          <ion-icon [name]="category.icon"></ion-icon>
+        </div>
+        <div class="category-info">
+          <div class="category-name">{{ category.name }}</div>
+          <div class="category-count">{{ category.count }} achievements</div>
+        </div>
+        <div class="category-progress">
+          <div class="progress-circle">
+            <div class="progress-text">{{ category.userProgress }}/{{ category.total }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Activity -->
+  <div class="recent-activity">
+    <h3>Recent Activity</h3>
+    <div class="activity-list">
+      <div class="activity-item" *ngFor="let activity of recentActivity">
+        <div class="activity-icon">
+          <ion-icon [name]="activity.icon"></ion-icon>
+        </div>
+        <div class="activity-content">
+          <div class="activity-text">{{ activity.text }}</div>
+          <div class="activity-time">{{ activity.time }}</div>
+        </div>
+        <div class="activity-points" *ngIf="activity.points">
+          +{{ activity.points }}
+        </div>
+      </div>
+    </div>
+  </div>
 </ion-content>

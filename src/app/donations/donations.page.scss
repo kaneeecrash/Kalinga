@@ -1,0 +1,835 @@
+// Donations Page Styles - Optimized
+.donations-bg {
+  --background: linear-gradient(135deg, #f8fffe 0%, #e8f5e8 100%);
+  min-height: 100vh;
+}
+
+// Variables
+$primary-green: #006400;
+$dark-green: #004d00;
+$gold: #ffd700;
+$silver: #c0c0c0;
+$bronze: #cd7f32;
+$white: white;
+$shadow: rgba(0, 100, 0, 0.1);
+
+// Header Section
+.donations-header {
+  background: linear-gradient(135deg, $primary-green 0%, $dark-green 100%);
+  padding: 2rem 1.5rem;
+  color: $white;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="0.5" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+    opacity: 0.3;
+  }
+
+  .header-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+    z-index: 1;
+
+    .header-icon {
+      font-size: 3rem;
+      opacity: 0.9;
+    }
+
+    .header-text {
+      h1 {
+        margin: 0;
+        font-size: 1.8rem;
+        font-weight: 700;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      }
+
+      p {
+        margin: 0.5rem 0 0 0;
+        opacity: 0.9;
+        font-size: 1rem;
+      }
+    }
+  }
+}
+
+// Filter Section
+.filter-section {
+  background: $white;
+  padding: 1rem 1.5rem;
+  margin-top: -1rem;
+  position: relative;
+  z-index: 2;
+  box-shadow: 0 2px 10px $shadow;
+
+  .search-bar {
+    margin-bottom: 1rem;
+
+    .custom-searchbar {
+      --background: #f5f5f5;
+      --border-radius: 12px;
+      --box-shadow: none;
+      --color: #333;
+      --placeholder-color: #666;
+      --icon-color: $primary-green;
+    }
+  }
+
+  .filter-tabs {
+    .custom-segment {
+      --background: #f5f5f5;
+      --indicator-color: $primary-green;
+      --color: #666;
+      --color-checked: $white;
+      border-radius: 12px;
+      padding: 0.25rem;
+
+      ion-segment-button {
+        --border-radius: 10px;
+        --color: #666;
+        --color-checked: $white;
+        --background-checked: $primary-green;
+        font-weight: 500;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+
+        &:hover {
+          --background-hover: rgba(0, 100, 0, 0.1);
+        }
+      }
+    }
+  }
+}
+
+// Drive Card Base Styles
+.drive-card {
+  background: $white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 20px $shadow;
+  border: 1px solid $shadow;
+  transition: all 0.3s ease;
+  cursor: pointer;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0, 100, 0, 0.15);
+  }
+
+  &.urgent {
+    border-left: 4px solid #dc3545;
+    background: linear-gradient(135deg, #fff 0%, #fff5f5 100%);
+  }
+}
+
+// Drives List
+.drives-list {
+  padding: 1.5rem;
+
+  .drives-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+
+    h2 {
+      margin: 0;
+      color: #333;
+      font-size: 1.3rem;
+      font-weight: 600;
+    }
+
+    .drives-count {
+      background: rgba(0, 100, 0, 0.1);
+      color: $primary-green;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+  }
+
+  .drives-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+
+    .drive-card {
+      .drive-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+
+        .organization-info {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+
+          .org-avatar img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #e0e0e0;
+          }
+
+          .org-details {
+            .org-name {
+              font-weight: 600;
+              color: #333;
+              margin-bottom: 0.25rem;
+            }
+
+            .org-verified {
+              display: flex;
+              align-items: center;
+              gap: 0.25rem;
+              font-size: 0.8rem;
+              color: $primary-green;
+
+              ion-icon {
+                font-size: 0.9rem;
+              }
+            }
+          }
+        }
+
+        .drive-status {
+          padding: 0.25rem 0.75rem;
+          border-radius: 20px;
+          font-size: 0.8rem;
+          font-weight: 600;
+
+          &.active {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+          }
+
+          &.completed {
+            background: rgba(108, 117, 125, 0.1);
+            color: #6c757d;
+          }
+
+          &.paused {
+            background: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+          }
+        }
+      }
+
+      .drive-content {
+        margin-bottom: 1.5rem;
+
+        .drive-title {
+          font-size: 1.2rem;
+          font-weight: 600;
+          color: #333;
+          margin: 0 0 0.75rem 0;
+          line-height: 1.4;
+        }
+
+        .drive-description {
+          color: #666;
+          line-height: 1.5;
+          margin-bottom: 1rem;
+          display: -webkit-box;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+
+        .drive-tags {
+          display: flex;
+          gap: 0.5rem;
+          flex-wrap: wrap;
+
+          .tag {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+
+            &.medical {
+              background: rgba(220, 53, 69, 0.1);
+              color: #dc3545;
+            }
+
+            &.education {
+              background: rgba(0, 123, 255, 0.1);
+              color: #007bff;
+            }
+
+            &.disaster {
+              background: rgba(255, 193, 7, 0.1);
+              color: #ffc107;
+            }
+
+            &.urgent {
+              background: rgba(220, 53, 69, 0.1);
+              color: #dc3545;
+            }
+
+            &.featured {
+              background: rgba(0, 100, 0, 0.1);
+              color: $primary-green;
+            }
+          }
+        }
+      }
+
+      .drive-progress {
+        margin-bottom: 1.5rem;
+
+        .progress-info {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 0.5rem;
+
+          .progress-label {
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 500;
+          }
+
+          .progress-percentage {
+            font-weight: 600;
+            color: $primary-green;
+          }
+        }
+
+        .progress-bar {
+          width: 100%;
+          height: 8px;
+          background: #e0e0e0;
+          border-radius: 4px;
+          overflow: hidden;
+          margin-bottom: 0.5rem;
+
+          .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, $primary-green 0%, $dark-green 100%);
+            transition: width 0.3s ease;
+          }
+        }
+
+        .progress-amounts {
+          display: flex;
+          justify-content: space-between;
+          font-size: 0.9rem;
+
+          .raised {
+            font-weight: 600;
+            color: $primary-green;
+          }
+
+          .target {
+            color: #666;
+          }
+        }
+      }
+
+      .drive-stats {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+
+        .stat {
+          display: flex;
+          align-items: center;
+          gap: 0.25rem;
+          font-size: 0.8rem;
+          color: #666;
+
+          ion-icon {
+            font-size: 0.9rem;
+            color: $primary-green;
+          }
+        }
+      }
+
+      .drive-actions {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+
+        .donate-btn {
+          flex: 1;
+          --background: linear-gradient(135deg, $primary-green 0%, $dark-green 100%);
+          --color: $white;
+          --border-radius: 12px;
+          --padding-top: 0.75rem;
+          --padding-bottom: 0.75rem;
+          font-weight: 600;
+          box-shadow: 0 4px 15px rgba(0, 100, 0, 0.3);
+          transition: all 0.3s ease;
+
+          &:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(0, 100, 0, 0.4);
+          }
+        }
+
+        .share-btn {
+          --color: $primary-green;
+          --border-color: $primary-green;
+          --border-radius: 12px;
+          --padding-start: 0.75rem;
+          --padding-end: 0.75rem;
+          transition: all 0.3s ease;
+
+          &:hover {
+            --background: rgba(0, 100, 0, 0.05);
+          }
+        }
+      }
+    }
+  }
+}
+
+// Empty State
+.empty-state {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  color: #666;
+
+  .empty-icon {
+    font-size: 4rem;
+    color: #ccc;
+    margin-bottom: 1rem;
+  }
+
+  h3 {
+    margin: 0 0 0.5rem 0;
+    color: #333;
+    font-size: 1.2rem;
+  }
+
+  p {
+    margin: 0 0 1.5rem 0;
+    font-size: 1rem;
+  }
+}
+
+// Quick Stats
+.quick-stats {
+  padding: 1.5rem;
+  background: $white;
+  margin: 1.5rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px $shadow;
+  border: 1px solid $shadow;
+
+  h3 {
+    margin: 0 0 1rem 0;
+    color: #333;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+
+    .stat-card {
+      text-align: center;
+      padding: 1rem 0.5rem;
+
+      .stat-icon {
+        font-size: 1.5rem;
+        color: $primary-green;
+        margin-bottom: 0.5rem;
+      }
+
+      .stat-content {
+        .stat-number {
+          font-size: 1.2rem;
+          font-weight: 700;
+          color: $primary-green;
+          margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+          font-size: 0.8rem;
+          color: #666;
+          font-weight: 500;
+        }
+      }
+    }
+  }
+}
+
+// Modal Styles
+.drive-details-content {
+  --background: #f8fffe;
+
+  .modal-drive-header {
+    background: $white;
+    padding: 1.5rem;
+    border-bottom: 1px solid #e0e0e0;
+
+    .modal-org-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+
+      img {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #e0e0e0;
+      }
+
+      .modal-org-details {
+        h4 {
+          margin: 0 0 0.25rem 0;
+          color: #333;
+          font-weight: 600;
+        }
+
+        p {
+          margin: 0;
+          color: #666;
+          font-size: 0.9rem;
+        }
+      }
+    }
+  }
+
+  .modal-drive-content {
+    padding: 1.5rem;
+
+    h3 {
+      margin: 0 0 1rem 0;
+      color: #333;
+      font-size: 1.3rem;
+      font-weight: 600;
+    }
+
+    .drive-description {
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+
+    .detailed-progress {
+      background: $white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 10px rgba(0, 100, 0, 0.05);
+
+      .progress-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+
+        h4 {
+          margin: 0;
+          color: #333;
+          font-size: 1.1rem;
+          font-weight: 600;
+        }
+
+        .progress-percentage {
+          font-weight: 700;
+          color: $primary-green;
+          font-size: 1.2rem;
+        }
+      }
+
+      .progress-bar {
+        width: 100%;
+        height: 10px;
+        background: #e0e0e0;
+        border-radius: 5px;
+        overflow: hidden;
+        margin-bottom: 1rem;
+
+        .progress-fill {
+          height: 100%;
+          background: linear-gradient(90deg, $primary-green 0%, $dark-green 100%);
+        }
+      }
+
+      .progress-details {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+
+        .progress-item {
+          text-align: center;
+
+          .label {
+            display: block;
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 0.25rem;
+          }
+
+          .value {
+            font-weight: 600;
+            color: #333;
+          }
+        }
+      }
+    }
+
+    .drive-info {
+      background: $white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 10px rgba(0, 100, 0, 0.05);
+
+      .info-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #f0f0f0;
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        ion-icon {
+          font-size: 1.2rem;
+          color: $primary-green;
+          min-width: 20px;
+        }
+
+        .info-content {
+          .info-label {
+            display: block;
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 0.25rem;
+          }
+
+          .info-value {
+            font-weight: 500;
+            color: #333;
+          }
+        }
+      }
+    }
+
+    .recent-donations {
+      background: $white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 10px rgba(0, 100, 0, 0.05);
+
+      h4 {
+        margin: 0 0 1rem 0;
+        color: #333;
+        font-size: 1.1rem;
+        font-weight: 600;
+      }
+
+      .donations-list {
+        .donation-item {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 0.75rem 0;
+          border-bottom: 1px solid #f0f0f0;
+
+          &:last-child {
+            border-bottom: none;
+          }
+
+          .donor-info {
+            .donor-name {
+              font-weight: 500;
+              color: #333;
+              margin-bottom: 0.25rem;
+            }
+
+            .donation-time {
+              font-size: 0.8rem;
+              color: #666;
+            }
+          }
+
+          .donation-amount {
+            font-weight: 600;
+            color: $primary-green;
+            font-size: 1.1rem;
+          }
+        }
+      }
+    }
+  }
+
+  .donation-form {
+    background: $white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 10px rgba(0, 100, 0, 0.05);
+
+    h4 {
+      margin: 0 0 1rem 0;
+      color: #333;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .quick-amounts {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+
+      .amount-btn {
+        background: $white;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        padding: 0.75rem;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #333;
+        transition: all 0.3s ease;
+        cursor: pointer;
+
+        &:hover {
+          border-color: $primary-green;
+          color: $primary-green;
+        }
+
+        &.selected {
+          background: $primary-green;
+          border-color: $primary-green;
+          color: $white;
+        }
+      }
+    }
+
+    .custom-amount {
+      margin-bottom: 1rem;
+
+      ion-input {
+        --padding-start: 1rem;
+        --padding-end: 1rem;
+        --padding-top: 1rem;
+        --padding-bottom: 1rem;
+        background: $white;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        font-size: 1rem;
+
+        &:focus {
+          border-color: $primary-green;
+          box-shadow: 0 0 0 3px rgba(0, 100, 0, 0.1);
+        }
+      }
+    }
+
+    .donor-info-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+
+      ion-input, ion-textarea {
+        --padding-start: 1rem;
+        --padding-end: 1rem;
+        --padding-top: 1rem;
+        --padding-bottom: 1rem;
+        background: $white;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        font-size: 1rem;
+
+        &:focus {
+          border-color: $primary-green;
+          box-shadow: 0 0 0 3px rgba(0, 100, 0, 0.1);
+        }
+      }
+    }
+
+    .donation-summary {
+      background: rgba(0, 100, 0, 0.05);
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+
+      .summary-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.25rem 0;
+
+        &.total {
+          font-weight: 700;
+          font-size: 1.1rem;
+          color: $primary-green;
+          margin-top: 0.5rem;
+          padding-top: 0.5rem;
+          border-top: 1px solid rgba(0, 100, 0, 0.2);
+        }
+      }
+
+      .summary-divider {
+        height: 1px;
+        background: rgba(0, 100, 0, 0.2);
+        margin: 0.5rem 0;
+      }
+    }
+
+    .modal-actions {
+      .donate-btn {
+        --background: linear-gradient(135deg, $primary-green 0%, $dark-green 100%);
+        --color: $white;
+        --border-radius: 12px;
+        --padding-top: 1rem;
+        --padding-bottom: 1rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        box-shadow: 0 4px 20px rgba(0, 100, 0, 0.3);
+
+        &:disabled {
+          --background: #ccc;
+          box-shadow: none;
+        }
+      }
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .quick-stats .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .drive-stats {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .donation-form .quick-amounts {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .detailed-progress .progress-details {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+}

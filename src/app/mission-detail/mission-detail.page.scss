@@ -1,89 +1,532 @@
-.poster img {
-	width: 100%;
-	height: 180px;
-	object-fit: cover;
-	border-bottom-left-radius: 12px;
-	border-bottom-right-radius: 12px;
+// Color Variables
+$primary-green: #006400;
+$primary-green-dark: #004d00;
+$primary-green-light: #8BC34A;
+$white: #ffffff;
+$gray-50: #f8f9fa;
+$gray-100: #f1f3f4;
+$gray-200: #e8eaed;
+$gray-300: #dadce0;
+$gray-400: #bdc1c6;
+$gray-500: #9aa0a6;
+$gray-600: #80868b;
+$gray-700: #5f6368;
+$gray-800: #3c4043;
+$gray-900: #202124;
+$success: #34a853;
+$warning: #fbbc04;
+$danger: #ea4335;
+$info: #4285f4;
+
+// Global Styles
+ion-content {
+  --background: $gray-50;
 }
 
-#mission-map {
-	height: 200px;
-	border-radius: 12px;
-	overflow: hidden;
+ion-header {
+  --background: $primary-green;
+  --color: $white;
 }
 
-.detail {
-	margin: 6px 0;
-	display: flex;
-	align-items: center;
+ion-toolbar {
+  --background: $primary-green;
+  --color: $white;
 }
 
-.detail ion-icon {
-	margin-right: 6px;
+ion-title {
+  font-weight: 600;
+  font-size: 18px;
 }
 
-.section {
-	margin-top: 16px;
+// Hero Section
+.hero-section {
+  background: $white;
+  margin-bottom: 16px;
 }
 
-.section-title {
-	font-weight: 600;
-	margin-bottom: 8px;
+.mission-image {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 }
 
-// Application Status Styles
-.application-status {
-	margin: 16px 0;
-	display: flex;
-	justify-content: center;
+.image-overlay {
+  position: absolute;
+  top: 16px;
+  right: 16px;
 }
 
-.application-status ion-chip {
-	font-weight: 600;
+.mission-status-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  background: rgba($white, 0.9);
+
+  &.status-open {
+    color: $success;
+  }
+
+  &.status-closed {
+    color: $gray-600;
+  }
+
+  ion-icon {
+    font-size: 14px;
+  }
 }
 
-.action-buttons {
-	margin: 16px 0;
+.mission-header {
+  padding: 24px 20px;
 }
 
-.action-buttons ion-button {
-	margin: 8px 0;
+.mission-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: $gray-900;
+  margin: 0 0 8px 0;
+  line-height: 1.3;
 }
 
-// Status-specific styling
-.status-pending {
-	--color: var(--ion-color-warning);
+.mission-tagline {
+  font-size: 18px;
+  color: $gray-600;
+  margin: 0 0 24px 0;
+  line-height: 1.5;
 }
 
-.status-approved {
-	--color: var(--ion-color-success);
+.quick-stats {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
 }
 
-.status-rejected {
-	--color: var(--ion-color-danger);
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 120px;
 }
 
-// Mission Communication Section
-.section:last-child {
-	border-top: 1px solid var(--ion-color-light);
-	padding-top: 16px;
-	margin-top: 24px;
+.stat-item ion-icon {
+  font-size: 20px;
+  color: $primary-green;
 }
 
-// Loading skeleton styles
+.stat-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: $gray-900;
+  line-height: 1.2;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: $gray-600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+// Status Card
+.status-card {
+  background: $white;
+  margin: 0 20px 16px;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.status-content {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  gap: 16px;
+}
+
+.status-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  &.status-pending {
+    background: rgba($warning, 0.1);
+    color: #d4a500;
+  }
+
+  &.status-approved {
+    background: rgba($success, 0.1);
+    color: $success;
+  }
+
+  &.status-rejected {
+    background: rgba($danger, 0.1);
+    color: $danger;
+  }
+
+  &.status-not-applied {
+    background: rgba($gray-400, 0.1);
+    color: $gray-600;
+  }
+
+  ion-icon {
+    font-size: 24px;
+  }
+}
+
+.status-info {
+  flex: 1;
+
+  h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: $gray-900;
+    margin: 0 0 4px 0;
+  }
+
+  p {
+    font-size: 14px;
+    color: $gray-600;
+    margin: 0;
+    line-height: 1.4;
+  }
+}
+
+// Action Section
+.action-section {
+  padding: 0 20px 24px;
+}
+
+.action-button {
+  --border-radius: 12px;
+  --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-weight: 600;
+  text-transform: none;
+  height: 48px;
+  font-size: 16px;
+
+  ion-icon {
+    margin-right: 8px;
+    font-size: 18px;
+  }
+}
+
+// Details Container
+.details-container {
+  padding: 0 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.detail-card {
+  background: $white;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid $gray-200;
+
+  ion-icon {
+    font-size: 20px;
+    color: $primary-green;
+  }
+
+  h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: $gray-900;
+    margin: 0;
+  }
+}
+
+.card-content {
+  padding: 20px;
+}
+
+.location-text {
+  font-size: 14px;
+  color: $gray-700;
+  margin: 0 0 16px 0;
+  font-weight: 500;
+}
+
+.mission-map {
+  height: 200px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid $gray-200;
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.service-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: $gray-50;
+  border-radius: 8px;
+  font-size: 14px;
+  color: $gray-700;
+
+  ion-icon {
+    font-size: 16px;
+    color: $primary-green;
+  }
+}
+
+.organization-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.org-avatar {
+  width: 48px;
+  height: 48px;
+  background: $primary-green;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $white;
+  flex-shrink: 0;
+
+  ion-icon {
+    font-size: 24px;
+  }
+}
+
+.org-details {
+  flex: 1;
+
+  h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: $gray-900;
+    margin: 0 0 4px 0;
+  }
+
+  p {
+    font-size: 14px;
+    color: $gray-600;
+    margin: 0 0 2px 0;
+    line-height: 1.4;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.mission-description {
+  font-size: 14px;
+  color: $gray-700;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.chat-button {
+  --border-radius: 8px;
+  margin-top: 12px;
+  font-weight: 500;
+
+  ion-icon {
+    margin-right: 8px;
+  }
+}
+
+// Loading State
+.loading-container {
+  padding: 20px;
+}
+
+.loading-skeleton {
+  background: $white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.skeleton-content {
+  padding: 20px;
+}
+
 ion-skeleton-text {
-	--border-radius: 4px;
-	margin: 8px 0;
+  --border-radius: 4px;
 }
 
-// Chips styling
-.chips {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 8px;
-	margin-top: 8px;
+// Skeleton styles
+.skeleton-image {
+  width: 100%;
+  height: 200px;
+  border-radius: 0;
 }
 
-.chips ion-chip {
-	margin: 0;
+.skeleton-title {
+  width: 80%;
+  height: 24px;
+  margin-bottom: 12px;
+}
+
+.skeleton-subtitle {
+  width: 60%;
+  height: 16px;
+  margin-bottom: 20px;
+}
+
+.skeleton-card {
+  width: 100%;
+  height: 120px;
+  margin-bottom: 16px;
+}
+
+.skeleton-card-small {
+  width: 90%;
+  height: 120px;
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .mission-header {
+    padding: 20px 16px;
+  }
+
+  .mission-title {
+    font-size: 24px;
+  }
+
+  .mission-tagline {
+    font-size: 16px;
+  }
+
+  .quick-stats {
+    gap: 16px;
+  }
+
+  .stat-item {
+    min-width: 100px;
+  }
+
+  .status-card {
+    margin: 0 16px 16px;
+  }
+
+  .action-section {
+    padding: 0 16px 20px;
+  }
+
+  .details-container {
+    padding: 0 16px 16px;
+  }
+
+  .card-header {
+    padding: 16px 16px 12px;
+  }
+
+  .card-content {
+    padding: 16px;
+  }
+
+  .services-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .service-item {
+    padding: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .mission-image {
+    height: 160px;
+  }
+
+  .mission-header {
+    padding: 16px 12px;
+  }
+
+  .mission-title {
+    font-size: 22px;
+  }
+
+  .mission-tagline {
+    font-size: 15px;
+  }
+
+  .quick-stats {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .stat-item {
+    min-width: auto;
+  }
+
+  .stat-value {
+    font-size: 14px;
+  }
+
+  .status-card {
+    margin: 0 12px 12px;
+  }
+
+  .status-content {
+    padding: 16px;
+  }
+
+  .action-section {
+    padding: 0 12px 16px;
+  }
+
+  .details-container {
+    padding: 0 12px 12px;
+  }
+
+  .card-header {
+    padding: 12px 12px 8px;
+  }
+
+  .card-content {
+    padding: 12px;
+  }
+
+  .mission-map {
+    height: 160px;
+  }
 }

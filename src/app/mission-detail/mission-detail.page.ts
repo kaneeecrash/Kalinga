@@ -322,4 +322,124 @@ export class MissionDetailPage implements OnInit, AfterViewInit {
     
     return time24; // Return original if format is not recognized
   }
+
+  // New methods for redesigned UI
+  getMissionStatusClass(mission: any): string {
+    const status = mission.status?.toLowerCase();
+    if (status !== 'open') return 'status-closed';
+    return 'status-open';
+  }
+
+  getMissionStatusIcon(mission: any): string {
+    const status = mission.status?.toLowerCase();
+    if (status !== 'open') return 'lock-closed-outline';
+    return 'radio-button-on-outline';
+  }
+
+  getMissionStatusText(mission: any): string {
+    const status = mission.status?.toLowerCase();
+    if (status !== 'open') return 'Closed';
+    return 'Open';
+  }
+
+  getApplicationStatusClass(): string {
+    switch (this.applicationStatus) {
+      case 'pending':
+        return 'status-pending';
+      case 'approved':
+        return 'status-approved';
+      case 'rejected':
+        return 'status-rejected';
+      default:
+        return 'status-not-applied';
+    }
+  }
+
+  getApplicationStatusIcon(): string {
+    switch (this.applicationStatus) {
+      case 'pending':
+        return 'time-outline';
+      case 'approved':
+        return 'checkmark-circle-outline';
+      case 'rejected':
+        return 'close-circle-outline';
+      default:
+        return 'person-outline';
+    }
+  }
+
+  getStatusDescription(): string {
+    switch (this.applicationStatus) {
+      case 'pending':
+        return 'Your application is being reviewed by the organization.';
+      case 'approved':
+        return 'Congratulations! You\'re officially part of this mission.';
+      case 'rejected':
+        return 'Unfortunately, your application was not accepted this time.';
+      default:
+        return 'You haven\'t applied to this mission yet.';
+    }
+  }
+
+  getActionButtonColor(): string {
+    if (!this.canJoin()) {
+      if (this.applicationStatus === 'pending') return 'warning';
+      if (this.applicationStatus === 'approved') return 'success';
+      if (this.applicationStatus === 'rejected') return 'danger';
+      return 'medium';
+    }
+    return 'success';
+  }
+
+  getActionButtonIcon(): string {
+    if (!this.canJoin()) {
+      if (this.applicationStatus === 'pending') return 'time-outline';
+      if (this.applicationStatus === 'approved') return 'checkmark-outline';
+      if (this.applicationStatus === 'rejected') return 'close-outline';
+      return 'lock-closed-outline';
+    }
+    return 'add-outline';
+  }
+
+  getActionButtonText(): string {
+    if (!this.canJoin()) {
+      if (this.applicationStatus === 'pending') return 'Application Pending';
+      if (this.applicationStatus === 'approved') return 'You\'re a Volunteer!';
+      if (this.applicationStatus === 'rejected') return 'Application Rejected';
+      return 'Mission Closed';
+    }
+    return 'Join Mission';
+  }
+
+  getServiceIcon(service: string): string {
+    const iconMap: { [key: string]: string } = {
+      'Medical': 'medical-outline',
+      'Dental': 'medical-outline',
+      'Surgical': 'medical-outline',
+      'Blood Donation': 'heart-outline',
+      'Education': 'school-outline',
+      'Community': 'people-outline',
+      'Environmental': 'leaf-outline',
+      'Emergency': 'warning-outline'
+    };
+    return iconMap[service] || 'help-outline';
+  }
+
+  shareMission() {
+    if (navigator.share && this.mission) {
+      navigator.share({
+        title: this.mission.missionName,
+        text: this.mission.tagline || 'Join this meaningful mission!',
+        url: window.location.href
+      }).catch(console.error);
+    } else {
+      // Fallback: copy to clipboard
+      const url = window.location.href;
+      navigator.clipboard.writeText(url).then(() => {
+        this.showAlert('Link Copied', 'Mission link has been copied to your clipboard.', ['OK']);
+      }).catch(() => {
+        this.showAlert('Share Mission', 'Share this mission with others!', ['OK']);
+      });
+    }
+  }
 }
