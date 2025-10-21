@@ -21,16 +21,31 @@ $info: #4285f4;
 // Global Styles
 ion-content {
   --background: $gray-50;
+  --padding-top: calc(56px + env(safe-area-inset-top)); // Account for fixed header
+  --padding-bottom: 80px; // Account for fixed footer (60px + 20px spacing)
 }
 
 ion-header {
-  --background: $primary-green;
+  --background: rgba(34, 136, 56, 0.95); // Semi-transparent green background
   --color: $white;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 ion-toolbar {
-  --background: $primary-green;
+  --background: rgba(34, 136, 56, 0.95); // Semi-transparent green background
   --color: $white;
+  --border-width: 0;
+  --padding-top: env(safe-area-inset-top);
+  --padding-bottom: 0;
+  --padding-start: 0;
+  --padding-end: 0;
 }
 
 ion-title {
@@ -47,13 +62,16 @@ ion-title {
 .mission-image {
   position: relative;
   width: 100%;
-  height: 200px;
+  height: 50vh; // Half of the viewport height
   overflow: hidden;
+  border-radius: 0 0 20px 20px; // Add rounded bottom corners
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); // Add subtle shadow
 
   img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: cover; // Maintains aspect ratio while covering the container
+    object-position: center; // Centers the image
   }
 }
 
@@ -91,7 +109,7 @@ ion-title {
 }
 
 .mission-header {
-  padding: 24px 20px;
+  padding: 24px 20px 20px 20px; // Reduced bottom padding for better spacing
 }
 
 .mission-title {
@@ -236,10 +254,10 @@ ion-title {
 
 // Details Container
 .details-container {
-  padding: 0 20px 20px;
+  padding: 0 20px 24px; // Increased bottom padding
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px; // Increased gap between cards
 }
 
 .detail-card {
@@ -270,7 +288,7 @@ ion-title {
 }
 
 .card-content {
-  padding: 20px;
+  padding: 20px 20px 24px; // Increased bottom padding
 }
 
 .location-text {
@@ -281,7 +299,7 @@ ion-title {
 }
 
 .mission-map {
-  height: 200px;
+  height: 240px; // Increased from 200px to 240px
   border-radius: 12px;
   overflow: hidden;
   border: 1px solid $gray-200;
@@ -325,9 +343,17 @@ ion-title {
   justify-content: center;
   color: $white;
   flex-shrink: 0;
+  overflow: hidden; // Ensure image doesn't overflow the circular container
 
   ion-icon {
     font-size: 24px;
+  }
+
+  .org-profile-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; // Maintains aspect ratio while covering the container
+    border-radius: 50%; // Ensures circular image
   }
 }
 
@@ -474,7 +500,7 @@ ion-skeleton-text {
 
 @media (max-width: 480px) {
   .mission-image {
-    height: 160px;
+    height: 40vh; // Slightly smaller on mobile for better proportions
   }
 
   .mission-header {

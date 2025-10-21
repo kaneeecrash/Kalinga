@@ -378,4 +378,61 @@ export class FirestoreService {
       })
     );
   }
+
+  // Add method to automatically close missions that have passed
+  updateMissionStatuses(): Observable<any[]> {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    return this.getMissions().pipe(
+      switchMap(missions => {
+        const missionsToUpdate = missions.filter(mission => {
+          const missionDate = new Date(mission.date);
+          missionDate.setHours(0, 0, 0, 0);
+          return missionDate < today && mission.status === 'open';
+        });
+
+        if (missionsToUpdate.length === 0) {
+          return of([]);
+        }
+
+        const updatePromises = missionsToUpdate.map(mission => {
+          const missionRef = doc(this.firestore, 'missions', mission.id);
+          return updateDoc(missionRef, { status: 'closed' });
+        });
+
+        return from(Promise.all(updatePromises)).pipe(
+          map(() => missionsToUpdate)
+        );
+      })
+    );
+  }
+
+  // Get organization data by ID
+  getOrganizationById(orgId: string): Observable<any> {
+    const ref = doc(this.firestore, 'organizations', orgId);
+    return docData(ref, { idField: 'id' }).pipe(
+      catchError(error => {
+        console.error('Error getting organization:', error);
+        return of(null);
+      })
+    ) as Observable<any>;
+  }
+
+  // Get organization data by ID (force refresh, no cache)
+  getOrganizationByIdForceRefresh(orgId: string): Observable<any> {
+    const ref = doc(this.firestore, 'organizations', orgId);
+    return from(getDoc(ref)).pipe(
+      map(docSnap => {
+        if (docSnap.exists()) {
+          return { id: docSnap.id, ...docSnap.data() };
+        }
+        return null;
+      }),
+      catchError(error => {
+        console.error('Error getting organization (force refresh):', error);
+        return of(null);
+      })
+    ) as Observable<any>;
+  }
 }

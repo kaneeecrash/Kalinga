@@ -115,20 +115,37 @@ export class ProfileInfoPage implements OnInit {
       // email not editable
     });
     
-    // Disable/enable form controls based on edit mode
-    this.updateFormControlsState();
+    console.log('Form created, editMode:', this.editMode);
+    
+    // Only disable form controls if not in edit mode
+    // Don't disable initially to allow focus events to work
+    if (!this.editMode) {
+      // Use setTimeout to ensure the form is fully initialized before disabling
+      setTimeout(() => {
+        this.updateFormControlsState();
+      }, 0);
+    }
     
     console.log('Form initialized:', this.profileForm.value);
     console.log('Form valid:', this.profileForm.valid);
+    console.log('Form enabled:', this.profileForm.enabled);
   }
 
   private updateFormControlsState() {
+    console.log('updateFormControlsState called, profileForm exists:', !!this.profileForm, 'editMode:', this.editMode);
+    
     if (this.profileForm) {
       if (this.editMode) {
+        console.log('Enabling form controls');
         this.profileForm.enable();
+        console.log('Form enabled:', this.profileForm.enabled);
       } else {
+        console.log('Disabling form controls');
         this.profileForm.disable();
+        console.log('Form enabled:', this.profileForm.enabled);
       }
+    } else {
+      console.warn('Cannot update form controls: profileForm is null');
     }
   }
 
@@ -137,11 +154,37 @@ export class ProfileInfoPage implements OnInit {
   }
 
   enableEdit() {
+    console.log('enableEdit called, profileForm exists:', !!this.profileForm, 'editMode:', this.editMode);
+    
+    // Ensure form is initialized before enabling edit mode
+    if (!this.profileForm) {
+      console.warn('Cannot enable edit mode: form not initialized');
+      return;
+    }
+    
     this.editMode = true;
+    console.log('Edit mode set to true, calling updateFormControlsState');
     this.updateFormControlsState();
     console.log('Edit mode enabled:', this.editMode);
+    console.log('Form enabled:', this.profileForm.enabled);
     console.log('Current form value:', this.profileForm?.value);
     console.log('Current user data:', this.user);
+  }
+
+  // Auto-enable edit mode when user taps on any field
+  onFieldFocus() {
+    console.log('Field focused, editMode:', this.editMode, 'profileForm exists:', !!this.profileForm);
+    
+    // Check if form is initialized before enabling edit mode
+    if (!this.profileForm) {
+      console.warn('Form not initialized yet, cannot enable edit mode');
+      return;
+    }
+    
+    if (!this.editMode) {
+      console.log('Enabling edit mode from field focus');
+      this.enableEdit();
+    }
   }
 
   cancelEdit() {

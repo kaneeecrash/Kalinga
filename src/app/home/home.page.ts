@@ -103,18 +103,59 @@ export class HomePage implements OnInit, AfterViewInit {
   }
 
   fetchFeaturedMissions() {
-    this.firestoreService.getMissions(3).subscribe(async missions => {
-      this.featuredMissions = missions;
-      // Load user's status for each mission
-      await this.loadUserMissionStatuses();
+    // First update mission statuses for missions that have passed
+    this.firestoreService.updateMissionStatuses().subscribe(() => {
+      // Then fetch and display missions
+      this.firestoreService.getMissions().subscribe(async missions => {
+        // Filter out past missions (missions that have already passed)
+        const today = new Date();
+        today.setHours(23, 59, 59, 999); // End of today
+        
+        const upcomingMissions = missions.filter(mission => {
+          const missionDate = new Date(mission.date);
+          missionDate.setHours(23, 59, 59, 999); // End of mission date
+          return missionDate >= today; // Only include missions from today onwards
+        });
+
+        // Sort by mission date (earliest first), then by creation date if same mission date
+        const sortedMissions = upcomingMissions.sort((a, b) => {
+          const dateA = new Date(a.date);
+          const dateB = new Date(b.date);
+          
+          // Compare mission dates first
+          if (dateA < dateB) return -1;
+          if (dateA > dateB) return 1;
+          
+          // If same mission date, sort by creation date (newest first)
+          const createdA = new Date(a.createdAt);
+          const createdB = new Date(b.createdAt);
+          return createdB.getTime() - createdA.getTime();
+        });
+
+        // Take the first 3 (earliest upcoming missions)
+        this.featuredMissions = sortedMissions.slice(0, 3);
+        
+        // Load user's status for each mission
+        await this.loadUserMissionStatuses();
+      });
     });
   }
 
   private watchAllMissionsAndNotify() {
     this.firestoreService.getMissions().subscribe(async (missions) => {
-      this.allMissions = missions;
+      // Filter out past missions for consistency
+      const today = new Date();
+      today.setHours(23, 59, 59, 999); // End of today
+      
+      const upcomingMissions = missions.filter(mission => {
+        const missionDate = new Date(mission.date);
+        missionDate.setHours(23, 59, 59, 999); // End of mission date
+        return missionDate >= today; // Only include missions from today onwards
+      });
+      
+      this.allMissions = upcomingMissions;
       // Notify on newly observed missions
-      for (const m of missions) {
+      for (const m of upcomingMissions) {
         if (m.id && !this.knownMissionIds.has(m.id)) {
           this.knownMissionIds.add(m.id);
           await this.sendLocalNotification(m);
@@ -340,7 +381,7 @@ export class HomePage implements OnInit, AfterViewInit {
     if (mission?.location) {
       try {
         const token = environment.mapbox.accessToken;
-        const resp = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(mission.location)}.json?access_token=${token}`);
+        const resp = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(mission.location)}.json?access_token=${token}&country=PH`);
         const data = await resp.json();
         const center = data?.features?.[0]?.center;
         if (Array.isArray(center) && center.length >= 2) {
@@ -418,6 +459,13 @@ export class HomePage implements OnInit, AfterViewInit {
     }
     
     return time24; // Return original if format is not recognized
+  }
+
+  formatLocation(location: string): string {
+    if (!location) return '';
+    
+    // Remove "Philippines" from the location string
+    return location.replace(/,?\s*Philippines\s*$/i, '').trim();
   }
 
   // Navigate to mission detail page

@@ -24,8 +24,11 @@ export class MissionDetailPage implements OnInit, AfterViewInit {
   applicationStatus: ApplicationStatus = 'not_applied';
   isLoading = true;
   mapInitialized = false;
+  mapRetryCount = 0;
+  maxMapRetries = 3;
   userLat = 10.317347; // Default Cebu City
   userLng = 123.885437;
+  organization: any = null; // Store organization data
 
   constructor(
     private route: ActivatedRoute, 
@@ -51,7 +54,17 @@ export class MissionDetailPage implements OnInit, AfterViewInit {
     if (id) {
       this.firestore.getMissionById(id).subscribe((m) => {
         this.mission = m;
+        console.log('Mission detail data:', m); // 🔎 Debug organization fields
         this.isLoading = false;
+        
+        // Fetch organization data if orgId exists
+        if (m?.orgId) {
+          this.firestore.getOrganizationById(m.orgId).subscribe((org) => {
+            this.organization = org;
+            console.log('Organization data:', org); // 🔎 Debug organization data
+            console.log('Organization profilePictureURL:', org?.profilePictureURL); // 🔎 Debug correct field
+          });
+        }
         
         // Initialize map after mission data is loaded
         if (this.mapInitialized) {
@@ -107,6 +120,20 @@ export class MissionDetailPage implements OnInit, AfterViewInit {
 
     try {
       console.log('Initializing mission detail map...');
+      
+      // Ensure DOM element exists
+      const mapElement = document.getElementById('mission-map');
+      if (!mapElement) {
+        if (this.mapRetryCount < this.maxMapRetries) {
+          this.mapRetryCount++;
+          console.warn(`Mission map element not found, retrying in 100ms... (attempt ${this.mapRetryCount}/${this.maxMapRetries})`);
+          setTimeout(() => this.initializeMap(), 100);
+        } else {
+          console.error('Failed to find mission map element after maximum retries');
+        }
+        return;
+      }
+      
       (mapboxgl as any).accessToken = environment.mapbox.accessToken;
       console.log('Mapbox token set:', environment.mapbox.accessToken ? 'Present' : 'Missing');
       
@@ -285,7 +312,7 @@ export class MissionDetailPage implements OnInit, AfterViewInit {
     if (this.mission.location) {
       try {
         const token = environment.mapbox.accessToken;
-        const resp = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(this.mission.location)}.json?access_token=${token}`);
+        const resp = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(this.mission.location)}.json?access_token=${token}&country=PH`);
         const data = await resp.json();
         const center = data?.features?.[0]?.center;
         if (Array.isArray(center) && center.length >= 2) {
@@ -294,7 +321,23 @@ export class MissionDetailPage implements OnInit, AfterViewInit {
         }
       } catch (error) {
         console.error('Geocoding error:', error);
+        // Fallback to user location if geocoding fails
+        console.log('Falling back to user location due to geocoding failure');
+        this.map?.setCenter([this.userLng, this.userLat]);
+        this.map?.setZoom(12);
       }
+    }
+  }
+
+  // Force refresh organization data
+  refreshOrganizationData() {
+    if (this.mission?.orgId) {
+      console.log('Refreshing organization data...');
+      this.firestore.getOrganizationByIdForceRefresh(this.mission.orgId).subscribe((org) => {
+        this.organization = org;
+        console.log('Refreshed organization data:', org);
+        console.log('Organization profilePictureURL:', org?.profilePictureURL); // 🔎 Debug correct field
+      });
     }
   }
 
@@ -321,6 +364,13 @@ export class MissionDetailPage implements OnInit, AfterViewInit {
     }
     
     return time24; // Return original if format is not recognized
+  }
+
+  formatLocation(location: string): string {
+    if (!location) return '';
+    
+    // Remove "Philippines" from the location string
+    return location.replace(/,?\s*Philippines\s*$/i, '').trim();
   }
 
   // New methods for redesigned UI

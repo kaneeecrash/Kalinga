@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "731579975165",
+    "project_id": "kalinga-74544",
+    "storage_bucket": "kalinga-74544.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:731579975165:android:e2e073e044c598ddb58594",
+        "android_client_info": {
+          "package_name": "io.ionic.starter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCc_TLlMYhba0th9U8Z9VCyc88LmFIOuww"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

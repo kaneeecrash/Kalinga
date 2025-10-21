@@ -11,6 +11,9 @@ import { environment } from '../environments/environment';
 import { provideFirestore, getFirestore  } from '@angular/fire/firestore';
 import { provideStorage, getStorage } from '@angular/fire/storage';
 
+import { provideMessaging, getMessaging } from '@angular/fire/messaging';
+
+
 @NgModule({
   declarations: [AppComponent],
   imports: [
@@ -24,6 +27,7 @@ import { provideStorage, getStorage } from '@angular/fire/storage';
     provideAnalytics(() => getAnalytics()),
     provideFirestore(() => getFirestore()),
     provideStorage(() => getStorage()),
+    provideMessaging(() => getMessaging()),
   ],
   bootstrap: [AppComponent],
 })

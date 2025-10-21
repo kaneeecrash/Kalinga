@@ -26,6 +26,7 @@ export class MissionsPage implements OnInit {
   // User tracking
   user: { userName?: string; displayName?: string; photoURL?: string; uid?: string } | null = null;
   userMissionStatus: Map<string, string> = new Map(); // Track user's status for each mission
+  organizations: Map<string, any> = new Map(); // Store organization data by orgId
 
   constructor(
     private firestoreService: FirestoreService,
@@ -35,39 +36,65 @@ export class MissionsPage implements OnInit {
 
   ngOnInit() {
     this.loadUserData();
-    this.firestoreService.getMissions().subscribe((res: any[]) => {
-      console.log('Fetched missions:', res); // 🔎 Debug
+    
+    // First update mission statuses for missions that have passed
+    this.firestoreService.updateMissionStatuses().subscribe(() => {
+      // Then fetch and display missions
+      this.firestoreService.getMissions().subscribe((res: any[]) => {
+        console.log('Fetched missions:', res); // 🔎 Debug
+        console.log('Sample mission data structure:', res[0]); // 🔎 Debug organization fields
 
-      // Filter out past missions first
-      const today = new Date();
-      today.setHours(0, 0, 0, 0); // Start of today
-      
-      const upcomingMissions = res.filter(mission => {
-        const missionDate = new Date(mission.date);
-        missionDate.setHours(0, 0, 0, 0); // Start of mission date
-        return missionDate >= today; // Only include missions from today onwards
+        // Filter out past missions (missions that have already passed)
+        const today = new Date();
+        today.setHours(23, 59, 59, 999); // End of today
+        
+        const upcomingMissions = res.filter(mission => {
+          const missionDate = new Date(mission.date);
+          missionDate.setHours(23, 59, 59, 999); // End of mission date
+          return missionDate >= today; // Only include missions from today onwards
+        });
+
+        // Sort by mission date first (earliest first), then by creation date if same mission date
+        this.missions = upcomingMissions.sort((a, b) => {
+          const dateA = new Date(a.date);
+          const dateB = new Date(b.date);
+
+          // Compare mission dates first
+          if (dateA < dateB) return -1;
+          if (dateA > dateB) return 1;
+
+          // If same mission date, sort by creation date (newest first)
+          const createdA = new Date(a.createdAt);
+          const createdB = new Date(b.createdAt);
+          return createdB.getTime() - createdA.getTime();
+        });
+        
+        // Load user's status for each mission
+        this.loadUserMissionStatuses();
+        this.loadOrganizations(); // Load organization data
+        this.applyFilters();
       });
-
-      // Sort by date first, then by duration if dates are the same
-      this.missions = upcomingMissions.sort((a, b) => {
-        const dateA = new Date(a.date); // Convert to Date objects
-        const dateB = new Date(b.date);
-
-        // Compare dates
-        if (dateA < dateB) return -1;
-        if (dateA > dateB) return 1;
-
-        // If dates are the same, compare by time duration
-        const durationA = this.getDuration(a.startTime, a.endTime);
-        const durationB = this.getDuration(b.startTime, b.endTime);
-
-        return durationB - durationA; // Sort longest duration first
-      });
-      
-      // Load user's status for each mission
-      this.loadUserMissionStatuses();
-      this.applyFilters();
     });
+  }
+
+  // Load organization data for all missions
+  private loadOrganizations() {
+    const uniqueOrgIds = [...new Set(this.missions.map(m => m.orgId).filter(id => id))];
+    
+    uniqueOrgIds.forEach(orgId => {
+      this.firestoreService.getOrganizationByIdForceRefresh(orgId).subscribe((org) => {
+        if (org) {
+          this.organizations.set(orgId, org);
+          console.log('Loaded organization:', orgId, org); // 🔎 Debug
+          console.log('Organization profilePictureURL:', org?.profilePictureURL); // 🔎 Debug correct field
+        }
+      });
+    });
+  }
+
+  // Get organization data by ID
+  getOrganization(orgId: string): any {
+    return this.organizations.get(orgId);
   }
 
   // Helper function to calculate the duration between start and end time in minutes
@@ -100,6 +127,13 @@ export class MissionsPage implements OnInit {
     }
     
     return time24; // Return original if format is not recognized
+  }
+
+  formatLocation(location: string): string {
+    if (!location) return '';
+    
+    // Remove "Philippines" from the location string
+    return location.replace(/,?\s*Philippines\s*$/i, '').trim();
   }
 
   joinMission(missionId: string): Observable<void> {

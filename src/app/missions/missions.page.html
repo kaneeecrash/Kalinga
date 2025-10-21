@@ -10,23 +10,7 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <!-- Hero Section -->
-  <div class="hero-section">
-    <div class="hero-content">
-      <h1 class="hero-title">Make a Difference</h1>
-      <p class="hero-subtitle">Join meaningful missions and create positive impact in your community</p>
-      <div class="stats-container">
-        <div class="stat-item">
-          <span class="stat-number">{{ missions.length }}</span>
-          <span class="stat-label">Active Missions</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-number">{{ getTotalVolunteers() }}</span>
-          <span class="stat-label">Volunteers Needed</span>
-        </div>
-      </div>
-    </div>
-  </div>
+
 
   <!-- Search and Filter Bar -->
   <div class="search-filter-container">
@@ -83,7 +67,7 @@
         <div class="mission-details">
           <div class="detail-item">
             <ion-icon name="location-outline"></ion-icon>
-            <span>{{ m.location }}</span>
+            <span>{{ formatLocation(m.location) }}</span>
           </div>
           <div class="detail-item">
             <ion-icon name="time-outline"></ion-icon>
@@ -106,7 +90,12 @@
         <!-- Organization Info -->
         <div class="organization-info">
           <div class="org-avatar">
-            <ion-icon name="business-outline"></ion-icon>
+            <img [src]="getOrganization(m.orgId)?.profilePictureURL" 
+                 alt="Organization Avatar" 
+                 *ngIf="getOrganization(m.orgId)?.profilePictureURL"
+                 class="org-profile-img">
+            <ion-icon name="business-outline" 
+                      *ngIf="!getOrganization(m.orgId)?.profilePictureURL"></ion-icon>
           </div>
           <div class="org-details">
             <span class="org-name">{{ m.orgName }}</span>

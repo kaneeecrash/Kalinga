@@ -11,13 +11,14 @@ $accent-shadow: rgba(0, 100, 0, 0.09);
   --ion-background-color: $accent-icy;
   background: $accent-icy;
   min-height: 100vh;
+  --padding-bottom: 80px; // Account for fixed footer (60px + 20px spacing)
 }
 
 // Header Section
 .profile-info-header {
   position: relative;
   height: 200px;
-  overflow: hidden;
+  overflow: visible; // Allow avatar to extend beyond header bounds
   
   .header-background {
     position: absolute;
@@ -36,40 +37,72 @@ $accent-shadow: rgba(0, 100, 0, 0.09);
   }
   
   .header-nav {
-    position: absolute;
+    position: fixed; // Make only navigation fixed
     top: 0;
     left: 0;
     right: 0;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 16px 20px;
-    z-index: 2;
+    padding: 16px 20px; // Increased padding for larger icons
+    z-index: 1000; // Ensure navigation stays on top
+    min-height: 60px; // Increased minimum height for larger icons
+    background: #2E7D32; // Dark green background
     
-    .back-btn, .edit-toggle-btn {
-      --color: white;
-      --background: rgba(255, 255, 255, 0.1);
-      --border-radius: 50%;
-      width: 44px;
-      height: 44px;
+    // Position elements with specific spacing
+    ion-back-button {
+      flex: 0 0 auto; // Don't grow or shrink
+      --color: black; // Changed to black for better visibility on dark green background
+      --background: transparent; // Removed circular background
+      --border-radius: 0; // Removed border radius
+      width: 50px; // Increased button size for larger icons
+      height: 50px; // Increased button size for larger icons
       
       ion-icon {
-        font-size: 20px;
+        font-size: 36px; // Much larger icon size
+        color: black; // Changed to black for better visibility on dark green background
       }
     }
     
     .page-title {
-      font-size: 1.2rem;
-      font-weight: 600;
+      flex: 1; // Take up remaining space
+      text-align: center; // Center the title
+      font-size: 1.1rem; // Reduced font size for smaller nav
+      font-weight: 700; // Increased from 600
       color: white;
       margin: 0;
       text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      letter-spacing: 0.5px; // Added letter spacing for better readability
+    }
+    
+    .edit-toggle-btn {
+      flex: 0 0 auto; // Don't grow or shrink
+      --color: black; // Changed to black for better visibility on dark green background
+      --background: transparent; // Removed circular background
+      --border-radius: 0; // Removed border radius
+      width: auto; // Auto width for text content
+      height: 50px; // Increased button size for larger icons
+      border: none; // Removed border
+      box-shadow: none; // Removed shadow
+      padding: 0 20px; // Increased padding for cleaner look
+      
+      font-size: 20px; // Much bigger text size
+      font-weight: 700; // Bolder text for cleaner look
+      color: black; // Changed to black for better visibility on dark green background
+      text-transform: none; // No text transformation
+      letter-spacing: 0.5px; // Added letter spacing for cleaner look
+      
+      &:hover {
+        --background: transparent; // No hover background
+        transform: none; // No hover transform
+        transition: none; // No transition
+      }
     }
   }
   
   .avatar-section {
     position: absolute;
-    bottom: -40px;
+    bottom: -50px; // Adjusted for larger avatar
     left: 50%;
     transform: translateX(-50%);
     z-index: 2;
@@ -80,8 +113,8 @@ $accent-shadow: rgba(0, 100, 0, 0.09);
       display: inline-block;
       
       .profile-avatar {
-        width: 100px;
-        height: 100px;
+        width: 140px;
+        height: 140px;
         border-radius: 50%;
         border: 4px solid $accent-white;
         object-fit: cover;
@@ -136,7 +169,7 @@ $accent-shadow: rgba(0, 100, 0, 0.09);
 
 // Form Container
 .form-container {
-  padding: 60px 20px 20px 20px;
+  padding: 100px 20px 20px 20px; // Adjusted for larger fixed navigation (60px nav + 40px spacing)
   max-width: 600px;
   margin: 0 auto;
 }
@@ -300,25 +333,62 @@ $accent-shadow: rgba(0, 100, 0, 0.09);
     height: 180px;
     
     .header-nav {
-      padding: 12px 16px;
+      padding: 14px 16px; // Increased mobile padding for larger icons
+      min-height: 56px; // Increased minimum height for mobile
+      
+      // Position elements with specific spacing for mobile
+      ion-back-button {
+        flex: 0 0 auto; // Don't grow or shrink
+        width: 44px; // Increased mobile button size for larger icons
+        height: 44px; // Increased mobile button size for larger icons
+        
+        ion-icon {
+          font-size: 32px; // Much larger mobile icon size
+          color: black; // Changed to black for better visibility on dark green background
+        }
+      }
       
       .page-title {
-        font-size: 1.1rem;
+        flex: 1; // Take up remaining space
+        text-align: center; // Center the title
+        font-size: 1.0rem; // Reduced mobile title size
+        font-weight: 700; // Maintained bold weight
+      }
+      
+      .edit-toggle-btn {
+        flex: 0 0 auto; // Don't grow or shrink
+        width: auto; // Auto width for text content
+        height: 44px; // Increased mobile button size for larger icons
+        border: none; // Removed border
+        box-shadow: none; // Removed shadow
+        padding: 0 16px; // Increased padding for cleaner mobile look
+        
+        font-size: 18px; // Bigger text for mobile
+        font-weight: 700; // Bolder text for cleaner look
+        color: black; // Changed to black for better visibility on dark green background
+        text-transform: none; // No text transformation
+        letter-spacing: 0.3px; // Added letter spacing for cleaner mobile look
+        
+        &:hover {
+          --background: transparent; // No hover background
+          transform: none; // No hover transform
+          transition: none; // No transition
+        }
       }
     }
     
     .avatar-section {
-      bottom: -35px;
+      bottom: -45px; // Adjusted for larger mobile avatar
       
       .avatar-container .profile-avatar {
-        width: 80px;
-        height: 80px;
+        width: 120px;
+        height: 120px;
       }
     }
   }
   
   .form-container {
-    padding: 50px 16px 16px 16px;
+    padding: 90px 16px 16px 16px; // Adjusted for larger fixed mobile navigation (56px nav + 34px spacing)
   }
   
   .form-section {

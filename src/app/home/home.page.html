@@ -15,9 +15,16 @@
   <div class="featured-missions-scroll">
     <div class="mission-card" *ngFor="let mission of featuredMissions" [ngClass]="{'open': mission.status?.toLowerCase() === 'open'}" (click)="goToMissionDetail(mission.id)">
       <div class="mission-type">{{ mission.missionName }}</div>
-      <div class="mission-details">📍{{ mission.location }}</div>
-      <div class="mission-datetime">⏰{{ mission.date | date:'MMMM d, y' }} | {{ formatTimeTo12Hour(mission.start_time || mission.startTime) }} - {{ formatTimeTo12Hour(mission.end_time || mission.endTime) }}</div>
-      <div class="mission-details">volunteers needed: {{ mission.volunteers }}</div>
+      <div class="mission-details">📍{{ formatLocation(mission.location) }}</div>
+      <div class="mission-details">
+        <ion-icon name="calendar-outline"></ion-icon>
+        {{ mission.date | date:'MMMM d, y' }}
+      </div>
+      <div class="mission-details">
+        <ion-icon name="time-outline"></ion-icon>
+        {{ formatTimeTo12Hour(mission.start_time || mission.startTime) }} - {{ formatTimeTo12Hour(mission.end_time || mission.endTime) }}
+      </div>
+      <div class="mission-details">👥 Volunteers needed: {{ mission.volunteers }}</div>
       <div class="mission-details">{{ mission.distance }}</div>
       <div class="mission-actions">
         <ion-button size="small" 

@@ -21,6 +21,7 @@ $info: #17a2b8;
 // Global Styles
 ion-content {
   --background: $gray-100;
+  --padding-bottom: 80px; // Account for fixed footer (60px + 20px spacing)
 }
 
 ion-header {
@@ -317,9 +318,17 @@ ion-title {
   align-items: center;
   justify-content: center;
   color: $white;
+  overflow: hidden; // Ensure image doesn't overflow the circular container
 
   ion-icon {
     font-size: 20px;
+  }
+
+  .org-profile-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; // Maintains aspect ratio while covering the container
+    border-radius: 50%; // Ensures circular image
   }
 }
 
