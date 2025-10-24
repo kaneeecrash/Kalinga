@@ -2,7 +2,7 @@
   <ion-content>
     <ion-router-outlet></ion-router-outlet>
   </ion-content>
-  <ion-footer *ngIf="!isLoginPage()">
+  <ion-footer *ngIf="!isLoginPage() && !isSplashPage()">
     <ion-tab-bar slot="bottom">
 
       <ion-tab-button tab="home" [routerLink]="['/home']" [routerDirection]="'root'">

@@ -1,3 +1,81 @@
+// Offline warning
+.offline-warning {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background: rgba(255, 193, 7, 0.1);
+  border: 1px solid rgba(255, 193, 7, 0.3);
+  border-radius: 16px;
+  color: #f59e0b;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 20px;
+  animation: slideIn 0.3s ease-out;
+  
+  ion-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+}
+
+// Loading skeleton
+.loading-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  
+  .skeleton-field {
+    width: 100%;
+    height: 48px;
+    border-radius: 16px;
+  }
+}
+
+// Enhanced Error Container
+.error-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 20px;
+  background: rgba(254, 242, 242, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 16px;
+  color: #dc2626;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-top: 12px;
+  animation: slideIn 0.3s ease-out;
+  
+  ion-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  
+  .error-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    
+    .error-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+    
+    .error-message {
+      line-height: 1.4;
+      color: #991b1b;
+    }
+  }
+  
+  span {
+    line-height: 1.4;
+  }
+}
+
 // Modern Register Page Styling
 .register-bg {
   --ion-background-color: transparent;
@@ -157,9 +235,16 @@
         transform: translateY(-1px);
       }
       
-      &.error {
+      &.error, &.invalid {
         border-color: #ef4444;
         box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.08);
+        background: rgba(254, 242, 242, 0.8);
+      }
+      
+      &.valid {
+        border-color: #10b981;
+        box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.08);
+        background: rgba(240, 253, 244, 0.8);
       }
     }
     
@@ -186,6 +271,57 @@
         color: #ef4444;
       }
     }
+
+    // Password toggle styles
+    .password-toggle {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: var(--ion-color-medium);
+      font-size: 20px;
+      z-index: 10;
+      transition: color 0.3s ease;
+      
+      &:hover {
+        color: #006400;
+      }
+    }
+
+    // Password strength indicator
+    .password-strength {
+      margin-top: 8px;
+      
+      .strength-bar {
+        height: 4px;
+        background-color: var(--ion-color-light);
+        border-radius: 2px;
+        overflow: hidden;
+        
+        .strength-fill {
+          height: 100%;
+          transition: width 0.3s ease;
+          border-radius: 2px;
+          
+          &.danger { background-color: var(--ion-color-danger); }
+          &.warning { background-color: var(--ion-color-warning); }
+          &.medium { background-color: var(--ion-color-medium); }
+          &.success { background-color: var(--ion-color-success); }
+        }
+      }
+      
+      .strength-text {
+        font-size: 12px;
+        margin-top: 4px;
+        font-weight: 500;
+        
+        &.danger { color: var(--ion-color-danger); }
+        &.warning { color: var(--ion-color-warning); }
+        &.medium { color: var(--ion-color-medium); }
+        &.success { color: var(--ion-color-success); }
+      }
+    }
   }
   
   .error-message {
@@ -193,6 +329,30 @@
     font-size: 0.85rem;
     color: #ef4444;
     font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    
+    ion-icon {
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+  }
+  
+  .success-message {
+    margin-top: 6px;
+    font-size: 0.85rem;
+    color: #10b981;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    animation: slideIn 0.3s ease-out;
+    
+    ion-icon {
+      font-size: 16px;
+      flex-shrink: 0;
+    }
   }
   
   .success-message {
@@ -282,6 +442,59 @@
   }
 }
 
+// Social login styles
+.social-login-section {
+  margin-top: 20px;
+  
+  .divider {
+    text-align: center;
+    margin: 20px 0;
+    position: relative;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background-color: var(--ion-color-light);
+    }
+    
+    span {
+      background-color: var(--ion-background-color);
+      padding: 0 16px;
+      color: var(--ion-color-medium);
+      font-size: 14px;
+    }
+  }
+  
+  .google-login-btn {
+    --background: #ffffff;
+    --color: #db4437;
+    --border-color: #db4437;
+    --border-radius: 16px;
+    --box-shadow: 0 2px 8px rgba(219, 68, 55, 0.2);
+    background: #ffffff;
+    color: #db4437;
+    border: 2px solid #db4437;
+    height: 48px;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    
+    &:hover:not(:disabled) {
+      --background: rgba(219, 68, 55, 0.1);
+      --color: #c23321;
+      --border-color: #c23321;
+      background: rgba(219, 68, 55, 0.1);
+      color: #c23321;
+      border-color: #c23321;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(219, 68, 55, 0.3);
+    }
+  }
+}
+
 // Sign In Link
 .signin-link {
   text-align: center;
@@ -318,6 +531,232 @@
         }
       }
     }
+  }
+}
+
+// ===========================================
+// DARK MODE SUPPORT
+// ===========================================
+
+@media (prefers-color-scheme: dark) {
+  .register-container {
+    --background: #1a1a1a;
+    background: #1a1a1a;
+    color: #ffffff;
+  }
+
+  .register-header {
+    background: linear-gradient(135deg, #006400, #004d00);
+    color: #ffffff;
+    
+    .header-content {
+      .welcome-title {
+        color: #ffffff;
+      }
+      
+      .welcome-subtitle {
+        color: rgba(255, 255, 255, 0.9);
+      }
+      
+      .welcome-icon ion-icon {
+        color: #ffffff;
+      }
+    }
+  }
+
+  .register-card {
+    background: #2a2a2a;
+    color: #ffffff;
+    border: 1px solid #404040;
+  }
+
+  .form-group {
+    label {
+      color: #e0e0e0;
+    }
+    
+    ion-input {
+      --background: #1a1a1a;
+      --color: #ffffff;
+      --placeholder-color: #a0a0a0;
+      --border-color: #555555;
+      background: #1a1a1a;
+      color: #ffffff;
+      border: 1px solid #555555;
+      
+      &:focus {
+        --border-color: #4ade80;
+        border-color: #4ade80;
+      }
+    }
+  }
+
+  .error-message {
+    color: #ff6b6b;
+    background: rgba(255, 107, 107, 0.1);
+    border: 1px solid rgba(255, 107, 107, 0.3);
+  }
+
+  .success-message {
+    color: #4ade80;
+    background: rgba(74, 222, 128, 0.1);
+    border: 1px solid rgba(74, 222, 128, 0.3);
+  }
+
+  .register-button {
+    --background: #4ade80;
+    --color: #000000;
+    --background-hover: #22c55e;
+  }
+
+  .login-link {
+    color: #4ade80;
+    
+    &:hover {
+      color: #22c55e;
+    }
+  }
+
+  .google-register-button {
+    --background: #2a2a2a;
+    --color: #ffffff;
+    --border-color: #555555;
+    background: #2a2a2a;
+    color: #ffffff;
+    border: 1px solid #555555;
+    
+    &:hover {
+      --background: #404040;
+      background: #404040;
+    }
+  }
+
+  .divider {
+    color: #a0a0a0;
+    
+    &::before,
+    &::after {
+      background: #555555;
+    }
+  }
+
+  .terms-checkbox {
+    ion-checkbox {
+      --color: #4ade80;
+      --color-checked: #4ade80;
+    }
+    
+    ion-label {
+      --color: #e0e0e0;
+    }
+  }
+
+  .loading-spinner {
+    --color: #4ade80;
+  }
+
+  // Enhanced dark mode styling for better visibility
+  .register-bg {
+    --background: #1a1a1a;
+    background: #1a1a1a;
+    color: #ffffff;
+  }
+
+  .register-header {
+    .header-content {
+      .welcome-title {
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        font-weight: 700;
+      }
+      
+      .welcome-subtitle {
+        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+        font-weight: 500;
+      }
+      
+      .welcome-icon ion-icon {
+        color: #4ade80;
+        filter: drop-shadow(0 0 8px rgba(74, 222, 128, 0.4));
+      }
+
+      .logo-container {
+        .kalinga-logo {
+          filter: brightness(1.2) contrast(1.1) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+        }
+      }
+    }
+  }
+
+  .register-card {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+
+  .form-group {
+    label {
+      font-weight: 600;
+    }
+    
+    ion-input {
+      &:focus {
+        box-shadow: 0 0 0 2px rgba(74, 222, 128, 0.2);
+      }
+    }
+
+    ion-textarea {
+      &:focus {
+        box-shadow: 0 0 0 2px rgba(74, 222, 128, 0.2);
+      }
+    }
+  }
+
+  .error-message,
+  .success-message {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .register-button {
+    font-weight: 700;
+    text-shadow: none;
+  }
+
+  .login-link {
+    font-weight: 600;
+  }
+
+  .google-register-button {
+    font-weight: 600;
+  }
+
+  .divider {
+    font-weight: 500;
+  }
+
+  .terms-checkbox {
+    color: #e0e0e0;
+    font-weight: 500;
+  }
+
+  .offline-warning {
+    background: rgba(255, 193, 7, 0.1);
+    border: 1px solid rgba(255, 193, 7, 0.3);
+    color: #fbbf24;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .loading-skeleton {
+    .skeleton-field {
+      background: linear-gradient(90deg, #404040 25%, #555555 50%, #404040 75%);
+    }
+  }
+
+  .error-container {
+    background: rgba(254, 242, 242, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    color: #fca5a5;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
   }
 }
 

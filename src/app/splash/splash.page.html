@@ -1,0 +1,50 @@
+<ion-content class="splash-content" fullscreen>
+  <div class="splash-container">
+    <!-- Logo Section -->
+    <div class="logo-section">
+      <div class="logo-container">
+        <img src="assets/kalinga-logo.png" alt="Kalinga Logo" class="app-logo" />
+      </div>
+      <h1 class="app-name">KALINGA</h1>
+      <p class="app-tagline">Making a Difference Together</p>
+    </div>
+
+    <!-- Loading Animation -->
+    <div class="loading-section">
+      <div class="loading-spinner">
+        <div class="spinner-ring"></div>
+        <div class="spinner-ring"></div>
+        <div class="spinner-ring"></div>
+      </div>
+      
+      <!-- Progress Bar -->
+      <div class="progress-container">
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="progress"></div>
+        </div>
+        <p class="loading-text">Loading...</p>
+      </div>
+    </div>
+
+    <!-- Features Preview -->
+    <div class="features-preview">
+      <div class="feature-item">
+        <ion-icon name="heart" class="feature-icon"></ion-icon>
+        <span class="feature-text">Volunteer</span>
+      </div>
+      <div class="feature-item">
+        <ion-icon name="people" class="feature-icon"></ion-icon>
+        <span class="feature-text">Community</span>
+      </div>
+      <div class="feature-item">
+        <ion-icon name="hand-left" class="feature-icon"></ion-icon>
+        <span class="feature-text">Help</span>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="splash-footer">
+      <p class="version-text">Version 1.0.0</p>
+    </div>
+  </div>
+</ion-content>

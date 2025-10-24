@@ -7,7 +7,7 @@ import * as mapboxgl from 'mapbox-gl';
 import { Geolocation } from '@capacitor/geolocation';
 import { environment } from '../../environments/environment';
 import { LocalNotifications } from '@capacitor/local-notifications';
-import { switchMap, of, from, map, Observable, forkJoin } from 'rxjs';
+import { switchMap, of, from, map, Observable, forkJoin, first } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -59,6 +59,28 @@ export class HomePage implements OnInit, AfterViewInit {
     });
   }
 
+  // Pull-to-refresh functionality
+  doRefresh(event: any) {
+    console.log('Refreshing home page data...');
+    
+    // Refresh user data
+    this.loadUserData();
+    
+    // Refresh featured missions
+    this.fetchFeaturedMissions();
+    
+    // Refresh map if it exists
+    if (this.map) {
+      this.retryMapLoad();
+    }
+    
+    // Complete the refresh after a short delay to show the loading state
+    setTimeout(() => {
+      event.target.complete();
+      console.log('Home page refresh completed');
+    }, 1000);
+  }
+
   // Refresh data when page becomes active (when navigating back from Profile Info)
   ionViewWillEnter() {
     this.loadUserData();
@@ -70,6 +92,7 @@ export class HomePage implements OnInit, AfterViewInit {
   private loadUserData() {
     // Use Angular Fire's authState observable properly with proper error handling
     authState(this.auth).pipe(
+      first(), // Add first() to avoid injection context warning
       switchMap((user: User | null) => {
         if (user) {
           // Now getUserByUID returns an Observable, so we can use it directly
@@ -321,8 +344,7 @@ export class HomePage implements OnInit, AfterViewInit {
     if (user) {
       return this.firestoreService.applyToMission(
         missionId,
-        user.uid,
-        user.displayName || user.email || 'Volunteer'
+        user.uid
       );
     } else {
       return of(null).pipe(

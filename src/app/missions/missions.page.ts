@@ -141,8 +141,7 @@ export class MissionsPage implements OnInit {
     if (user) {
       return this.firestoreService.applyToMission(
         missionId,
-        user.uid,
-        user.displayName || user.email || 'Volunteer'
+        user.uid
       );
     } else {
       return of(null).pipe(
@@ -359,6 +358,25 @@ export class MissionsPage implements OnInit {
   // New methods for redesigned UI
   getTotalVolunteers(): number {
     return this.missions.reduce((total, mission) => total + (mission.volunteers || 0), 0);
+  }
+
+  // Get count of active missions (excluding today/ongoing missions)
+  getActiveMissionCount(): number {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Start of today
+    
+    return this.missions.filter(mission => {
+      const missionDate = new Date(mission.date);
+      missionDate.setHours(0, 0, 0, 0); // Start of mission date
+      
+      // Only count missions that are:
+      // 1. Status is 'open' or 'active'
+      // 2. Date is after today (not today or ongoing)
+      const isOpen = mission.status?.toLowerCase() === 'open' || mission.status?.toLowerCase() === 'active';
+      const isFuture = missionDate > today;
+      
+      return isOpen && isFuture;
+    }).length;
   }
 
   toggleServiceFilter(service: string) {

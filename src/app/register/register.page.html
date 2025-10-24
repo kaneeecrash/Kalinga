@@ -28,7 +28,22 @@
 
   <!-- Register Form Card -->
   <div class="register-card">
-    <form [formGroup]="regForm" (ngSubmit)="onRegister()" class="register-form">
+    <!-- Offline Warning -->
+    <div *ngIf="!isOnline" class="offline-warning">
+      <ion-icon name="wifi-outline"></ion-icon>
+      <span>You're currently offline. Please check your internet connection.</span>
+    </div>
+
+    <!-- Loading Skeleton -->
+    <div *ngIf="loading" class="loading-skeleton">
+      <ion-skeleton-text animated class="skeleton-field"></ion-skeleton-text>
+      <ion-skeleton-text animated class="skeleton-field"></ion-skeleton-text>
+      <ion-skeleton-text animated class="skeleton-field"></ion-skeleton-text>
+      <ion-skeleton-text animated class="skeleton-field"></ion-skeleton-text>
+      <ion-skeleton-text animated class="skeleton-field"></ion-skeleton-text>
+    </div>
+
+    <form *ngIf="!loading" [formGroup]="regForm" (ngSubmit)="onRegister()" class="register-form" role="form" aria-label="Registration form">
       
       <!-- Username Field -->
       <div class="form-group">
@@ -41,7 +56,12 @@
             placeholder="Choose a username"
             autocomplete="username"
             class="form-input"
-            [class.error]="regForm.get('userName')?.invalid && regForm.get('userName')?.touched || usernameError">
+            [class.valid]="usernameAvailable === true"
+            [class.invalid]="regForm.get('userName')?.invalid && regForm.get('userName')?.touched || usernameError"
+            [class.error]="regForm.get('userName')?.invalid && regForm.get('userName')?.touched || usernameError"
+            aria-label="Username"
+            aria-describedby="username-error username-success"
+            [attr.aria-invalid]="regForm.get('userName')?.invalid ? 'true' : 'false'">
           </ion-input>
           <!-- Username validation indicator -->
           <div class="username-indicator">
@@ -51,14 +71,20 @@
           </div>
         </div>
         <div *ngIf="regForm.get('userName')?.invalid && regForm.get('userName')?.touched" 
-             class="error-message">
-          Username is required
+             class="error-message" 
+             id="username-error"
+             role="alert">
+          <ion-icon name="information-circle-outline"></ion-icon>
+          <span *ngIf="regForm.get('userName')?.errors?.['required']">Username is required</span>
+          <span *ngIf="regForm.get('userName')?.errors?.['minlength']">Username must be at least 3 characters</span>
         </div>
-        <div *ngIf="usernameError" class="error-message">
-          {{ usernameError }}
+        <div *ngIf="usernameError" class="error-message" role="alert">
+          <ion-icon name="information-circle-outline"></ion-icon>
+          <span>{{ usernameError }}</span>
         </div>
-        <div *ngIf="usernameAvailable === true && !usernameChecking" class="success-message">
-          ✓ Username is available
+        <div *ngIf="usernameAvailable === true && !usernameChecking" class="success-message" id="username-success">
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+          <span>Username is available</span>
         </div>
       </div>
 
@@ -112,17 +138,38 @@
           <ion-input
             id="password"
             formControlName="password"
-            type="password"
+            [type]="showPassword ? 'text' : 'password'"
             placeholder="Create a password"
             autocomplete="new-password"
             class="form-input"
             [class.error]="regForm.get('password')?.invalid && regForm.get('password')?.touched">
           </ion-input>
+          <ion-icon 
+            [name]="showPassword ? 'eye-off-outline' : 'eye-outline'" 
+            class="password-toggle"
+            (click)="togglePasswordVisibility()">
+          </ion-icon>
         </div>
+        
+        <!-- Password strength indicator -->
+        <div *ngIf="shouldShowPasswordStrength" 
+             class="password-strength">
+          <div class="strength-bar">
+            <div class="strength-fill" 
+                 [style.width.%]="(passwordStrength / 5) * 100"
+                 [class]="passwordStrengthColor">
+            </div>
+          </div>
+          <span class="strength-text" [class]="passwordStrengthColor">
+            {{ passwordStrengthText }}
+          </span>
+        </div>
+        
         <div *ngIf="regForm.get('password')?.invalid && regForm.get('password')?.touched" 
              class="error-message">
           <span *ngIf="regForm.get('password')?.errors?.['required']">Password is required</span>
           <span *ngIf="regForm.get('password')?.errors?.['minlength']">Password must be at least 6 characters</span>
+          <span *ngIf="regForm.get('password')?.errors?.['pattern']">Password must contain at least one letter and one number</span>
         </div>
       </div>
 
@@ -134,12 +181,17 @@
           <ion-input
             id="confirmPassword"
             formControlName="confirmPassword"
-            type="password"
+            [type]="showConfirmPassword ? 'text' : 'password'"
             placeholder="Confirm your password"
             autocomplete="new-password"
             class="form-input"
             [class.error]="regForm.get('confirmPassword')?.invalid && regForm.get('confirmPassword')?.touched">
           </ion-input>
+          <ion-icon 
+            [name]="showConfirmPassword ? 'eye-off-outline' : 'eye-outline'" 
+            class="password-toggle"
+            (click)="toggleConfirmPasswordVisibility()">
+          </ion-icon>
         </div>
         <div *ngIf="regForm.get('confirmPassword')?.invalid && regForm.get('confirmPassword')?.touched" 
              class="error-message">
@@ -156,16 +208,37 @@
         expand="block"
         type="submit"
         class="register-btn"
-        [disabled]="regForm.invalid || loading || usernameAvailable === false || usernameChecking">
+        [disabled]="!isFormValid || loading"
+        [class.loading]="loading">
         <ion-spinner *ngIf="loading" name="crescent" size="small"></ion-spinner>
         <span *ngIf="!loading">Create Account</span>
         <span *ngIf="loading">Creating Account...</span>
       </ion-button>
 
-      <!-- Error Message -->
-      <div *ngIf="errorMsg" class="error-container">
+      <!-- Enhanced Error Message -->
+      <div *ngIf="errorMsg" class="error-container" role="alert">
         <ion-icon name="warning-outline"></ion-icon>
-        <span>{{ errorMsg }}</span>
+        <div class="error-content">
+          <span class="error-title">Registration Failed</span>
+          <span class="error-message">{{ errorMsg }}</span>
+        </div>
+      </div>
+
+      <!-- Social Login Section -->
+      <div class="social-login-section">
+        <div class="divider">
+          <span>or continue with</span>
+        </div>
+        
+        <ion-button 
+          expand="block" 
+          fill="outline" 
+          class="google-login-btn"
+          (click)="registerWithGoogle()"
+          [disabled]="loading">
+          <ion-icon name="logo-google" slot="start"></ion-icon>
+          <span>Continue with Google</span>
+        </ion-button>
       </div>
 
       <!-- Sign In Link -->
