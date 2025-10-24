@@ -62,11 +62,34 @@ $accent-shadow: rgba(0, 100, 0, 0.09); // Adjust shadow to match dark green
   font-size: 15px;
 }
 
-.notif-icon {
+.notification-icon-container {
+  position: relative;
   margin-left: auto;
+  display: flex;
+  align-items: center;
+}
+
+.notif-icon {
   font-size: 45px;
   color: $accent-white;
+  cursor: pointer;
 }
+
+.notification-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  font-size: 12px;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  z-index: 10;
+}
+
 
 // Titles
 .featured-missions-title, .ongoing-title {

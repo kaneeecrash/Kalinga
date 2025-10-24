@@ -1,0 +1,158 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Push Notification Test</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="container">
+    
+    <!-- Status Section -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Current Status</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item>
+          <ion-label>
+            <h3>Platform</h3>
+            <p>{{ platform }}</p>
+          </ion-label>
+        </ion-item>
+        
+        <ion-item>
+          <ion-label>
+            <h3>Permission Status</h3>
+            <p>
+              <ion-badge [color]="getStatusColor()">{{ getStatusText() }}</ion-badge>
+            </p>
+          </ion-label>
+        </ion-item>
+        
+        <ion-item>
+          <ion-label>
+            <h3>Device Token</h3>
+            <p class="token-text">{{ currentToken || 'Not available' }}</p>
+          </ion-label>
+          <ion-button 
+            *ngIf="currentToken" 
+            slot="end" 
+            fill="clear" 
+            size="small"
+            (click)="copyTokenToClipboard()">
+            <ion-icon name="copy-outline"></ion-icon>
+          </ion-button>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Actions Section -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Test Actions</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-button 
+          expand="block" 
+          (click)="requestPermissions()"
+          [disabled]="permissionStatus === 'granted'">
+          <ion-icon name="notifications-outline" slot="start"></ion-icon>
+          Request Push Permission
+        </ion-button>
+        
+        <ion-button 
+          expand="block" 
+          fill="outline" 
+          (click)="sendTestLocalNotification()">
+          <ion-icon name="send-outline" slot="start"></ion-icon>
+          Send Test Local Notification
+        </ion-button>
+        
+        <ion-button 
+          expand="block" 
+          fill="outline" 
+          color="secondary"
+          (click)="loadDeliveredNotifications()">
+          <ion-icon name="refresh-outline" slot="start"></ion-icon>
+          Refresh Delivered Notifications
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Delivered Notifications Section -->
+    <ion-card *ngIf="deliveredNotifications.length > 0">
+      <ion-card-header>
+        <ion-card-title>Delivered Notifications</ion-card-title>
+        <ion-button 
+          slot="end" 
+          fill="clear" 
+          size="small"
+          (click)="clearDeliveredNotifications()">
+          Clear All
+        </ion-button>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item *ngFor="let notification of deliveredNotifications">
+            <ion-label>
+              <h3>{{ notification.title }}</h3>
+              <p>{{ notification.body }}</p>
+              <p class="notification-id">ID: {{ notification.id }}</p>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Instructions Section -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Next Steps</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item>
+            <ion-icon name="checkmark-circle-outline" slot="start" color="success"></ion-icon>
+            <ion-label>
+              <h3>1. Download google-services.json</h3>
+              <p>From Firebase Console → Project Settings → Your apps → Android</p>
+            </ion-label>
+          </ion-item>
+          
+          <ion-item>
+            <ion-icon name="checkmark-circle-outline" slot="start" color="success"></ion-icon>
+            <ion-label>
+              <h3>2. Place in android/app/</h3>
+              <p>Copy google-services.json to android/app/google-services.json</p>
+            </ion-label>
+          </ion-item>
+          
+          <ion-item>
+            <ion-icon name="checkmark-circle-outline" slot="start" color="success"></ion-icon>
+            <ion-label>
+              <h3>3. Sync Capacitor</h3>
+              <p>Run: npx cap sync android</p>
+            </ion-label>
+          </ion-item>
+          
+          <ion-item>
+            <ion-icon name="checkmark-circle-outline" slot="start" color="success"></ion-icon>
+            <ion-label>
+              <h3>4. Build & Test</h3>
+              <p>Run: npx cap run android</p>
+            </ion-label>
+          </ion-item>
+          
+          <ion-item>
+            <ion-icon name="checkmark-circle-outline" slot="start" color="success"></ion-icon>
+            <ion-label>
+              <h3>5. Send Test Push</h3>
+              <p>Use Firebase Console → Cloud Messaging → Send test message</p>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
+  </div>
+</ion-content>

@@ -19,6 +19,7 @@
     text-align: center;
     margin: 0;
     max-width: 220px; // Optional: keeps it nice on big screens
+    position: relative;
   }
   .tab-btn.active {
     background: #390C00;
@@ -30,29 +31,387 @@
   }
 }
 
-.notif-empty {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-top: 18vh;
+.tab-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  font-size: 10px;
+  min-width: 18px;
+  height: 18px;
+}
 
-    img {
-        width: 160px;
-        margin-bottom: 30px;
-        // user-drag: none;
+.notifications-container {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 200px); // Increased height to ensure button visibility
+  margin-bottom: 0; // Remove margin to maximize space
+}
+
+.notifications-list {
+  flex: 1;
+  padding: 16px;
+  background: #ffffff; // White background for consistency
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch; // Smooth scrolling on iOS
+  
+  // Custom scrollbar styling (WebKit browsers)
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: var(--ion-color-medium);
+    border-radius: 3px;
+  }
+  
+  &::-webkit-scrollbar-thumb:hover {
+    background: var(--ion-color-dark);
+  }
+}
+
+.notification-card {
+  margin-bottom: 12px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  cursor: pointer;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  // UNREAD STATE - Highlighted
+  &.unread {
+    background: linear-gradient(135deg, #f8f9ff 0%, #e3f2fd 100%);
+    border-left: 4px solid var(--ion-color-primary);
+    
+    .notification-title {
+      font-weight: 600;
+      color: var(--ion-color-primary);
     }
-    h2 {
+  }
+
+  // READ STATE - Normal
+  &:not(.unread) {
+    background: #ffffff; // White background for consistency
+    border-left: 4px solid transparent;
+    
+    .notification-title {
+      font-weight: 500; // Keep some weight for readability
+      color: #2c2c2c; // Darker, more visible color
+      opacity: 1; // Ensure full opacity
+    }
+  }
+}
+
+.notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+
+  .notification-icon {
+    font-size: 20px;
+  }
+
+  .notification-time {
+    font-size: 12px;
+    color: var(--ion-color-medium);
+    font-weight: 500;
+  }
+}
+
+.notification-content {
+  .notification-title {
+    font-size: 16px;
+    margin: 0 0 4px 0;
+    line-height: 1.3;
+    transition: all 0.3s ease;
+  }
+
+  .notification-body {
+    font-size: 14px;
+    color: var(--ion-color-medium);
+    margin: 0;
+    line-height: 1.4;
+  }
+}
+
+.clear-all-section {
+  padding: 16px; // More padding for better visibility
+  border-top: 4px solid #006400; // Green border to match app theme
+  background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%); // Light green gradient background
+  flex-shrink: 0; // Prevent shrinking
+  box-shadow: 0 -6px 16px rgba(0, 100, 0, 0.2); // Green shadow for prominence
+  position: sticky; // Make it stick to bottom
+  bottom: 0;
+  z-index: 100; // Higher z-index to ensure it's above everything
+  margin-top: auto; // Push to bottom
+
+  .clear-all-button {
+    --border-radius: 10px; // Larger border radius
+    font-weight: 800; // Extra bold font
+    font-size: 16px; // Larger font
+    --padding-top: 12px; // More padding
+    --padding-bottom: 12px;
+    --padding-start: 24px;
+    --padding-end: 24px;
+    height: 48px; // Taller for better visibility
+    --background: linear-gradient(135deg, #006400 0%, #004d00 100%); // Green gradient background
+    --color: #ffffff; // White text
+    --border-color: #006400; // Green border
+    box-shadow: 0 4px 12px rgba(0, 100, 0, 0.3); // Green button shadow
+    width: 100%; // Full width
+    background: linear-gradient(135deg, #006400 0%, #004d00 100%); // Ensure gradient works
+    border: none; // Remove default border
+    transition: all 0.3s ease; // Smooth transitions
+    
+    &:hover {
+      background: linear-gradient(135deg, #004d00 0%, #003300 100%); // Darker gradient on hover
+      transform: translateY(-2px); // Lift effect
+      box-shadow: 0 6px 16px rgba(0, 100, 0, 0.4); // Stronger shadow on hover
+    }
+    
+    &:active {
+      transform: translateY(0); // Press effect
+      box-shadow: 0 2px 8px rgba(0, 100, 0, 0.3); // Reduced shadow when pressed
+    }
+  }
+}
+
+// Animation for new notifications
+@keyframes slideInFromTop {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.notification-card {
+  animation: slideInFromTop 0.3s ease-out;
+}
+
+.notif-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  text-align: center;
+  padding: 20px;
+
+  img {
+    width: 160px;
+    margin-bottom: 30px;
+  }
+
+  h2 {
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 8px;
+    color: #181818;
+  }
+
+  p {
+    font-size: 16px;
+    color: #444;
+    text-align: center;
+    margin-bottom: 24px;
+    max-width: 260px;
+  }
+
+}
+
+// Global white theme for the entire page
+:host {
+  --background: #ffffff;
+}
+
+// Ensure proper scrolling behavior and white theme
+ion-content {
+  --overflow: auto;
+  --background: #ffffff; // White background for content
+}
+
+// Fix header background
+ion-header {
+  ion-toolbar {
+    --background: #ffffff; // White background for header
+    --color: #000000; // Black text for contrast
+    --border-color: #e0e0e0; // Light border
+  }
+}
+
+// Modal Styles
+ion-modal {
+  --background: #ffffff; // White background for modal
+}
+
+ion-modal ion-header ion-toolbar {
+  --background: #ffffff; // White background for modal header
+  --color: #000000; // Black text for contrast
+  --border-color: #e0e0e0; // Light border
+}
+
+.notification-details {
+  background: #ffffff; // White background for consistency
+  
+  .details-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--ion-color-light-shade);
+
+    .details-icon {
+      font-size: 32px;
+      margin-top: 4px;
+      flex-shrink: 0; // Prevent icon from shrinking
+    }
+
+    .details-meta {
+      flex: 1;
+      min-width: 0; // Allow text to wrap properly
+
+      h2 {
         font-size: 20px;
-        font-weight: bold;
-        text-align: center;
-        margin-bottom: 8px;
-        color: #181818;
+        font-weight: 600;
+        margin: 0 0 8px 0;
+        color: #1a1a1a; // Much darker color for better readability
+        line-height: 1.3;
+        word-wrap: break-word; // Allow long words to break
+        overflow-wrap: break-word; // Modern browsers
+        hyphens: auto; // Add hyphens for long words
+      }
+
+      .details-time {
+        font-size: 14px;
+        color: var(--ion-color-medium);
+        margin: 0 0 12px 0;
+      }
+
+      ion-chip {
+        font-size: 12px;
+      }
     }
-    p {
-        font-size: 16px;
-        color: #444;
-        text-align: center;
-        margin-bottom: 0;
-        max-width: 260px;
+  }
+
+  .details-content {
+    h3 {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 0 0 8px 0;
+      color: #1a1a1a; // Much darker color for better readability
     }
+
+    .details-body {
+      font-size: 16px;
+      line-height: 1.5;
+      color: #2c2c2c; // Darker color for better readability
+      margin: 0 0 24px 0;
+      word-wrap: break-word; // Allow long words to break
+      overflow-wrap: break-word; // Modern browsers
+      hyphens: auto; // Add hyphens for long words
+      white-space: pre-wrap; // Preserve line breaks and wrap text
+    }
+
+    .details-data {
+      margin-bottom: 24px;
+
+      ion-card {
+        margin: 8px 0 0 0;
+
+        pre {
+          font-size: 12px;
+          color: var(--ion-color-medium);
+          margin: 0;
+          white-space: pre-wrap;
+          word-break: break-all;
+          overflow-x: auto; // Allow horizontal scrolling for very long content
+        }
+      }
+    }
+
+    .details-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+
+      ion-button {
+        flex: 1;
+      }
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .notifications-container {
+    height: calc(100vh - 180px); // Adequate height on mobile
+    margin-bottom: 0; // No margin on mobile
+  }
+
+  .notifications-list {
+    padding: 12px;
+  }
+  
+  .notification-card {
+    margin-bottom: 8px;
+  }
+
+  .clear-all-section {
+    padding: 12px; // Adequate padding on mobile
+    position: sticky; // Ensure it sticks on mobile too
+    bottom: 0;
+    z-index: 100; // High z-index on mobile too
+    background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%); // Maintain green gradient on mobile
+    
+    .clear-all-button {
+      height: 44px; // Slightly smaller on mobile
+      font-size: 15px; // Slightly smaller font on mobile
+      background: linear-gradient(135deg, #006400 0%, #004d00 100%); // Ensure gradient on mobile
+    }
+  }
+
+  .notification-details {
+    .details-header {
+      flex-direction: column;
+      gap: 12px;
+      
+      .details-icon {
+        align-self: flex-start;
+      }
+      
+      .details-meta {
+        h2 {
+          font-size: 18px; // Slightly smaller on mobile
+        }
+      }
+    }
+    
+    .details-content {
+      .details-body {
+        font-size: 15px; // Slightly smaller on mobile
+      }
+    }
+    
+    .details-actions {
+      flex-direction: column;
+      
+      ion-button {
+        flex: none;
+      }
+    }
+  }
 }

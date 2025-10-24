@@ -378,4 +378,33 @@ export class FirestoreService {
       })
     );
   }
+
+  // ---- NEW: Device Token Management ----
+  saveDeviceToken(userId: string, token: string, deviceInfo: any): Observable<void> {
+    const tokenRef = doc(this.firestore, 'deviceTokens', `${userId}_${token.substring(0, 20)}`);
+    const tokenData = {
+      userId,
+      token,
+      deviceInfo,
+      updatedAt: new Date()
+    };
+    return from(setDoc(tokenRef, tokenData));
+  }
+
+  getDeviceTokens(userId: string): Observable<any[]> {
+    const tokensRef = collection(this.firestore, 'deviceTokens');
+    const q = query(tokensRef, where('userId', '==', userId));
+    return from(getDocs(q)).pipe(
+      map(querySnapshot => 
+        querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }))
+      ),
+      catchError(error => {
+        console.error('Error getting device tokens:', error);
+        return of([]);
+      })
+    );
+  }
 }

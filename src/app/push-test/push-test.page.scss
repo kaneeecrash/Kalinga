@@ -1,0 +1,41 @@
+.container {
+  padding: 16px;
+}
+
+.token-text {
+  font-family: monospace;
+  font-size: 12px;
+  word-break: break-all;
+  color: var(--ion-color-medium);
+}
+
+.notification-id {
+  font-size: 10px;
+  color: var(--ion-color-medium);
+}
+
+ion-card {
+  margin-bottom: 16px;
+}
+
+ion-card-title {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+ion-button {
+  margin-bottom: 8px;
+}
+
+ion-item {
+  --padding-start: 0;
+  --inner-padding-end: 0;
+}
+
+ion-list {
+  padding: 0;
+}
+
+ion-badge {
+  font-size: 12px;
+}

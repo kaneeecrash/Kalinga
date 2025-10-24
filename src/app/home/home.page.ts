@@ -1,13 +1,14 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { FirestoreService } from '../services/firestore.service'; // Import your Firestore service
+import { PushNotificationService } from '../services/push-notification.service';
 import { Auth, authState, User } from '@angular/fire/auth';
 import * as mapboxgl from 'mapbox-gl';
 import { Geolocation } from '@capacitor/geolocation';
 import { environment } from '../../environments/environment';
 import { LocalNotifications } from '@capacitor/local-notifications';
-import { switchMap, of, from, map, Observable, forkJoin } from 'rxjs';
+import { switchMap, of, from, map, Observable, forkJoin, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -15,7 +16,7 @@ import { switchMap, of, from, map, Observable, forkJoin } from 'rxjs';
   styleUrls: ['./home.page.scss'],
   standalone: false
 })
-export class HomePage implements OnInit, AfterViewInit {
+export class HomePage implements OnInit, AfterViewInit, OnDestroy {
 
   user: { userName?: string; displayName?: string; photoURL?: string; uid?: string } | null = null;
   userLat = 10.291389; // Your current location: 10°17'29.0"N
@@ -32,10 +33,15 @@ export class HomePage implements OnInit, AfterViewInit {
   mapLoadAttempts = 0;
   maxMapLoadAttempts = 3;
 
+  // Notification badge properties
+  unreadNotificationCount = 0;
+  private notificationSubscription?: Subscription;
+
   constructor(
     private nav: NavController,
     private router: Router,
     private firestoreService: FirestoreService, // Inject FirestoreService
+    private pushNotificationService: PushNotificationService,
     private auth: Auth
   ) {}
 
@@ -47,6 +53,7 @@ export class HomePage implements OnInit, AfterViewInit {
           console.log('User is authenticated, loading data...');
           this.loadUserData();
           this.fetchFeaturedMissions();
+          this.setupNotificationListener();
         } else {
           console.log('User not authenticated, redirecting to login...');
           this.router.navigate(['/login']);
@@ -59,11 +66,41 @@ export class HomePage implements OnInit, AfterViewInit {
     });
   }
 
+  ngOnDestroy() {
+    if (this.notificationSubscription) {
+      this.notificationSubscription.unsubscribe();
+    }
+  }
+
+  private setupNotificationListener() {
+    // Listen for new notifications to update badge count
+    this.notificationSubscription = this.pushNotificationService.newNotification$.subscribe(notification => {
+      if (notification) {
+        this.unreadNotificationCount++;
+        console.log('New notification received on home page, badge count:', this.unreadNotificationCount);
+      }
+    });
+
+    // Load existing notifications from localStorage to set initial count
+    this.loadUnreadNotificationCount();
+  }
+
+  private loadUnreadNotificationCount() {
+    const savedNotifications = localStorage.getItem('notifications');
+    if (savedNotifications) {
+      const notifications = JSON.parse(savedNotifications);
+      this.unreadNotificationCount = notifications.filter((n: any) => !n.read).length;
+      console.log('Loaded unread notification count:', this.unreadNotificationCount);
+    }
+  }
+
   // Refresh data when page becomes active (when navigating back from Profile Info)
   ionViewWillEnter() {
     this.loadUserData();
     // Also refresh mission statuses when returning to homepage
     this.loadUserMissionStatuses();
+    // Refresh notification count when returning to home page
+    this.loadUnreadNotificationCount();
   }
 
   // Extract user loading logic into a reusable method

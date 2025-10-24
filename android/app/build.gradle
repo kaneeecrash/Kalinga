@@ -51,6 +51,9 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
     implementation project(':capacitor-cordova-android-plugins')
     
+    // Firebase Cloud Messaging for push notifications
+    implementation 'com.google.firebase:firebase-messaging:23.4.1'
+    
     // Mapbox dependencies
     implementation 'com.mapbox.maps:android:10.16.1'
 }

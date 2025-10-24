@@ -8,7 +8,12 @@
       <div class="header-username">{{ user?.userName || user?.displayName || 'User' }}</div>
       <div class="header-tagline">Ready to make a difference today?</div>
     </div>
-    <ion-icon name="notifications-outline" class="notif-icon" (click)="goToNotifications()"></ion-icon>
+    <div class="notification-icon-container">
+      <ion-icon name="notifications-outline" class="notif-icon" (click)="goToNotifications()"></ion-icon>
+      <ion-badge *ngIf="unreadNotificationCount > 0" color="danger" class="notification-badge">
+        {{ unreadNotificationCount }}
+      </ion-badge>
+    </div>
   </div>
 
   <div class="featured-missions-title">Featured Missions</div>

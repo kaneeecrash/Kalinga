@@ -51,6 +51,10 @@ const routes: Routes = [
     path: 'emergency',
     loadChildren: () => import('./emergency/emergency.module').then(m => m.EmergencyPageModule)
   },
+  {
+    path: 'push-test',
+    loadChildren: () => import('./push-test/push-test.module').then(m => m.PushTestPageModule)
+  },
 ];
 
 @NgModule({

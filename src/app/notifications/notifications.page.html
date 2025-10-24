@@ -1,6 +1,11 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>Messages</ion-title>
+    <ion-buttons slot="end" *ngIf="selectedTab === 'notifications' && notifications.length > 0">
+      <ion-button (click)="clearAllNotifications()" fill="clear" size="small">
+        <ion-icon name="trash-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -21,6 +26,9 @@
       (click)="selectTab('notifications')"
     >
       Notifications
+      <ion-badge *ngIf="getUnreadCount() > 0" color="danger" class="tab-badge">
+        {{ getUnreadCount() }}
+      </ion-badge>
     </button>
   </div>
 
@@ -32,9 +40,126 @@
   </div>
 
   <!-- Notifications Tab -->
-  <div *ngIf="selectedTab === 'notifications'" class="notif-empty">
-    <img src="assets/notifs/noNotif.png" alt="No notifications" />
-    <h2>Notifications will appear here</h2>
-    <p>Watch this space for offers, updates, and more.</p>
+  <div *ngIf="selectedTab === 'notifications'">
+    
+    <!-- Empty State -->
+    <div *ngIf="notifications.length === 0" class="notif-empty">
+      <img src="assets/notifs/noNotif.png" alt="No notifications" />
+      <h2>No notifications yet</h2>
+      <p>You'll see push notifications here when they arrive.</p>
+    </div>
+
+    <!-- Notifications List -->
+    <div *ngIf="notifications.length > 0" class="notifications-container">
+      <div class="notifications-list">
+        <ion-card 
+          *ngFor="let notification of notifications" 
+          class="notification-card"
+          [class.unread]="!notification.read"
+          (click)="viewNotificationDetails(notification)">
+          
+          <ion-card-content>
+            <div class="notification-header">
+              <ion-icon 
+                [name]="getNotificationIcon(notification.type || 'general')" 
+                [color]="getNotificationColor(notification.type || 'general')"
+                class="notification-icon">
+              </ion-icon>
+              <span class="notification-time">{{ formatTimestamp(notification.timestamp) }}</span>
+            </div>
+            
+            <div class="notification-content">
+              <h3 class="notification-title" [class.unread-title]="!notification.read">
+                {{ notification.title }}
+              </h3>
+              <p class="notification-body">{{ notification.body }}</p>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </div>
+
+      <!-- Clear All Button (Fixed at Bottom) -->
+      <div class="clear-all-section">
+        <ion-button 
+          (click)="clearAllNotifications()" 
+          fill="outline" 
+          color="medium" 
+          expand="block"
+          class="clear-all-button">
+          <ion-icon name="trash-outline" slot="start"></ion-icon>
+          Clear All Notifications
+        </ion-button>
+      </div>
+    </div>
+
   </div>
 </ion-content>
+
+<!-- Notification Details Modal -->
+<ion-modal [isOpen]="isModalOpen" (didDismiss)="setOpen(false)">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Notification Details</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="setOpen(false)">
+            <ion-icon name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    
+    <ion-content class="ion-padding" *ngIf="selectedNotification">
+      <div class="notification-details">
+        <div class="details-header">
+          <ion-icon 
+            [name]="getNotificationIcon(selectedNotification.type || 'general')" 
+            [color]="getNotificationColor(selectedNotification.type || 'general')"
+            class="details-icon">
+          </ion-icon>
+          <div class="details-meta">
+            <h2>{{ selectedNotification.title }}</h2>
+            <p class="details-time">{{ formatTimestamp(selectedNotification.timestamp) }}</p>
+            <ion-chip [color]="getNotificationColor(selectedNotification.type || 'general')" outline>
+              <ion-icon [name]="getNotificationIcon(selectedNotification.type || 'general')"></ion-icon>
+              <ion-label>{{ selectedNotification.type || 'general' | titlecase }}</ion-label>
+            </ion-chip>
+          </div>
+        </div>
+        
+        <div class="details-content">
+          <h3>Message</h3>
+          <p class="details-body">{{ selectedNotification.body }}</p>
+          
+          <div *ngIf="selectedNotification.data" class="details-data">
+            <h3>Additional Data</h3>
+            <ion-card>
+              <ion-card-content>
+                <pre>{{ selectedNotification.data | json }}</pre>
+              </ion-card-content>
+            </ion-card>
+          </div>
+          
+          <div class="details-actions">
+            <ion-button 
+              *ngIf="!selectedNotification.read" 
+              (click)="markAsRead(selectedNotification); setOpen(false)" 
+              fill="solid" 
+              color="primary">
+              <ion-icon name="checkmark-outline" slot="start"></ion-icon>
+              Mark as Read
+            </ion-button>
+            
+            <ion-button 
+              (click)="deleteNotification(selectedNotification); setOpen(false)" 
+              fill="outline" 
+              color="danger">
+              <ion-icon name="trash-outline" slot="start"></ion-icon>
+              Delete Notification
+            </ion-button>
+          </div>
+        </div>
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>
