@@ -1,4 +1,13 @@
 <ion-content class="home-bg" fullscreen>
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content
+      pullingIcon="chevron-down-circle-outline"
+      pullingText="Pull to refresh"
+      refreshingSpinner="circles"
+      refreshingText="Refreshing...">
+    </ion-refresher-content>
+  </ion-refresher>
+
   <div class="home-header">
     <div class="avatar">
       <img [src]="user?.photoURL || 'assets/avatar.png'" alt="Avatar" />
@@ -20,9 +29,16 @@
   <div class="featured-missions-scroll">
     <div class="mission-card" *ngFor="let mission of featuredMissions" [ngClass]="{'open': mission.status?.toLowerCase() === 'open'}" (click)="goToMissionDetail(mission.id)">
       <div class="mission-type">{{ mission.missionName }}</div>
-      <div class="mission-details">📍{{ mission.location }}</div>
-      <div class="mission-datetime">⏰{{ mission.date | date:'MMMM d, y' }} | {{ formatTimeTo12Hour(mission.start_time || mission.startTime) }} - {{ formatTimeTo12Hour(mission.end_time || mission.endTime) }}</div>
-      <div class="mission-details">volunteers needed: {{ mission.volunteers }}</div>
+      <div class="mission-details">📍{{ formatLocation(mission.location) }}</div>
+      <div class="mission-details">
+        <ion-icon name="calendar-outline"></ion-icon>
+        {{ mission.date | date:'MMMM d, y' }}
+      </div>
+      <div class="mission-details">
+        <ion-icon name="time-outline"></ion-icon>
+        {{ formatTimeTo12Hour(mission.start_time || mission.startTime) }} - {{ formatTimeTo12Hour(mission.end_time || mission.endTime) }}
+      </div>
+      <div class="mission-details">👥 Volunteers needed: {{ mission.volunteers }}</div>
       <div class="mission-details">{{ mission.distance }}</div>
       <div class="mission-actions">
         <ion-button size="small" 
@@ -40,7 +56,7 @@
       <ion-col size="4">
         <div class="action-card" (click)="goToJoinMission()">
           <img src="assets/icons/join-mission.png" alt="Join Mission" />
-          <div class="label">JOIN<br>MISSION</div>
+          <div class="label">JOIN MISSION</div>
         </div>
       </ion-col>
       <ion-col size="4">
@@ -61,7 +77,7 @@
   <div class="ongoing-title">Ongoing Missions near you</div>
   <div class="map-container">
     <div id="map" aria-label="Map of ongoing missions"></div>
-    <div id="map-error" class="map-error" style="display: none;">
+    <div id="map-error" class="map-error">
       <ion-icon name="warning-outline"></ion-icon>
       <p>Map temporarily unavailable</p>
       <ion-button size="small" (click)="retryMapLoad()">Retry</ion-button>

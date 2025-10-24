@@ -8,21 +8,177 @@ ion-footer {
   z-index: 1000;
   
   ion-tab-bar {
-    --background: #fff;
-    --color-selected: #ff3c6f;
-    --color: #444;
-    border-radius: 18px 18px 0 0;
-    box-shadow: 0 -2px 10px #0001;
-    height: 60px;
+    --background: #ffffff;
+    --color-selected: #006400;
+    --color: #666666;
+    --color-hover: #006400;
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.08);
+    height: 65px;
     margin: 0;
-    padding: 0;
-    padding-bottom: 0 !important;
+    padding: 6px 4px 8px 4px;
+    padding-bottom: calc(8px + env(safe-area-inset-bottom));
     margin-bottom: 0 !important;
     border-bottom: none;
+    border-top: 1px solid rgba(0, 100, 0, 0.08);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  ion-tab-button {
+    --color: #666666;
+    --color-selected: #006400;
+    --background: transparent;
+    --background-selected: rgba(0, 100, 0, 0.08);
+    border-radius: 10px;
+    margin: 0 4px;
+    padding: 6px 6px 4px 6px;
+    transition: all 0.2s ease;
+    min-height: 45px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    max-width: calc(20% - 8px);
+    text-align: center;
+    position: relative;
+    
+    &:hover {
+      --color: #006400;
+      --background: rgba(0, 100, 0, 0.05);
+    }
+    
+    &.tab-selected {
+      --color: #006400;
+      --background: rgba(0, 100, 0, 0.08);
+      transform: translateY(-1px);
+    }
   }
   
   ion-icon {
     font-size: 22px;
+    margin-bottom: 3px;
+    transition: all 0.2s ease;
+    display: block;
+    line-height: 1;
+    width: 22px;
+    height: 22px;
+    text-align: center;
+  }
+  
+  ion-label {
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    transition: all 0.2s ease;
+    line-height: 1.1;
+    text-align: center;
+    width: 100%;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    word-break: keep-all;
+  }
+}
+
+// Responsive spacing for different screen sizes
+@media (max-width: 480px) {
+  ion-footer {
+    ion-tab-bar {
+      padding: 6px 2px 8px 2px;
+    }
+    
+    ion-tab-button {
+      margin: 0 1px;
+      padding: 5px 2px 3px 2px;
+      max-width: calc(20% - 2px);
+      flex: 1;
+    }
+    
+    ion-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+      margin-bottom: 2px;
+    }
+    
+    ion-label {
+      font-size: 8px;
+      line-height: 1.1;
+      white-space: nowrap;
+      overflow: visible;
+      text-overflow: unset;
+      word-break: keep-all;
+      max-width: none;
+    }
+  }
+}
+
+@media (min-width: 768px) {
+  ion-footer {
+    ion-tab-bar {
+      padding: 6px 8px 8px 8px;
+    }
+    
+    ion-tab-button {
+      margin: 0 6px;
+      padding: 7px 8px 5px 8px;
+      max-width: calc(20% - 12px);
+    }
+    
+    ion-icon {
+      font-size: 24px;
+      width: 24px;
+      height: 24px;
+      margin-bottom: 4px;
+    }
+    
+    ion-label {
+      font-size: 11px;
+      line-height: 1.1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      word-break: keep-all;
+    }
+  }
+}
+
+// Dark Mode Support
+@media (prefers-color-scheme: dark) {
+  ion-footer {
+    ion-tab-bar {
+      --background: #2a2a2a;
+      --color-selected: #4ade80;
+      --color: #a0a0a0;
+      --color-hover: #4ade80;
+      border-top-color: rgba(74, 222, 128, 0.15);
+      box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.2);
+    }
+    
+    ion-tab-button {
+      --color: #a0a0a0;
+      --color-selected: #4ade80;
+      --background: transparent;
+      --background-selected: rgba(74, 222, 128, 0.08);
+      
+      &:hover {
+        --color: #4ade80;
+        --background: rgba(74, 222, 128, 0.05);
+      }
+      
+      &.tab-selected {
+        --color: #4ade80;
+        --background: rgba(74, 222, 128, 0.08);
+      }
+    }
   }
 }
 
@@ -37,11 +193,11 @@ ion-footer {
 
 // Ensure content doesn't overlap with fixed footer
 ion-content {
-  --padding-bottom: 80px; // 60px footer height + 20px extra spacing
+  --padding-bottom: 75px; // 65px footer height + 10px extra spacing
   margin-bottom: 0px;
 }
 
 // Alternative: Use CSS to add bottom margin to the last content element
 ion-content::part(scroll) {
-  padding-bottom: 80px;
+  padding-bottom: 75px;
 }

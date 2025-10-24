@@ -5,7 +5,7 @@
       <svg viewBox="0 0 400 160" class="header-svg" preserveAspectRatio="xMidYMid meet">
         <defs>
           <pattern id="cutePattern" x="0" y="0" width="100%" height="100%" patternUnits="objectBoundingBox">
-            <image x="0" y="0" width="100%" height="100%" href="../../assets/cute.JPG" preserveAspectRatio="xMidYMid slice"/>
+            <image x="0" y="0" width="100%" height="100%" href="../../assets/image.png" preserveAspectRatio="xMidYMid slice"/>
           </pattern>
         </defs>
         <path d="M0,80 Q120,160 260,80 T400,80 L400,0 L0,0 Z"
@@ -28,7 +28,21 @@
 
   <!-- Login Form Card -->
   <div class="login-card">
-    <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="login-form">
+    <!-- Offline Warning -->
+    <div *ngIf="!isOnline" class="offline-warning">
+      <ion-icon name="wifi-outline"></ion-icon>
+      <span>You're currently offline. Please check your internet connection.</span>
+    </div>
+
+    <!-- Loading Skeleton -->
+    <div *ngIf="loading" class="loading-skeleton">
+      <ion-skeleton-text animated class="skeleton-field"></ion-skeleton-text>
+      <ion-skeleton-text animated class="skeleton-field"></ion-skeleton-text>
+      <ion-skeleton-text animated class="skeleton-field"></ion-skeleton-text>
+      <ion-skeleton-text animated class="skeleton-field"></ion-skeleton-text>
+    </div>
+
+    <form *ngIf="!loading" [formGroup]="loginForm" (ngSubmit)="onLogin()" class="login-form" role="form" aria-label="Login form">
       
       <!-- Email/Username Field -->
       <div class="form-group">
@@ -41,12 +55,31 @@
             placeholder="Enter your username or email"
             autocomplete="username email"
             class="form-input"
-            [class.error]="loginForm.get('emailOrUserName')?.invalid && loginForm.get('emailOrUserName')?.touched">
+            [class.valid]="isEmailValid"
+            [class.invalid]="loginForm.get('emailOrUserName')?.invalid && loginForm.get('emailOrUserName')?.touched"
+            [class.error]="loginForm.get('emailOrUserName')?.invalid && loginForm.get('emailOrUserName')?.touched"
+            aria-label="Username or email address"
+            aria-describedby="email-error"
+            [attr.aria-invalid]="loginForm.get('emailOrUserName')?.invalid ? 'true' : 'false'"
+            (ionFocus)="onEmailFocus()"
+            (ionBlur)="onEmailBlur()">
           </ion-input>
         </div>
         <div *ngIf="loginForm.get('emailOrUserName')?.invalid && loginForm.get('emailOrUserName')?.touched" 
-             class="error-message">
-          Username or email is required
+             class="error-message" 
+             id="email-error"
+             role="alert">
+          <ion-icon name="information-circle-outline"></ion-icon>
+          <span *ngIf="loginForm.get('emailOrUserName')?.errors?.['required']">
+            Please enter your username or email
+          </span>
+          <span *ngIf="loginForm.get('emailOrUserName')?.errors?.['minlength']">
+            Username/email must be at least 3 characters
+          </span>
+        </div>
+        <div *ngIf="isEmailValid" class="success-message">
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+          <span>Valid email format</span>
         </div>
       </div>
 
@@ -58,16 +91,37 @@
           <ion-input 
             id="password"
             formControlName="password" 
-            type="password"
+            [type]="showPassword ? 'text' : 'password'"
             placeholder="Enter your password"
             autocomplete="current-password"
             class="form-input"
-            [class.error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+            [class.valid]="isPasswordValid"
+            [class.invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+            [class.error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+            aria-label="Password"
+            aria-describedby="password-error"
+            [attr.aria-invalid]="loginForm.get('password')?.invalid ? 'true' : 'false'">
           </ion-input>
+          <ion-icon 
+            [name]="showPassword ? 'eye-off-outline' : 'eye-outline'" 
+            class="password-toggle"
+            (click)="togglePasswordVisibility()"
+            aria-label="Toggle password visibility"
+            role="button"
+            tabindex="0">
+          </ion-icon>
         </div>
         <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" 
-             class="error-message">
-          Password is required
+             class="error-message"
+             id="password-error"
+             role="alert">
+          <ion-icon name="information-circle-outline"></ion-icon>
+          <span *ngIf="loginForm.get('password')?.errors?.['required']">Password is required</span>
+          <span *ngIf="loginForm.get('password')?.errors?.['minlength']">Password must be at least 6 characters</span>
+        </div>
+        <div *ngIf="isPasswordValid" class="success-message">
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+          <span>Password looks good</span>
         </div>
       </div>
 
@@ -77,7 +131,7 @@
           <ion-checkbox formControlName="rememberMe" class="remember-checkbox"></ion-checkbox>
           <label class="remember-label">Remember me</label>
         </div>
-        <a href="#" class="forgot-password">Forgot Password?</a>
+        <a href="#" class="forgot-password" (click)="resetPassword(); $event.preventDefault()">Forgot Password?</a>
       </div>
 
       <!-- Login Button -->
@@ -85,16 +139,37 @@
         expand="block"
         type="submit"
         class="login-btn"
-        [disabled]="loginForm.invalid || loading">
+        [disabled]="!isFormValid || loading"
+        [class.loading]="loading">
         <ion-spinner *ngIf="loading" name="crescent" size="small"></ion-spinner>
         <span *ngIf="!loading">Sign In</span>
         <span *ngIf="loading">Signing In...</span>
       </ion-button>
 
-      <!-- Error Message -->
-      <div *ngIf="errorMsg" class="error-container">
+      <!-- Enhanced Error Message -->
+      <div *ngIf="errorMsg" class="error-container" role="alert">
         <ion-icon name="warning-outline"></ion-icon>
-        <span>{{ errorMsg }}</span>
+        <div class="error-content">
+          <span class="error-title">Login Failed</span>
+          <span class="error-message">{{ errorMsg }}</span>
+        </div>
+      </div>
+
+      <!-- Social Login Section -->
+      <div class="social-login-section">
+        <div class="divider">
+          <span>or continue with</span>
+        </div>
+        
+        <ion-button 
+          expand="block" 
+          fill="outline" 
+          class="google-login-btn"
+          (click)="loginWithGoogle()"
+          [disabled]="loading">
+          <ion-icon name="logo-google" slot="start"></ion-icon>
+          <span>Continue with Google</span>
+        </ion-button>
       </div>
 
       <!-- Sign Up Link -->

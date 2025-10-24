@@ -1,7 +1,7 @@
 <ion-content class="profile-info-bg" fullscreen>
   <!-- Green gradient header -->
   <div class="profile-info-header">
-    <div class="header-background">
+    <!-- <div class="header-background">
       <svg viewBox="0 0 400 120" class="header-svg" preserveAspectRatio="none">
         <defs>
           <linearGradient id="profileInfoGradient" x1="0" y1="0" x2="1" y2="1">
@@ -12,16 +12,14 @@
         <path d="M0,60 Q120,120 260,60 T400,60 L400,0 L0,0 Z"
           fill="url(#profileInfoGradient)" />
       </svg>
-    </div>
+    </div> -->
     
     <!-- Navigation -->
     <div class="header-nav">
-      <ion-button fill="clear" class="back-btn" (click)="goBack()">
-        <ion-icon name="arrow-back-outline"></ion-icon>
-      </ion-button>
+      <ion-back-button defaultHref="/profile"></ion-back-button>
       <h2 class="page-title">Profile Information</h2>
-      <ion-button fill="clear" class="edit-toggle-btn" (click)="editMode ? cancelEdit() : enableEdit()">
-        <ion-icon [name]="editMode ? 'close-outline' : 'create-outline'"></ion-icon>
+      <ion-button fill="clear" class="edit-toggle-btn" (click)="editMode ? saveProfile() : enableEdit()">
+        {{ editMode ? 'SAVE' : 'EDIT' }}
       </ion-button>
     </div>
     
@@ -34,12 +32,15 @@
         <div class="avatar-overlay" *ngIf="editMode" (click)="selectAvatar()">
           <ion-icon name="camera-outline"></ion-icon>
         </div>
+        <div class="avatar-overlay" *ngIf="!editMode" (click)="profileForm ? onFieldFocus() : null">
+          <ion-icon name="camera-outline"></ion-icon>
+        </div>
         <input type="file" #avatarInput accept="image/*" hidden (change)="onAvatarChange($event)">
       </div>
       
       <ion-button *ngIf="editMode" fill="outline" size="small" class="change-avatar-btn" (click)="selectAvatar()" [disabled]="isUploadingAvatar">
         <ion-spinner *ngIf="isUploadingAvatar" name="crescent" size="small"></ion-spinner>
-        <span *ngIf="!isUploadingAvatar">Change Avatar</span>
+        <span *ngIf="!isUploadingAvatar">Change Photo</span>
         <span *ngIf="isUploadingAvatar">Processing...</span>
       </ion-button>
     </div>
@@ -71,7 +72,9 @@
                  class="form-input" 
                  formControlName="displayName" 
                  [readonly]="!editMode" 
-                 placeholder="Enter your full name" />
+                 placeholder="Enter your full name"
+                 (focus)="profileForm ? onFieldFocus() : null"
+                 (click)="profileForm ? onFieldFocus() : null" />
           <div *ngIf="profileForm.get('displayName')?.invalid && profileForm.get('displayName')?.touched" 
                class="form-error">
             <span *ngIf="profileForm.get('displayName')?.errors?.['required']">Full Name is required</span>
@@ -95,7 +98,9 @@
                  formControlName="mobile" 
                  [readonly]="!editMode" 
                  placeholder="Enter your mobile number" 
-                 type="tel" />
+                 type="tel"
+                 (focus)="profileForm ? onFieldFocus() : null"
+                 (click)="profileForm ? onFieldFocus() : null" />
         </div>
 
         <div class="form-group">
@@ -105,12 +110,13 @@
                  class="form-input" 
                  formControlName="birthdate"
                  [readonly]="!editMode" 
-                 [max]="today" />
+                 [max]="today"
+                 (focus)="profileForm ? onFieldFocus() : null" />
         </div>
 
         <div class="form-group">
           <label class="form-label" for="gender">Gender</label>
-          <select id="gender" class="form-input" formControlName="gender">
+          <select id="gender" class="form-input" formControlName="gender" (focus)="profileForm ? onFieldFocus() : null">
             <option value="">Select Gender</option>
             <option value="male">Male</option>
             <option value="female">Female</option>
@@ -128,7 +134,8 @@
                  class="form-input" 
                  formControlName="occupation" 
                  [readonly]="!editMode" 
-                 placeholder="Enter your occupation" />
+                 placeholder="Enter your occupation"
+                 (focus)="profileForm ? onFieldFocus() : null" />
         </div>
 
         <div class="form-group">
@@ -137,7 +144,8 @@
                  class="form-input" 
                  formControlName="skills" 
                  [readonly]="!editMode" 
-                 placeholder="Enter your skills and interests" />
+                 placeholder="Enter your skills and interests"
+                 (focus)="profileForm ? onFieldFocus() : null" />
         </div>
       </div>
 
@@ -151,12 +159,13 @@
                     formControlName="bio" 
                     [readonly]="!editMode" 
                     rows="4" 
-                    placeholder="Tell us about yourself..."></textarea>
+                    placeholder="Tell us about yourself..."
+                    (focus)="profileForm ? onFieldFocus() : null"></textarea>
         </div>
       </div>
 
       <!-- Action Buttons -->
-      <div *ngIf="editMode" class="action-buttons">
+      <!-- <div *ngIf="editMode" class="action-buttons">
         <ion-button type="submit" 
                     color="primary" 
                     expand="block" 
@@ -175,7 +184,7 @@
                     [disabled]="isSaving">
           Cancel
         </ion-button>
-      </div>
+      </div> -->
     </form>
   </div>
 </ion-content>

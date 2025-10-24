@@ -59,13 +59,155 @@ ion-tab-bar {
   margin-bottom: 0 !important;
 }
 
-/* Remove extra spacing from content */
+/* Add proper spacing for fixed footer - let components control their own padding */
 ion-content {
-  --padding-bottom: 0px !important;
   margin-bottom: 0px !important;
+  --padding-bottom: 75px; /* Updated for new footer height */
 }
 
 /* Ensure no extra space below footer */
 ion-app {
   --ion-safe-area-bottom: 0px !important;
+}
+
+/* ===========================================
+   GLOBAL FONT COLORS FOR DARK/LIGHT MODE
+   =========================================== */
+
+/* Light Mode Font Colors */
+ion-content {
+  --color: #212529;
+  color: #212529;
+}
+
+ion-header {
+  --color: #ffffff;
+  color: #ffffff;
+}
+
+ion-toolbar {
+  --color: #ffffff;
+  color: #ffffff;
+}
+
+ion-title {
+  --color: #ffffff;
+  color: #ffffff;
+}
+
+ion-item {
+  --color: #212529;
+  color: #212529;
+}
+
+ion-label {
+  --color: #212529;
+  color: #212529;
+}
+
+ion-input {
+  --color: #212529;
+  --placeholder-color: #6c757d;
+  color: #212529;
+}
+
+ion-textarea {
+  --color: #212529;
+  --placeholder-color: #6c757d;
+  color: #212529;
+}
+
+ion-button {
+  --color: #ffffff;
+  color: #ffffff;
+}
+
+ion-chip {
+  --color: #495057;
+  color: #495057;
+}
+
+ion-segment {
+  --color: #495057;
+  color: #495057;
+}
+
+ion-checkbox {
+  --color: #006400;
+  --color-checked: #006400;
+}
+
+ion-radio {
+  --color: #006400;
+  --color-checked: #006400;
+}
+
+/* Dark Mode Font Colors */
+@media (prefers-color-scheme: dark) {
+  ion-content {
+    --color: #ffffff;
+    color: #ffffff;
+  }
+
+  ion-header {
+    --color: #ffffff;
+    color: #ffffff;
+  }
+
+  ion-toolbar {
+    --color: #ffffff;
+    color: #ffffff;
+  }
+
+  ion-title {
+    --color: #ffffff;
+    color: #ffffff;
+  }
+
+  ion-item {
+    --color: #ffffff;
+    color: #ffffff;
+  }
+
+  ion-label {
+    --color: #e0e0e0;
+    color: #e0e0e0;
+  }
+
+  ion-input {
+    --color: #ffffff;
+    --placeholder-color: #a0a0a0;
+    color: #ffffff;
+  }
+
+  ion-textarea {
+    --color: #ffffff;
+    --placeholder-color: #a0a0a0;
+    color: #ffffff;
+  }
+
+  ion-button {
+    --color: #ffffff;
+    color: #ffffff;
+  }
+
+  ion-chip {
+    --color: #e0e0e0;
+    color: #e0e0e0;
+  }
+
+  ion-segment {
+    --color: #e0e0e0;
+    color: #e0e0e0;
+  }
+
+  ion-checkbox {
+    --color: #4ade80;
+    --color-checked: #4ade80;
+  }
+
+  ion-radio {
+    --color: #4ade80;
+    --color-checked: #4ade80;
+  }
 }

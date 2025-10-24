@@ -1,4 +1,4 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/missions"></ion-back-button>
@@ -16,7 +16,10 @@
   <!-- Hero Section with Mission Image -->
   <div class="hero-section">
     <div class="mission-image">
-      <img [src]="m.posterUrl || 'assets/mission.png'" alt="Mission Poster" />
+      <img [src]="getMissionImageSrc()" 
+           alt="Mission Poster" 
+           (error)="onImageError()"
+           [class.image-error]="imageError" />
       <div class="image-overlay">
         <div class="mission-status-badge" [ngClass]="getMissionStatusClass(m)">
           <ion-icon [name]="getMissionStatusIcon(m)"></ion-icon>
@@ -26,11 +29,11 @@
     </div>
     
     <!-- Mission Header Info -->
-    <div class="mission-header">
+    <!-- <div class="mission-header">
       <h1 class="mission-title">{{ m.missionName }}</h1>
       <p class="mission-tagline">{{ m.description || m.tagline || 'Join us in making a meaningful difference in our community' }}</p>
       
-      <!-- Quick Stats -->
+
       <div class="quick-stats">
         <div class="stat-item">
           <ion-icon name="calendar-outline"></ion-icon>
@@ -54,7 +57,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
 
   <!-- Application Status Card -->
@@ -89,11 +92,118 @@
     <div class="detail-card">
       <div class="card-header">
         <ion-icon name="location-outline"></ion-icon>
-        <h3>Location</h3>
+        <h3>Location & Directions</h3>
       </div>
       <div class="card-content">
-        <p class="location-text">{{ m.location }}</p>
-        <div id="mission-map" class="mission-map"></div>
+        <p class="location-text">{{ mission.location }}</p>
+        
+        <!-- Navigation Controls
+        <div class="navigation-controls">
+          <ion-button 
+            fill="outline" 
+            size="small" 
+            (click)="openInGoogleMaps()"
+            class="nav-button">
+            <ion-icon name="logo-google"></ion-icon>
+            <span>Google Maps</span>
+          </ion-button>
+          
+          <ion-button 
+            fill="outline" 
+            size="small" 
+            (click)="openInAppleMaps()"
+            class="nav-button">
+            <ion-icon name="navigate-outline"></ion-icon>
+            <span>Apple Maps</span>
+          </ion-button>
+          
+          <ion-button 
+            fill="outline" 
+            size="small" 
+            (click)="openInWaze()"
+            class="nav-button">
+            <ion-icon name="car-outline"></ion-icon>
+            <span>Waze</span>
+          </ion-button>
+        </div> -->
+
+        <!-- Directions Toggle Button -->
+        <div class="directions-control">
+          <ion-button 
+            fill="solid" 
+            color="primary" 
+            size="small"
+            (click)="toggleDirections()"
+            [disabled]="directionsLoading || !canLoadDirections()"
+            class="directions-button">
+            <ion-icon [name]="getDirectionsButtonIcon()"></ion-icon>
+            <span>{{ getDirectionsButtonText() }}</span>
+          </ion-button>
+        </div>
+
+        <!-- Directions Unavailable Message -->
+        <div class="directions-unavailable" *ngIf="!canLoadDirections() && !directionsLoading">
+          <ion-icon name="information-circle-outline"></ion-icon>
+          <span>Directions unavailable - Mission location not available</span>
+        </div>
+
+        <!-- Route Information -->
+        <div class="route-info" *ngIf="routeInfo">
+          <div class="route-detail">
+            <ion-icon name="time-outline"></ion-icon>
+            <span>{{ routeInfo.duration }}</span>
+          </div>
+          <div class="route-detail">
+            <ion-icon name="resize-outline"></ion-icon>
+            <span>{{ routeInfo.distance }}</span>
+          </div>
+        </div>
+
+        <!-- Directions Error -->
+        <div class="directions-error" *ngIf="directionsError">
+          <ion-icon name="warning-outline"></ion-icon>
+          <span>Unable to load directions</span>
+          <ion-button 
+            fill="clear" 
+            size="small" 
+            (click)="retryDirections()"
+            class="retry-button">
+            <ion-icon name="refresh-outline"></ion-icon>
+            <span>Retry</span>
+          </ion-button>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div class="map-loading" *ngIf="mapLoading && !mapError">
+          <ion-spinner name="crescent" size="small"></ion-spinner>
+          <span>Loading map...</span>
+        </div>
+
+        <!-- Map Error -->
+        <div class="map-error" *ngIf="mapError">
+          <ion-icon name="warning-outline"></ion-icon>
+          <span>Map temporarily unavailable</span>
+          <ion-button 
+            fill="clear" 
+            size="small" 
+            (click)="retryMapLoad()"
+            class="retry-button">
+            <ion-icon name="refresh-outline"></ion-icon>
+            <span>Retry</span>
+          </ion-button>
+        </div>
+
+        <!-- Directions Loading Indicator -->
+        <div class="directions-loading" *ngIf="directionsLoading">
+          <ion-spinner name="crescent" size="small"></ion-spinner>
+          <span>Loading directions...</span>
+        </div>
+        
+        <!-- Map Container -->
+        <div id="mission-map" 
+             class="mission-map"
+             [class.hidden]="mapLoading || mapError">
+        </div>
       </div>
     </div>
 
@@ -122,7 +232,12 @@
       <div class="card-content">
         <div class="organization-info">
           <div class="org-avatar">
-            <ion-icon name="business-outline"></ion-icon>
+            <img [src]="organization?.profilePictureURL" 
+                 alt="Organization Avatar" 
+                 *ngIf="organization?.profilePictureURL"
+                 class="org-profile-img">
+            <ion-icon name="business-outline" 
+                      *ngIf="!organization?.profilePictureURL"></ion-icon>
           </div>
           <div class="org-details">
             <h4>{{ m.orgName }}</h4>
